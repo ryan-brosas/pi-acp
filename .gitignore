@@ -20,3 +20,8 @@ dist
 # Generated pi operating-layer runtime state
 .pi/MEMORY.md
 .pi/implementation-notes.md
+
+# Local work pointer and per-work dotfiles stay untracked (AGENTS.md)
+.pi/work/.active
+.pi/work/*/.progress.md
+.pi/work/*/.verify.log
