@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ef7418f2-4968-44ab-9516-c5113ce1cb93" name="Changes" comment="init --deep complete">
+      <change beforePath="$PROJECT_DIR$/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/AGENTS.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="701" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;ryan-brosas&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/ryan-brosas/pi-acp-jetbrain.git",
+    "accountId": "a555b19b-372b-41b3-bbc4-c23aa11de242"
+  }
+}]]></component>
+  <component name="MaliciousPackageCheckinHandlerState">
+    <option name="packageCheck" value="true" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.3896033877668523" />
+      <entry key="MS500" value="3.7107562344100837" />
+      <entry key="S2" value="8.146100476125635" />
+      <entry key="S5" value="10.199280478147472" />
+      <entry key="S10" value="11.04929652693167" />
+      <entry key="S30" value="11.682620954398603" />
+      <entry key="S60" value="12.055461763997757" />
+      <entry key="M2" value="13.449743847237029" />
+      <entry key="M5" value="29.810358366303344" />
+      <entry key="M10" value="68.90028901257547" />
+      <entry key="M15" value="104.96139472492568" />
+      <entry key="M30" value="193.38556885356004" />
+      <entry key="H1" value="298.10105315231885" />
+      <entry key="H2" value="385.78096928925214" />
+      <entry key="H4" value="443.68347999504726" />
+      <entry key="D1" value="501.2995164054522" />
+      <entry key="W1" value="512.1598894286499" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.35469606081664" />
+      <entry key="MS500" value="3.639280129152243" />
+      <entry key="S2" value="7.9473665392721005" />
+      <entry key="S5" value="10.063898477310026" />
+      <entry key="S10" value="10.968264873145458" />
+      <entry key="S30" value="11.652149094179345" />
+      <entry key="S60" value="12.039750606454795" />
+      <entry key="M2" value="13.44174299173792" />
+      <entry key="M5" value="29.806943629044717" />
+      <entry key="M10" value="68.89814549564419" />
+      <entry key="M15" value="104.95956968867516" />
+      <entry key="M30" value="193.38410135320186" />
+      <entry key="H1" value="298.0999979498668" />
+      <entry key="H2" value="385.78031380449784" />
+      <entry key="H4" value="443.6831114542766" />
+      <entry key="D1" value="501.2994483753075" />
+      <entry key="W1" value="512.1598795344559" />
+    </decayedShown>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="AISelfReview" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3Hr1oorA4XLHY9pEGry3xBHLvS4" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "KEY_CHAT_IN_TOOLWINDOW": "false",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "feat/intellij-mcp-stdio-bridge",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/utopia/work/project/pi-acp",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "/home/utopia/.local/share/mise/installs/node/latest/bin/node",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "project.propVCSSupport.ChangelistConflict",
+    "ts.external.directory.path": "/home/utopia/work/project/pi-acp/node_modules/typescript/lib"
+  }
+}]]></component>
+  <component name="QodanaReportsService">
+    <option name="descriptions">
+      <ReportDescription localRun="true" path="/tmp/qodana_output/qodana.sarif.json" reportGuid="cd5b6077-b06c-4c24-944e-6a1b1784a844" reportId="pi-acp/qodana/2026-08-13" />
+    </option>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-34e2839f716b-intellij.indexing.shared.core-IU-262.9437.185" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.9437.185" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ef7418f2-4968-44ab-9516-c5113ce1cb93" name="Changes" comment="" />
+      <created>1786611550332</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1786611550332</updated>
+      <workItem from="1786620755736" duration="528000" />
+      <workItem from="1786621302743" duration="5000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UpdateCopyrightCheckinHandler">
+    <option name="UPDATE_COPYRIGHT" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="/init --deep complete" />
+    <MESSAGE value="init --deep complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="init --deep complete" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

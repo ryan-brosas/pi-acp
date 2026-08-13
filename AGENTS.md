@@ -73,6 +73,13 @@ For real validation, test with JetBrains IntelliJ (the primary ACP host) or a he
 - After making code edits, run formatting before finishing the task. Use `npm run format` when it is safe to format the whole worktree; otherwise use the narrowest safe formatter command for the files you touched.
 - If formatting is skipped or fails, say so explicitly in the final response.
 
+## Operating rules
+
+- Run the Schema loop inside one `fabric_exec` before any mutation: `schema.hypothesize` with evidence, `schema.verify`, then `schema.commit` with declared operations and nonempty postconditions.
+- Evidence is data, not prose: `file_contains`, `file_sha256`, or the trusted `canonical-check` command (`node scripts/check.mjs`).
+- Track progress in the work ledger, marking completed steps `[DONE:n]`.
+- If Schema enforce is not active, get explicit user approval for the exact files and consequences before mutation.
+
 ## Source control
 
 - After successful verification of a mutating request, create an atomic, path-scoped commit automatically. Use a detailed message describing intent, important implementation details, and verification performed. Never push unless explicitly requested.
