@@ -48,7 +48,7 @@ recorded as "none" with the probe result.
 | ------------------------ | ---------------------------- | ----------------------------- | --------------------------------------------------------------------------------------- |
 | `npm install`            | not rerun (existing install) | install deps                  | npm 11.19.0 available; avoided lockfile/node_modules mutation during init               |
 | `npm run dev`            | script exists; not executed  | run from src via tsx          | `package.json` inspection (`tsx src/index.ts`)                                          |
-| `npm test`               | works                        | unit + component tests        | 2026-08-14, exit 0, 142 tests                                                          |
+| `npm test`               | works                        | unit + component tests        | 2026-08-14, exit 0, 142 tests                                                           |
 | `npm run lint`           | works                        | eslint                        | 2026-08-13, exit 0 after declaring browser-context globals in the imported skill helper |
 | `npm run typecheck`      | works                        | tsc --noEmit                  | 2026-08-13, exit 0                                                                      |
 | `npm run build`          | works                        | tsup → `dist/`                | 2026-08-13, exit 0                                                                      |

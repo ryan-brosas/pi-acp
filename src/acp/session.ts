@@ -233,9 +233,10 @@ export class SessionManager {
       throw e
     }
 
-    let state: any = null
+    type PiState = { sessionId?: string; sessionFile?: string }
+    let state: PiState | null = null
     try {
-      state = (await proc.getState()) as any
+      state = ((await proc.getState()) as PiState | null | undefined) ?? null
     } catch {
       state = null
     }

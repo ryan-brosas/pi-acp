@@ -426,7 +426,14 @@ export default function acpMcpBridgeExtension(pi: ExtensionAPI): void {
     const names = new Set<string>()
     for (const tool of tools) {
       try {
-        if (names.has(tool.exposedName)) throw new Error('duplicate exposed tool name')
+        if (names.has(tool.exposedName)) {
+          registration.failed.push({
+            exposedName: tool.exposedName,
+            schemaHash: tool.schemaHash,
+            message: 'duplicate exposed tool name'
+          })
+          continue
+        }
         names.add(tool.exposedName)
         const conversionState = createConversionState()
         const schema = schemaToTypeBox(tool.inputSchema, conversionState)

@@ -429,7 +429,11 @@ export class AcpMcpBridge {
           )
         } else {
           if (!isStdioServer(server)) {
-            throw new Error('invalid stdio descriptor: args and env must both be arrays')
+            this.#catalogComplete = false
+            this.#diagnostics.push(
+              `IDE bridge: ${server.name} unavailable (transport=${isAcpServer(server) ? 'acp' : 'stdio'}; phase=descriptor_validation; invalid stdio descriptor: args and env must both be arrays)`
+            )
+            continue
           }
           const ssePort = intellijSsePort(server)
           let sseClient: SseMcpClient | undefined
