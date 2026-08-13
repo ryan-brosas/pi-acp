@@ -10,6 +10,8 @@ This is an MVP-style adapter intended to be useful today and easy to iterate on.
 
 Expect some minor breaking changes.
 
+The local IntelliJ integration is experimental: IntelliJ's installed ACP implementation supplies its private IDE MCP server as a stdio descriptor, and `pi-acp` bridges it into Pi as `ide_<server>_<tool>` tools. The draft ACP MCP transport remains supported. A fresh IntelliJ `pi-acp-local` chat is still required before claiming complete end-to-end IntelliJ-hosted success.
+
 ## Features
 
 - Streams assistant output as ACP `agent_message_chunk`
@@ -195,7 +197,19 @@ Project layout:
 ## Limitations
 
 - No ACP filesystem delegation (`fs/*`) and no ACP terminal delegation (`terminal/*`). pi reads/writes and executes locally.
-- MCP servers are accepted in ACP params and stored in session state, but not wired through to pi in this adapter. If you use [pi MCP adapter](https://github.com/nicobailon/pi-mcp-adapter) it will be available in the ACP client.
+- MCP servers are accepted in ACP params and bridged into the Pi subprocess as deterministic `ide_<server>_<tool>` extension tools.
+  - IntelliJ's primary path is stdio MCP (`command`, `args`, `env`); draft ACP MCP remains supported.
+  - Discovery is bounded, cursor-paginated, deduplicated, and immutable for the session.
+  - IntelliJ tools receive the ACP working directory as `projectPath` automatically when their schema declares it; explicit model arguments win.
+  - New sessions include semantic-first IDE guidance (symbol search/info, call hierarchy, inspections, refactoring, build/run, Git, and controlled debugger workflows) so Pi uses IntelliJ's index instead of approximating everything with shell/text tools.
+  - Runtime calls use a separate long timeout from discovery and support cancellation/late-response suppression.
+  - JSON Schema conversion preserves required fields, nested structures, enums, const, unions/intersections, tuple items, local `$ref`/`$defs`/`definitions`, and common constraints with bounded permissive fallback.
+  - MCP text/images/resources and structured content map into Pi content/details; `isError` becomes a failed Pi tool.
+  - Private IPC validates catalog identity, tool names, and schema hashes in per-tool registration acknowledgements and reports partial registration health.
+  - Server-originated ACP MCP notifications are diagnosed; `tools/list_changed` requires a new session and unsupported server requests are rejected.
+- The IntelliJ allowlist is controlled by `/home/utopia/.jetbrains/acp.json`. The current 40-tool profile includes controlled debugger start/control/breakpoint workflows while excluding terminal, database, universal execution, arbitrary debugger expression evaluation, and variable mutation. An explicit `idea_mcp_allowed_tools` list is a deny-all mask plus named tools; omitting it means AllowAll in the installed build and should be treated as a deliberate security/context decision.
+- The bridge uses an immutable per-session catalog. After changing IntelliJ MCP settings or the allowlist, start a new ACP chat.
+
 - Assistant streaming is currently sent as `agent_message_chunk` (no separate thought stream).
 - Queue is implemented client-side and should work like pi's `one-at-a-time`
 - ~~ACP clients don't yet suport session history, but ACP sessions from `pi-acp` can be `/resume`d in pi directly~~

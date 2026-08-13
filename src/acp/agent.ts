@@ -26,6 +26,7 @@ import {
 import { getAuthMethods } from './auth.js'
 import { SessionManager, type PiAcpSession } from './session.js'
 import { AcpMcpBridge } from './mcp-bridge.js'
+import type { BridgeTool } from './mcp-types.js'
 import { SessionStore } from './session-store.js'
 import { PiRpcProcess } from '../pi-rpc/process.js'
 import { listPiSessions, findPiSession } from './pi-sessions.js'
@@ -198,14 +199,15 @@ export class PiAcpAgent implements ACPAgent {
 
       const cwd = opts?.cwd ?? stored.cwd
 
-      // ACP MCP bridge: connect client-provided ACP-transport MCP servers and
+      // MCP bridge: connect client-provided ACP or stdio MCP servers and
       // prepare the pi subprocess to expose their tools (best effort; failures
       // degrade to ordinary pi-acp sessions without IDE tools).
-      const bridge = new AcpMcpBridge(this.conn, opts?.mcpServers ?? [], sessionId)
+      const bridge = new AcpMcpBridge(this.conn, opts?.mcpServers ?? [], sessionId, { cwd })
       const bridgeSettings = await bridge.start().catch(err => {
         this.bridgeDiagnostics.push(String(err?.message ?? err))
         return { extensionPaths: [], env: {} }
       })
+      this.bridgeDiagnostics.push(...bridge.diagnostics)
 
       let proc: PiRpcProcess
       try {
@@ -237,7 +239,22 @@ export class PiAcpAgent implements ACPAgent {
       // Wait for the pi extension to authenticate (bounded); never fail the
       // session on a slow/absent handshake.
       if (bridgeSettings.extensionPaths.length > 0) {
-        await bridge.waitForHandshake().catch(() => undefined)
+        const handshaken = await bridge.waitForHandshake().then(() => true).catch(err => {
+          this.bridgeDiagnostics.push(`IDE bridge handshake unavailable: ${String(err?.message ?? err)}`)
+          return false
+        })
+        if (handshaken) {
+          await bridge
+            .waitForRegistration()
+            .then(registration => {
+              if (registration.failed.length > 0) {
+                this.bridgeDiagnostics.push(`IDE tool registration partial (${registration.failed.length} failed)`)
+              }
+            })
+            .catch(err => {
+              this.bridgeDiagnostics.push(`IDE bridge registration unavailable: ${String(err?.message ?? err)}`)
+            })
+        }
       }
 
       this.lastSessionCwd = cwd
@@ -253,6 +270,16 @@ export class PiAcpAgent implements ACPAgent {
     } finally {
       this.restoringSessions.delete(sessionId)
     }
+  }
+
+  async extMethod(method: string, params: Record<string, unknown>): Promise<Record<string, unknown>> {
+    if (method !== 'mcp/message') throw new Error(`Unsupported client extension method: ${method}`)
+    return this.sessions.handleIncomingMcpMessage(params, false)
+  }
+
+  async extNotification(method: string, params: Record<string, unknown>): Promise<void> {
+    if (method !== 'mcp/message') return
+    await this.sessions.handleIncomingMcpMessage(params, true)
   }
 
   async initialize(params: InitializeRequest): Promise<InitializeResponse> {
@@ -300,16 +327,17 @@ export class PiAcpAgent implements ACPAgent {
     const fileCommands = loadSlashCommands(params.cwd)
     const enableSkillCommands = getEnableSkillCommands(params.cwd)
 
-    // ACP MCP bridge: connect client-provided ACP-transport MCP servers and
+    // MCP bridge: connect client-provided ACP or stdio MCP servers and
     // prepare the pi subprocess to expose their tools (best effort).
     // The IPC session id is a bridge-internal correlation value (pipe naming,
     // hello validation). The ACP session id only exists after pi spawns, so we
     // generate one here and keep it stable for the pi subprocess env.
-    const bridge = new AcpMcpBridge(this.conn, params.mcpServers, crypto.randomUUID())
+    const bridge = new AcpMcpBridge(this.conn, params.mcpServers, crypto.randomUUID(), { cwd: params.cwd })
     const bridgeSettings = await bridge.start().catch(err => {
       this.bridgeDiagnostics.push(String(err?.message ?? err))
       return { extensionPaths: [], env: {} }
     })
+    this.bridgeDiagnostics.push(...bridge.diagnostics)
     const session = await this.sessions.create({
       cwd: params.cwd,
       mcpServers: params.mcpServers,
@@ -322,7 +350,22 @@ export class PiAcpAgent implements ACPAgent {
     })
     // Handshake is bounded and best-effort; failures degrade gracefully.
     if (bridgeSettings.extensionPaths.length > 0) {
-      await bridge.waitForHandshake().catch(() => undefined)
+      const handshaken = await bridge.waitForHandshake().then(() => true).catch(err => {
+        this.bridgeDiagnostics.push(`IDE bridge handshake unavailable: ${String(err?.message ?? err)}`)
+        return false
+      })
+      if (handshaken) {
+        await bridge
+          .waitForRegistration()
+          .then(registration => {
+            if (registration.failed.length > 0) {
+              this.bridgeDiagnostics.push(`IDE tool registration partial (${registration.failed.length} failed)`)
+            }
+          })
+          .catch(err => {
+            this.bridgeDiagnostics.push(`IDE bridge registration unavailable: ${String(err?.message ?? err)}`)
+          })
+      }
     }
 
     // Fetch state + models once (parallel) to reduce startup latency.
@@ -401,7 +444,10 @@ export class PiAcpAgent implements ACPAgent {
           cwd: params.cwd,
           fileCommands,
           updateNotice,
-          bridgeDiagnostics: this.bridgeDiagnostics
+          bridgeDiagnostics: this.bridgeDiagnostics,
+          bridgeTools: bridge.tools,
+          bridgeProjectPath: bridge.projectPath,
+          bridgeCatalogComplete: bridge.catalogComplete
         })
 
     if (preludeText)
@@ -1523,11 +1569,14 @@ function buildUpdateNotice(): string | null {
   }
 }
 
-function buildStartupInfo(opts: {
+export function buildStartupInfo(opts: {
   cwd: string
   fileCommands: ReturnType<typeof loadSlashCommands>
   updateNotice: string | null
   bridgeDiagnostics?: string[]
+  bridgeTools?: BridgeTool[]
+  bridgeProjectPath?: string
+  bridgeCatalogComplete?: boolean
 }): string {
   void opts.fileCommands
 
@@ -1567,6 +1616,33 @@ function buildStartupInfo(opts: {
   // IDE bridge diagnostics (ACP MCP bridge status)
   if (opts.bridgeDiagnostics?.length) {
     addSection('IDE Bridge', opts.bridgeDiagnostics)
+  }
+
+  // IntelliJ MCP guidance. Keep this short and operational: the model already receives
+  // individual tool schemas, but it benefits from an explicit semantic-first workflow.
+  if (opts.bridgeTools?.length) {
+    const preferred = [
+      'search_symbol',
+      'get_symbol_info',
+      'analyze_calls',
+      'get_file_problems',
+      'lint_files',
+      'rename_refactoring',
+      'build_project',
+      'get_run_configurations',
+      'execute_run_configuration',
+      'git_status'
+    ].filter(name => opts.bridgeTools!.some(tool => tool.remoteName === name))
+    const registered = opts.bridgeTools.map(tool => tool.remoteName).join(', ')
+    const status = opts.bridgeCatalogComplete === false ? ' (catalog is partial)' : ''
+    addSection('IDE Tools', [
+      `IntelliJ MCP bridge: ${opts.bridgeTools.length} tool${opts.bridgeTools.length === 1 ? '' : 's'} registered${status}.`,
+      `Project context: ${opts.bridgeProjectPath ?? opts.cwd}; projectPath is injected for tools that declare it unless explicitly overridden.`,
+      preferred.length > 0
+        ? `Prefer semantic IntelliJ workflows when applicable: ${preferred.join(', ')}.`
+        : 'Prefer the registered IntelliJ tools for IDE-aware navigation, inspections, and refactoring.',
+      `Registered remote tools: ${registered}`
+    ])
   }
 
   // Skills

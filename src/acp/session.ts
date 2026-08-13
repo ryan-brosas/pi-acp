@@ -188,6 +188,20 @@ export class SessionManager {
     }
   }
 
+  async handleIncomingMcpMessage(
+    params: Record<string, unknown>,
+    notification: boolean
+  ): Promise<Record<string, unknown>> {
+    const connectionId = params.connectionId
+    if (typeof connectionId !== 'string') throw new Error('mcp/message is missing connectionId')
+    for (const session of this.sessions.values()) {
+      if (session.ownsMcpConnection(connectionId)) {
+        return session.handleIncomingMcpMessage(params, notification)
+      }
+    }
+    throw new Error(`Unknown MCP connection: ${connectionId}`)
+  }
+
   async create(params: SessionCreateParams): Promise<PiAcpSession> {
     // Let pi manage session persistence in its default location (~/.pi/agent/sessions/...)
     // so sessions are visible to the regular `pi` CLI.
@@ -323,6 +337,18 @@ export class PiAcpSession {
     this.bridge = opts.bridge
 
     this.proc.onEvent(ev => this.handlePiEvent(ev))
+  }
+
+  ownsMcpConnection(connectionId: string): boolean {
+    return this.bridge?.ownsConnection(connectionId) ?? false
+  }
+
+  handleIncomingMcpMessage(
+    params: Record<string, unknown>,
+    notification: boolean
+  ): Promise<Record<string, unknown>> {
+    if (!this.bridge) throw new Error('Session has no MCP bridge')
+    return this.bridge.handleIncomingMcpMessage(params, notification)
   }
 
   setStartupInfo(text: string) {
