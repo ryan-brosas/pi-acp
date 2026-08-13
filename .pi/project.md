@@ -7,12 +7,13 @@ Rendered by /init from .pi/templates/project.md (adapted 2026-08-13 when the pi-
 - **Goal:** An ACP (Agent Client Protocol) adapter that bridges JetBrains IntelliJ's ACP host to the `pi` coding agent (`@earendil-works/pi-coding-agent`) without modifying pi — one pi subprocess per ACP session, with IntelliJ's private IDE MCP server exposed to pi as `ide_<server>_<tool>` tools.
 - **Status:** Functional and verified end to end. The IntelliJ path connects over SSE (transport=sse), registers the full IDE tool catalog with pi, and pi invokes IDE tools through the bridge. Primary host is JetBrains IntelliJ; other ACP clients are best-effort.
 - **Milestone:** MCP-over-SSE transport with SSE-first preference (2026-08-13), session-scoped bridge diagnostics, teardown hardening, 139 unit tests green. Evidence: live IntelliJ probe (`connected over SSE; 58 tools registered`), `node scripts/check.mjs` exit 0.
+- **Milestone:** JetBrains IDE generalization (2026-08-14): user-facing guidance labels JetBrains IDE (wire `IJ_MCP_*` semantics unchanged), capability-subset test for IntelliJ IDEA/WebStorm/PyCharm/Rider, completion gate requires IDE inspections + independent review (no unresolved P0/P1), deployed adapter repointed to this checkout (`48f76d2`), 140 unit tests green.
 - **Next Milestone:** See .pi/roadmap.md.
 
 ## Success Criteria
 
 1. A new IntelliJ chat gets `ide_*` tools registered with pi and pi can invoke them (verifiable via startup info "IDE Tools" section and tool_call events).
-2. `npm test` (139 tests), `npm run lint`, `npm run typecheck`, and `npm run build` all pass; `node scripts/check.mjs` exits 0 for the template layer.
+2. `npm test` (140 tests), `npm run lint`, `npm run typecheck`, and `npm run build` all pass; `node scripts/check.mjs` exits 0 for the template layer.
 3. Session teardown leaves no orphan pi/MCP processes (SIGKILL escalation, deduped close).
 4. The adapter never blocks `session/new` on a silent MCP server (bounded discovery timeouts).
 
