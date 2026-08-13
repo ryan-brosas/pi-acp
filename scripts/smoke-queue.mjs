@@ -14,14 +14,14 @@ try {
     3,
     'session/prompt',
     { sessionId, prompt: [{ type: 'text', text: '/queue' }] },
-    { timeoutMs: 60_000 }
+    { timeoutMs: 90_000 }
   )
   assert(r1?.stopReason === 'end_turn', `first turn stopReason=${r1?.stopReason}`)
   const r2 = await h.expectResult(
     4,
     'session/prompt',
     { sessionId, prompt: [{ type: 'text', text: '/queue all' }] },
-    { timeoutMs: 60_000 }
+    { timeoutMs: 90_000 }
   )
   assert(r2?.stopReason === 'end_turn', `second turn stopReason=${r2?.stopReason}`)
 

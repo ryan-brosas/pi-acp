@@ -4,7 +4,10 @@
 import { SmokeHarness, assert } from './lib/acp-smoke.mjs'
 
 let sessionId
-const a = new SmokeHarness().start()
+// Keep the isolated agent dir alive across both adapter processes (F-027):
+// process B loads the session persisted by process A, so the temp dir must
+// survive A's close and be removed only after B finishes.
+const a = new SmokeHarness({ cleanupIsolation: false }).start()
 try {
   await a.expectResult(1, 'initialize', { protocolVersion: 1 })
   const created = await a.expectResult(2, 'session/new', { cwd: process.cwd(), mcpServers: [] })
@@ -25,7 +28,7 @@ try {
 await a.close()
 a.assertExited(0)
 
-const b = new SmokeHarness().start()
+const b = new SmokeHarness({ env: a.env, isolate: false }).start()
 try {
   await b.expectResult(1, 'initialize', { protocolVersion: 1 })
   const loaded = await b.expectResult(
@@ -52,3 +55,4 @@ try {
 }
 await b.close()
 b.assertExited(0)
+a.removeIsolation()
