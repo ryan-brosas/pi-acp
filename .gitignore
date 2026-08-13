@@ -9,3 +9,7 @@ dist
 
 /agentDocs
 .DS_Store
+
+# Pi/Fabric harness session state
+.pi/fabric/
+.veda/

@@ -10,7 +10,7 @@ This is an MVP-style adapter intended to be useful today and easy to iterate on.
 
 Expect some minor breaking changes.
 
-The local IntelliJ integration is experimental: IntelliJ's installed ACP implementation supplies its private IDE MCP server as a stdio descriptor, and `pi-acp` bridges it into Pi as `ide_<server>_<tool>` tools. The draft ACP MCP transport remains supported. A fresh IntelliJ `pi-acp-local` chat is still required before claiming complete end-to-end IntelliJ-hosted success.
+The local IntelliJ integration is experimental: IntelliJ's installed ACP implementation supplies its private IDE MCP server as a stdio descriptor (`idea.sh`), and `pi-acp` bridges it into Pi as `ide_<server>_<tool>` tools. The IntelliJ launcher script forwards the stdio command to the already-running IDE and exits 0 without speaking MCP, so `pi-acp` prefers a direct connection to the IDE's in-process SSE endpoint when the descriptor carries `IJ_MCP_SERVER_PORT`, and falls back to the stdio child only if that endpoint is unreachable. The draft ACP MCP transport remains supported for other hosts. A fresh IntelliJ `pi-acp-local` chat is still required before claiming complete end-to-end IntelliJ-hosted success.
 
 ## Features
 
@@ -114,6 +114,7 @@ Point your ACP client to the built `dist/index.js`:
 ### Environment variables
 
 - `PI_ACP_ENABLE_EMBEDDED_CONTEXT=true` advertises ACP `promptCapabilities.embeddedContext` support to the client.
+- `PI_ACP_DEBUG_BRIDGE=1` logs the sanitized `session/new.mcpServers` descriptor to stderr on every new session. IntelliJ pipes the adapter's stderr into `idea.log`, so this captures the exact descriptor the host sent (values redacted except `IJ_MCP_SERVER_PORT`/`IJ_MCP_SESSION_ID`).
 - Default: unset/any other value means `false`.
 - When disabled, compliant ACP clients should avoid sending embedded `resource` blocks. If they send them anyway, `pi-acp` still degrades gracefully by converting them into plain-text prompt context.
 
@@ -199,6 +200,7 @@ Project layout:
 - No ACP filesystem delegation (`fs/*`) and no ACP terminal delegation (`terminal/*`). pi reads/writes and executes locally.
 - MCP servers are accepted in ACP params and bridged into the Pi subprocess as deterministic `ide_<server>_<tool>` extension tools.
   - IntelliJ's primary path is stdio MCP (`command`, `args`, `env`); draft ACP MCP remains supported.
+  - IntelliJ's launcher-based stdio descriptor forwards to the running IDE and exits 0. When the descriptor carries `IJ_MCP_SERVER_PORT`, the bridge prefers a direct MCP-over-SSE client (`/sse` + `/message`) against the IDE's in-process server (so healthy sessions never spawn the launcher) and falls back to the stdio child only when that endpoint is unreachable — the same bounded discovery, runtime deadlines, cancellation, and diagnostics apply to both transports.
   - Discovery is bounded, cursor-paginated, deduplicated, and immutable for the session.
   - IntelliJ tools receive the ACP working directory as `projectPath` automatically when their schema declares it; explicit model arguments win.
   - New sessions include semantic-first IDE guidance (symbol search/info, call hierarchy, inspections, refactoring, build/run, Git, and controlled debugger workflows) so Pi uses IntelliJ's index instead of approximating everything with shell/text tools.
