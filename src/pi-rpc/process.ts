@@ -76,19 +76,26 @@ type SpawnParams = {
   sessionPath?: string
   /** Extra pi extensions to load via `--extension` (e.g. the ACP MCP bridge extension). */
   extensionPaths?: string[]
+  /** Deadline for each pi RPC request; bounds silent pi processes (default 30s). */
+  requestTimeoutMs?: number
   /** Per-child environment overlay merged over process.env (e.g. bridge IPC credentials). */
   env?: Record<string, string | undefined>
 }
 
 export class PiRpcProcess {
   private readonly child: ChildProcessWithoutNullStreams
-  private readonly pending = new Map<string, { resolve: (v: PiRpcResponse) => void; reject: (e: unknown) => void }>()
+  private readonly pending = new Map<
+    string,
+    { resolve: (v: PiRpcResponse) => void; reject: (e: unknown) => void; timer?: ReturnType<typeof setTimeout> }
+  >()
+  private readonly requestTimeoutMs: number
   private readonly exitPromise: Promise<void>
   private eventHandlers: Array<(ev: PiRpcEvent) => void> = []
   private readonly preludeLines: string[] = []
 
-  private constructor(child: ChildProcessWithoutNullStreams) {
+  private constructor(child: ChildProcessWithoutNullStreams, requestTimeoutMs: number) {
     this.child = child
+    this.requestTimeoutMs = requestTimeoutMs
     this.exitPromise = new Promise(resolve => {
       child.once('exit', () => resolve())
       child.once('close', () => resolve())
@@ -114,6 +121,7 @@ export class PiRpcProcess {
           const pending = this.pending.get(id)
           if (pending) {
             this.pending.delete(id)
+            if (pending.timer) clearTimeout(pending.timer)
             pending.resolve(msg as PiRpcResponse)
             return
           }
@@ -125,7 +133,10 @@ export class PiRpcProcess {
 
     child.on('exit', (code, signal) => {
       const err = new Error(`pi process exited (code=${code}, signal=${signal})`)
-      for (const [, p] of this.pending) p.reject(err)
+      for (const [, p] of this.pending) {
+        if (p.timer) clearTimeout(p.timer)
+        p.reject(err)
+      }
       this.pending.clear()
     })
 
@@ -196,7 +207,7 @@ export class PiRpcProcess {
       // leave stderr untouched; ACP clients may capture it.
     })
 
-    const proc = new PiRpcProcess(child)
+    const proc = new PiRpcProcess(child, params.requestTimeoutMs ?? 30_000)
 
     // Best-effort handshake.
     // Important: pi may emit a get_state response pointing at a sessionFile in a directory
@@ -314,7 +325,7 @@ export class PiRpcProcess {
   }
 
   async compact(customInstructions?: string): Promise<unknown> {
-    const res = await this.request({ type: 'compact', customInstructions })
+    const res = await this.request({ type: 'compact', customInstructions }, 120_000)
     if (!res.success) throw new Error(`pi compact failed: ${res.error ?? JSON.stringify(res.data)}`)
     return res.data
   }
@@ -336,7 +347,7 @@ export class PiRpcProcess {
   }
 
   async exportHtml(outputPath?: string): Promise<{ path: string }> {
-    const res = await this.request({ type: 'export_html', outputPath })
+    const res = await this.request({ type: 'export_html', outputPath }, 120_000)
     if (!res.success) throw new Error(`pi export_html failed: ${res.error ?? JSON.stringify(res.data)}`)
     const data: any = res.data
     return { path: String(data?.path ?? '') }
@@ -363,16 +374,25 @@ export class PiRpcProcess {
     await this.writeLine(`${JSON.stringify({ type: 'extension_ui_response', ...response })}\n`)
   }
 
-  private request(cmd: PiRpcCommand): Promise<PiRpcResponse> {
+  private request(cmd: PiRpcCommand, timeoutMs: number = this.requestTimeoutMs): Promise<PiRpcResponse> {
     const id = crypto.randomUUID()
     const withId = { ...cmd, id }
+    const command = cmd.type
 
     const line = `${JSON.stringify(withId)}\n`
 
     return new Promise<PiRpcResponse>((resolve, reject) => {
-      this.pending.set(id, { resolve, reject })
+      const timer = setTimeout(() => {
+        this.pending.delete(id)
+        reject(new Error(`pi RPC ${command} timed out after ${timeoutMs}ms`))
+      }, timeoutMs)
+      timer.unref?.()
+
+      this.pending.set(id, { resolve, reject, timer })
 
       void this.writeLine(line).catch(error => {
+        const entry = this.pending.get(id)
+        if (entry?.timer) clearTimeout(entry.timer)
         this.pending.delete(id)
         reject(error)
       })

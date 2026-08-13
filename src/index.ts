@@ -49,14 +49,26 @@ const output = new ReadableStream<Uint8Array>({
 
 const stream = ndJsonStream(input, output)
 
-const agent = new AgentSideConnection(conn => new PiAcpAgent(conn), stream)
+// Retain the agent so shutdown can dispose owned pi subprocesses. The SDK's
+// AgentSideConnection does not expose the handler instance it created.
+let activeAgent: PiAcpAgent | null = null
+new AgentSideConnection(conn => {
+  activeAgent = new PiAcpAgent(conn)
+  return activeAgent
+}, stream)
 
-function shutdown() {
+let shuttingDown = false
+async function shutdown(): Promise<void> {
+  if (shuttingDown) return
+  shuttingDown = true
   try {
-    // Best-effort: dispose session subprocesses when the client disconnects.
-    ;(agent as any)?.agent?.dispose?.()
+    // Dispose session subprocesses (and the IDE bridge) before exiting so no
+    // pi or MCP child is orphaned when the client disconnects.
+    const a = activeAgent
+    activeAgent = null
+    if (a) await a.dispose()
   } catch {
-    // ignore
+    // ignore; the exit below is authoritative
   }
   try {
     process.exit(0)
@@ -65,12 +77,12 @@ function shutdown() {
   }
 }
 
-process.stdin.on('end', shutdown)
-process.stdin.on('close', shutdown)
+process.stdin.on('end', () => void shutdown())
+process.stdin.on('close', () => void shutdown())
 
 process.stdin.resume()
-process.on('SIGINT', shutdown)
-process.on('SIGTERM', shutdown)
+process.on('SIGINT', () => void shutdown())
+process.on('SIGTERM', () => void shutdown())
 
 // Avoid crashing if the client closes stdout early.
 process.stdout.on('error', () => {

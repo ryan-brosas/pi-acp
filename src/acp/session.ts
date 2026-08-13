@@ -157,8 +157,8 @@ export class SessionManager {
   private readonly store = new SessionStore()
 
   /** Dispose all sessions and their underlying pi subprocesses. */
-  disposeAll(): void {
-    for (const id of [...this.sessions.keys()]) void this.closeSession(id).catch(() => undefined)
+  async disposeAll(): Promise<void> {
+    await Promise.all([...this.sessions.keys()].map(id => this.closeSession(id).catch(() => undefined)))
   }
 
   /** Get a registered session if it exists (no throw). */
@@ -314,11 +314,6 @@ export class PiAcpSession {
   // Some pi events can arrive out of order (e.g. late toolcall_* deltas after execution starts),
   // and clients may hide progress if we ever downgrade back to `pending`.
   private currentToolCalls = new Map<string, 'pending' | 'in_progress'>()
-
-  // pi can emit multiple `turn_end` and `agent_end` events for a single user prompt
-  // when retry, compaction, or queued continuations run. The session-level prompt
-  // completes only when `agent_settled` is emitted.
-  private inAgentLoop = false
 
   // For ACP diff support: capture file contents before edit/write mutations,
   // then emit ToolCallContent {type:"diff"}. Compatible structured edit/write
@@ -562,7 +557,6 @@ export class PiAcpSession {
 
   private startTurn(t: QueuedTurn): void {
     this.cancelRequested = false
-    this.inAgentLoop = false
 
     this.pendingTurn = { resolve: t.resolve, reject: t.reject }
 
@@ -589,7 +583,6 @@ export class PiAcpSession {
         }
 
         this.pendingTurn = null
-        this.inAgentLoop = false
 
         // If the prompt failed, do not automatically proceed—pi may be unhealthy.
         // But we still clear the queueDepth metadata.
@@ -908,7 +901,6 @@ export class PiAcpSession {
       }
 
       case 'agent_start': {
-        this.inAgentLoop = true
         break
       }
 
@@ -921,7 +913,6 @@ export class PiAcpSession {
       case 'agent_end': {
         // One low-level run ended. Pi may still retry, compact, or process a queued
         // continuation, so keep the ACP turn open until `agent_settled`.
-        this.inAgentLoop = false
         break
       }
 
@@ -932,7 +923,6 @@ export class PiAcpSession {
           const reason: StopReason = this.cancelRequested ? 'cancelled' : 'end_turn'
           this.pendingTurn?.resolve(reason)
           this.pendingTurn = null
-          this.inAgentLoop = false
 
           // Start next queued prompt, if any.
           const next = this.turnQueue.shift()

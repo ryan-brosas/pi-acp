@@ -128,8 +128,8 @@ export class PiAcpAgent implements ACPAgent {
   private readonly store = new SessionStore()
   private readonly restoringSessions = new Map<string, Promise<PiAcpSession>>()
 
-  dispose(): void {
-    this.sessions.disposeAll()
+  async dispose(): Promise<void> {
+    await this.sessions.disposeAll()
   }
 
   // Remember recent session cwd and use it as the default filter.

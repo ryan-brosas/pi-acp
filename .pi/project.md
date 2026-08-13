@@ -8,6 +8,7 @@ Rendered by /init from .pi/templates/project.md (adapted 2026-08-13 when the pi-
 - **Status:** Functional and verified end to end. The IntelliJ path connects over SSE (transport=sse), registers the full IDE tool catalog with pi, and pi invokes IDE tools through the bridge. Primary host is JetBrains IntelliJ; other ACP clients are best-effort.
 - **Milestone:** MCP-over-SSE transport with SSE-first preference (2026-08-13), session-scoped bridge diagnostics, teardown hardening, 139 unit tests green. Evidence: live IntelliJ probe (`connected over SSE; 58 tools registered`), `node scripts/check.mjs` exit 0.
 - **Milestone:** JetBrains IDE generalization (2026-08-14): user-facing guidance labels JetBrains IDE (wire `IJ_MCP_*` semantics unchanged), capability-subset test for IntelliJ IDEA/WebStorm/PyCharm/Rider, completion gate requires IDE inspections + independent review (no unresolved P0/P1), deployed adapter repointed to this checkout (`48f76d2`), 140 unit tests green.
+- **Milestone:** Lifecycle hardening (2026-08-14): bounded pi RPC deadlines (default 30s; 120s for export_html/compact), awaitable shutdown chain so client disconnect disposes owned pi subprocesses, inAgentLoop dead state removed, noUnusedLocals and noUnusedParameters enabled, adapter gates wired into CI, redundant smoke script removed. 142 unit tests green.
 - **Next Milestone:** See .pi/roadmap.md.
 
 ## Success Criteria
@@ -45,7 +46,7 @@ Rendered by /init from .pi/templates/project.md (adapted 2026-08-13 when the pi-
   - `src/acp/*` — ACP protocol handling: agent, session lifecycle, MCP bridge (`mcp-bridge.ts`), transports (`mcp-stdio.ts`, `mcp-sse.ts`), IPC adapter (`mcp-ipc.ts`), session store, settings/sessions helpers.
   - `src/pi-rpc/*` — pi subprocess wrapper: spawn, newline-delimited JSON, abort, teardown with SIGKILL escalation.
   - `src/pi-extension/acp-mcp-bridge.ts` — in-pi extension: IPC client, JSON Schema → TypeBox conversion, `ide_<server>_<tool>` tool registration.
-  - `test/unit|component` — node:test suites (139 tests); `scripts/smoke-*.mjs` — headless ACP end-to-end probes.
+  - `test/unit|component` — node:test suites (142 tests); `scripts/smoke-*.mjs` — headless ACP end-to-end probes.
   - `.pi/prompts|skills|templates` — the imported pi-template operating layer (9 slash commands, progressive-disclosure skill packs, document templates).
   - `scripts/check.mjs` + validators — template-layer canonical gate.
 - **Dependency Rules:** The bridge never imports the ACP session layer; the pi extension only speaks the IPC wire protocol; transports share `#initializeAndDiscover` (bounded initialize → initialized → tools/list).
@@ -93,11 +94,11 @@ Rendered by /init from .pi/templates/project.md (adapted 2026-08-13 when the pi-
 
 ## Testing Architecture
 
-- **Unit + component:** `npm test` (node:test via tsx) — 139 tests at fork `main` (`f6e5ab2`): ACP translation, session lifecycle, bridge (stdio/SSE/fallback ordering), SSE client, IPC handshake, startup info. The workspace checkout (`e17ed85`) runs 118 tests (pre-SSE tree).
+- **Unit + component:** `npm test` (node:test via tsx) — 142 tests in this checkout: ACP translation, session lifecycle, bridge (stdio/SSE/fallback ordering), SSE client, IPC handshake, startup info, silent-pi deadlines, shutdown cleanup.
 - **End-to-end:** `scripts/smoke-*.mjs` (headless ACP client) and live IntelliJ probes (real IDE MCP server on the advertised port).
 - **Canonical gate:** `node scripts/check.mjs` — seven structural validators for the template layer + `git diff --check`; also runs in `.github/workflows/check.yml`.
-- **Command status (verified 2026-08-13, workspace checkout):** build pass, test pass (118), lint pass, typecheck pass, canonical check pass (111 oks). The four init artifacts pass a scoped Prettier check; the repository-wide write-mode formatter was not run.
-- **Coverage gaps:** no ACP-host integration test suite beyond smoke probes; IntelliJ-specific behavior is covered by manual live probes.
+- **Command status (verified 2026-08-14, this checkout):** build pass, test pass (142), lint pass, typecheck pass (with noUnusedLocals and noUnusedParameters), canonical check pass, smoke pass. Prettier still flags `.pi/roadmap.md` (pre-existing table padding; intentionally not reformatted).
+- **Coverage gaps:** IntelliJ-specific behavior is covered by manual live probes; lifecycle paths (shutdown, silent-pi deadlines) now have unit/entrypoint tests.
 
 ## Observability
 
@@ -134,7 +135,7 @@ Rendered by /init from .pi/templates/project.md (adapted 2026-08-13 when the pi-
 
 ## Known Risks and Hotspots
 
-- The IntelliJ workspace checkout is stale (`e17ed85`) relative to fork `main` (`f6e5ab2`), so source claims must use the dev clone until roadmap Phase 2.
+- Consolidation complete: this checkout is the single workspace; source claims use this checkout's `main` (`dist` rebuilt, `~/.jetbrains/acp.json` repointed).
 - `src/acp/mcp-bridge.ts` and session teardown are the highest-coupling paths; transport order, cancellation, registration, and disposal need regression tests.
 - IntelliJ's private MCP/SSE contract is not a public compatibility guarantee.
 

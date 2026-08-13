@@ -48,17 +48,17 @@ recorded as "none" with the probe result.
 | ------------------------ | ---------------------------- | ----------------------------- | --------------------------------------------------------------------------------------- |
 | `npm install`            | not rerun (existing install) | install deps                  | npm 11.19.0 available; avoided lockfile/node_modules mutation during init               |
 | `npm run dev`            | script exists; not executed  | run from src via tsx          | `package.json` inspection (`tsx src/index.ts`)                                          |
-| `npm test`               | works                        | unit + component tests        | 2026-08-13, exit 0, 118 tests (workspace checkout; 139 at fork `main`)                  |
+| `npm test`               | works                        | unit + component tests        | 2026-08-14, exit 0, 142 tests                                                          |
 | `npm run lint`           | works                        | eslint                        | 2026-08-13, exit 0 after declaring browser-context globals in the imported skill helper |
 | `npm run typecheck`      | works                        | tsc --noEmit                  | 2026-08-13, exit 0                                                                      |
 | `npm run build`          | works                        | tsup → `dist/`                | 2026-08-13, exit 0                                                                      |
 | `npm run format`         | script exists; not executed  | prettier write-mode formatter | `package.json` inspection; not run because it mutates the whole tree                    |
-| `node scripts/check.mjs` | works                        | template-layer canonical gate | 2026-08-13, exit 0, 111 oks                                                             |
+| `node scripts/check.mjs` | works                        | template-layer canonical gate | 2026-08-14, exit 0                                                                      |
 
 ## CI
 
 - **Workflows:** `check.yml` (canonical template gate), `github-release.yml` (release), `npm-publish.yml` (npm publish). Evidence: `.github/workflows/`.
-- **Local reproduction:** `node scripts/check.mjs` mirrors `check.yml`. Adapter gates (`npm test`, lint, typecheck) are not wired into CI yet — gap.
+- **Local reproduction:** `node scripts/check.mjs` mirrors `check.yml`; the CI check job also runs `npm ci`, `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build`.
 
 ## Generated Files
 
@@ -88,7 +88,7 @@ recorded as "none" with the probe result.
 - Node >= 20 (`package.json` `engines.node`); pi v0.80.4+ (`README.md` prerequisites).
 - JetBrains IntelliJ is the primary actively developed ACP host (explicit user direction, 2026-08-13).
 - No ACP client-side filesystem or terminal delegation; pi operates locally (`README.md` Limitations).
-- Workspace checkout is pre-SSE (`e17ed85`); sync to fork `main` (`f6e5ab2`) is roadmap Phase 2.
+- This checkout is the consolidated workspace (roadmap Phase 2 done); `dist/index.js` here is what IntelliJ launches.
 
 ## Unknowns
 
@@ -119,7 +119,7 @@ npm run typecheck
 npm run build
 ```
 
-All recorded gates pass in this checkout after adapting the imported browser helper for ESLint. Fork `main` remains the code-claim source for SSE behavior until Phase 2 consolidation.
+All recorded gates pass in this checkout (142 tests; canonical; lint; typecheck; build; smoke).
 
 ---
 
