@@ -24,8 +24,16 @@ Use `@agentclientprotocol/sdk`:
 
 ## Implementation constraints / decisions
 
+## IntelliJ MCP bridge
+
+The installed IntelliJ ACP implementation supplies its private IDE MCP server as `McpServer.Stdio` with `command`, `args`, and `env`; this is the primary IntelliJ path. `McpServerAcp` and `mcp/connect`/`mcp/message` remain supported for hosts using the draft ACP MCP transport.
+
+The bridge launches stdio MCP servers from the session working directory, discovers a bounded cursor-paginated catalog, and exposes deterministic `ide_<server>_<tool>` extension tools over authenticated per-session IPC. The catalog is immutable for the session; changing IntelliJ MCP settings or the allowlist requires a new ACP chat. Runtime calls have a separate deadline from discovery. Stdio cancellation uses the actual MCP request ID; ACP cancellation is best-effort when the outer SDK does not expose the inner request ID. Pi registration is acknowledged per tool and validated against catalog names/schema hashes; partial registration remains diagnostic. Server-originated `tools/list_changed` is a session-snapshot diagnostic, while unsupported server requests are rejected rather than silently ignored.
+
+Do not silently use IntelliJ AllowAll. The installed IntelliJ source shows omitted `idea_mcp_allowed_tools` means AllowAll, while an explicit list becomes deny-all plus explicit names. Keep terminal, database, universal execution, debugger launch/control, breakpoint mutation, and variable mutation outside the default profile unless deliberately reviewed.
+
 - Do **not** implement ACP client-side FS/terminal delegation in MVP. Pi already reads/writes and executes locally.
-- Ignore `mcpServers` for MVP (accept in params, store in session state).
+- Accept and bridge supported `mcpServers` descriptors through the session-owned IntelliJ/MCP adapter; preserve graceful degradation for unavailable servers.
 - Stream all pi assistant output as ACP `agent_message_chunk` initially.
 - Tool events: map pi tool execution events to ACP `tool_call` / `tool_call_update` (as text content).
 

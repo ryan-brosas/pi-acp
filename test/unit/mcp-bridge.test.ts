@@ -1,0 +1,559 @@
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
+import { AcpMcpBridge } from '../../src/acp/mcp-bridge.js'
+import { McpIpcServer } from '../../src/acp/mcp-ipc.js'
+import { BRIDGE_IPC_VERSION } from '../../src/acp/mcp-types.js'
+import { createConnection } from 'node:net'
+import { createInterface } from 'node:readline'
+
+/** Records extMethod traffic and answers with canned MCP responses. */
+class FakeConn {
+  calls: Array<{ method: string; params: any }> = []
+  notifications: Array<{ method: string; params: any }> = []
+  failConnect = false
+  tools = [
+    {
+      name: 'open_file_in_editor',
+      description: 'Open a file',
+      inputSchema: { type: 'object', properties: { path: { type: 'string' } } }
+    }
+  ]
+
+  page = 0
+  delayCalls = false
+
+  async extMethod(method: string, params: any): Promise<any> {
+    this.calls.push({ method, params })
+    if (method === 'mcp/connect') {
+      if (this.failConnect) throw new Error('mcp/connect failed')
+      return { connectionId: `conn-${params.acpId}` }
+    }
+    if (method === 'mcp/message') {
+      if (params.method === 'tools/list') {
+        if (params.params?.cursor === 'page-2') return { tools: [{ ...this.tools[0], name: 'second_tool' }] }
+        if (params.params?.cursor === 'page-1') return { tools: [this.tools[0]], nextCursor: 'page-2' }
+        return { tools: this.tools, ...(this.page > 0 ? { nextCursor: 'page-1' } : {}) }
+      }
+      if (params.method === 'tools/call') {
+        if (this.delayCalls) await new Promise(resolve => setTimeout(resolve, 60))
+        return { content: [{ type: 'text', text: 'opened' }] }
+      }
+      if (params.method === 'initialize') return { protocolVersion: '2025-03-26' }
+      return {}
+    }
+    if (method === 'mcp/disconnect') return {}
+    throw new Error(`unexpected extMethod: ${method}`)
+  }
+
+  async extNotification(method: string, params: any): Promise<void> {
+    this.notifications.push({ method, params })
+    this.calls.push({ method, params })
+  }
+}
+
+function acpServer(id: string, name: string): any {
+  return { type: 'acp', id, name }
+}
+
+const STDIO_MCP_SERVER_SCRIPT = [
+  "import readline from 'node:readline'",
+  "const send = message => process.stdout.write(JSON.stringify({ jsonrpc: '2.0', ...message }) + '\\n')",
+  'const rl = readline.createInterface({ input: process.stdin })',
+  "rl.on('line', line => {",
+  '  let message',
+  '  try { message = JSON.parse(line) } catch { return }',
+  "  if (message.method === 'initialize') send({ id: message.id, result: { protocolVersion: '2025-03-26', capabilities: {}, serverInfo: { name: 'fake', version: '1' } } })",
+  "  if (message.method === 'tools/list') send({ id: message.id, result: { tools: [{ name: 'open_file_in_editor', description: 'Open a file', inputSchema: { type: 'object' } }] } })",
+  "  if (message.method === 'tools/call') send({ id: message.id, result: { content: [{ type: 'text', text: process.env.TEST_MCP_ENV ?? 'missing' }] } })",
+  '})'
+].join('\n')
+
+function stdioServer(name = 'IntelliJ'): any {
+  return {
+    name,
+    command: process.execPath,
+    args: ['--input-type=module', '-e', STDIO_MCP_SERVER_SCRIPT],
+    env: [{ name: 'TEST_MCP_ENV', value: 'stdio-ok' }]
+  }
+}
+
+describe('AcpMcpBridge', () => {
+  it('launches stdio servers, discovers tools, and routes calls', async () => {
+    const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'stdio-session')
+    const settings = await bridge.start()
+
+    assert.equal(bridge.hasServers, true)
+    assert.equal(bridge.lifecycle, 'ready')
+    assert.equal(bridge.tools.length, 1)
+    assert.equal(bridge.tools[0].exposedName, 'ide_intellij_open_file_in_editor')
+
+    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+    const lines = createInterface({ input: sock })
+    const iterator = lines[Symbol.asyncIterator]()
+    const nextMessage = async (): Promise<any> => {
+      const next = await iterator.next()
+      if (next.done) throw new Error('IPC socket closed before the expected message')
+      return JSON.parse(next.value)
+    }
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(
+      JSON.stringify({
+        type: 'hello',
+        version: BRIDGE_IPC_VERSION,
+        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
+        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
+      }) + '\n'
+    )
+    const helloAck = await nextMessage()
+    assert.equal(helloAck.type, 'hello_ack')
+    const registration = {
+      type: 'catalog_registered',
+      registration: {
+        catalogId: helloAck.catalog.catalogId,
+        registered: bridge.tools.map(tool => ({ exposedName: tool.exposedName, schemaHash: tool.schemaHash })),
+        failed: []
+      }
+    }
+    sock.write(JSON.stringify(registration) + '\n')
+    sock.write(
+      JSON.stringify({
+        type: 'call',
+        id: 'stdio-call',
+        tool: 'ide_intellij_open_file_in_editor',
+        args: {}
+      }) + '\n'
+    )
+    assert.deepEqual(await nextMessage(), {
+      type: 'result',
+      id: 'stdio-call',
+      result: { content: [{ type: 'text', text: 'stdio-ok' }] }
+    })
+
+    lines.close()
+    sock.destroy()
+    await bridge.dispose()
+  })
+
+  it('discovers bounded cursor pages and computes catalog identity', async () => {
+    const conn = new FakeConn()
+    conn.page = 1
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('srv-1', 'IntelliJ')], 'paged')
+    await bridge.start()
+    assert.equal(bridge.tools.length, 2)
+    assert.ok(bridge.tools.every(tool => tool.schemaHash))
+    assert.ok(conn.calls.some(call => call.params?.params?.cursor === 'page-1'))
+    assert.ok(conn.calls.some(call => call.params?.params?.cursor === 'page-2'))
+    await bridge.dispose()
+  })
+
+  it('stops on a repeated pagination cursor and marks the catalog incomplete', async () => {
+    const conn = new FakeConn()
+    const original = conn.extMethod.bind(conn)
+    conn.extMethod = async (method: string, params: any) => {
+      if (method === 'mcp/message' && params.method === 'tools/list') {
+        return { tools: [], nextCursor: params.params?.cursor ?? 'loop' }
+      }
+      return original(method, params)
+    }
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('srv-1', 'IntelliJ')], 'cursor-cycle')
+    await bridge.start()
+    assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('repeated tools/list cursor')))
+    await bridge.dispose()
+  })
+
+  it('uses a separate runtime timeout for slow calls', async () => {
+    const conn = new FakeConn()
+    conn.delayCalls = true
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('srv-1', 'IntelliJ')], 'runtime', {
+      discoveryTimeoutMs: 100,
+      runtimeTimeoutMs: 200
+    })
+    const settings = await bridge.start()
+    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+    const lines = createInterface({ input: sock })
+    const iterator = lines[Symbol.asyncIterator]()
+    const nextMessage = async (): Promise<any> => {
+      const next = await iterator.next()
+      if (next.done) throw new Error('IPC socket closed before the expected message')
+      return JSON.parse(next.value)
+    }
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(
+      JSON.stringify({
+        type: 'hello',
+        version: BRIDGE_IPC_VERSION,
+        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
+        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
+      }) + '\n'
+    )
+    const helloAck = await nextMessage()
+    assert.equal(helloAck.type, 'hello_ack')
+    sock.write(
+      JSON.stringify({
+        type: 'catalog_registered',
+        registration: {
+          catalogId: helloAck.catalog.catalogId,
+          registered: bridge.tools.map(tool => ({ exposedName: tool.exposedName, schemaHash: tool.schemaHash })),
+          failed: []
+        }
+      }) + '\n'
+    )
+    sock.write(
+      JSON.stringify({ type: 'call', id: 'slow-ok', tool: 'ide_intellij_open_file_in_editor', args: {} }) + '\n'
+    )
+    assert.equal((await nextMessage()).type, 'result')
+    lines.close()
+    sock.destroy()
+    await bridge.dispose()
+  })
+
+  it('cancels an ACP call when the runtime deadline expires', async () => {
+    const conn = new FakeConn()
+    conn.delayCalls = true
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('srv-1', 'IntelliJ')], 'runtime-timeout', {
+      discoveryTimeoutMs: 100,
+      runtimeTimeoutMs: 20
+    })
+    const settings = await bridge.start()
+    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+    const lines = createInterface({ input: sock })
+    const iterator = lines[Symbol.asyncIterator]()
+    const nextMessage = async (): Promise<any> => {
+      const next = await iterator.next()
+      if (next.done) throw new Error('IPC socket closed before the expected message')
+      return JSON.parse(next.value)
+    }
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(
+      JSON.stringify({
+        type: 'hello',
+        version: BRIDGE_IPC_VERSION,
+        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
+        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
+      }) + '\n'
+    )
+    assert.equal((await nextMessage()).type, 'hello_ack')
+    sock.write(
+      JSON.stringify({ type: 'call', id: 'timeout-call', tool: 'ide_intellij_open_file_in_editor', args: {} }) + '\n'
+    )
+    assert.deepEqual(await nextMessage(), {
+      type: 'error',
+      id: 'timeout-call',
+      code: 'cancelled',
+      message: 'IDE tool call runtime timeout'
+    })
+    assert.ok(conn.notifications.some(call => call.params?.method === 'notifications/cancelled'))
+    lines.close()
+    sock.destroy()
+    await bridge.dispose()
+  })
+
+  it('connects ACP servers, initializes MCP, discovers tools, and returns spawn settings', async () => {
+    const conn = new FakeConn()
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('srv-1', 'IntelliJ')], 'session-1')
+    const settings = await bridge.start()
+
+    assert.equal(bridge.hasServers, true)
+    assert.equal(bridge.lifecycle, 'ready')
+    const methods = conn.calls.map(c => c.method)
+    assert.ok(methods.includes('mcp/connect'))
+    assert.equal(conn.calls.find(c => c.method === 'mcp/message')?.params.method, 'initialize')
+    assert.ok(conn.calls.some(c => c.method === 'mcp/message' && c.params.method === 'tools/list'))
+    assert.deepEqual(conn.notifications[0], {
+      method: 'mcp/message',
+      params: { connectionId: 'conn-srv-1', method: 'notifications/initialized', params: {} }
+    })
+    assert.equal(settings.extensionPaths.length, 1)
+    assert.ok(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+    assert.ok(settings.env.PI_ACP_MCP_IPC_TOKEN)
+    assert.equal(settings.env.PI_ACP_MCP_SESSION_ID, 'session-1')
+
+    const tools = bridge.tools
+    assert.equal(tools.length, 1)
+    assert.equal(tools[0].exposedName, 'ide_intellij_open_file_in_editor')
+    assert.equal(tools[0].remoteName, 'open_file_in_editor')
+    await bridge.dispose()
+    assert.equal(bridge.lifecycle, 'closed')
+    await assert.rejects(() => bridge.start(), /already closed/)
+  })
+
+  it('records unsupported inbound ACP MCP messages without changing the catalog', async () => {
+    const bridge = new AcpMcpBridge(new FakeConn() as any, [acpServer('srv-1', 'IntelliJ')], 'inbound')
+    await bridge.start()
+    assert.deepEqual(
+      await bridge.handleIncomingMcpMessage(
+        { connectionId: 'conn-srv-1', method: 'sampling/createMessage', params: {} },
+        false
+      ),
+      { error: { code: -32601, message: 'Unsupported server-originated MCP request: sampling/createMessage' } }
+    )
+    await bridge.handleIncomingMcpMessage(
+      { connectionId: 'conn-srv-1', method: 'notifications/tools/list_changed', params: {} },
+      true
+    )
+    assert.equal(bridge.tools.length, 1)
+    assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('session snapshot')))
+    await bridge.dispose()
+  })
+
+  it('routes authenticated IPC calls to the remote MCP tool', async () => {
+    const conn = new FakeConn()
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('srv-1', 'IntelliJ')], 'call-session')
+    const settings = await bridge.start()
+    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+    const lines = createInterface({ input: sock })
+    const iterator = lines[Symbol.asyncIterator]()
+    const nextMessage = async (): Promise<any> => {
+      const next = await iterator.next()
+      if (next.done) throw new Error('IPC socket closed before the expected message')
+      return JSON.parse(next.value)
+    }
+
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(
+      JSON.stringify({
+        type: 'hello',
+        version: BRIDGE_IPC_VERSION,
+        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
+        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
+      }) + '\n'
+    )
+    const helloAck = await nextMessage()
+    assert.equal(helloAck.type, 'hello_ack')
+    sock.write(
+      JSON.stringify({
+        type: 'catalog_registered',
+        registration: {
+          catalogId: helloAck.catalog.catalogId,
+          registered: bridge.tools.map(tool => ({ exposedName: tool.exposedName, schemaHash: tool.schemaHash })),
+          failed: []
+        }
+      }) + '\n'
+    )
+
+    sock.write(
+      JSON.stringify({ type: 'call', id: 'call-1', tool: 'ide_intellij_open_file_in_editor', args: { path: 'x.ts' } }) +
+        '\n'
+    )
+    const result = await nextMessage()
+    assert.deepEqual(result, { type: 'result', id: 'call-1', result: { content: [{ type: 'text', text: 'opened' }] } })
+    assert.deepEqual(conn.calls.at(-1), {
+      method: 'mcp/message',
+      params: {
+        connectionId: 'conn-srv-1',
+        method: 'tools/call',
+        params: { name: 'open_file_in_editor', arguments: { path: 'x.ts' } }
+      }
+    })
+
+    lines.close()
+    sock.destroy()
+    await bridge.dispose()
+  })
+
+  it('omits failed servers but keeps successful ones', async () => {
+    const conn = new FakeConn()
+    conn.failConnect = true
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('bad', 'Broken'), acpServer('good', 'IntelliJ')], 's')
+    // First server fails; second succeeds. failConnect is global, so make it selective:
+    const original = conn.extMethod.bind(conn)
+    conn.failConnect = false
+    let first = true
+    conn.extMethod = async (method: string, params: any) => {
+      if (method === 'mcp/connect' && first) {
+        first = false
+        throw new Error('mcp/connect failed')
+      }
+      return original(method, params)
+    }
+    const settings = await bridge.start()
+    assert.equal(bridge.tools.length, 1)
+    assert.equal(bridge.diagnostics.length, 1)
+    assert.ok(bridge.diagnostics[0].includes('Broken'))
+    assert.equal(settings.extensionPaths.length, 1)
+    await bridge.dispose()
+  })
+
+  it('disposes idempotently and disconnects each server exactly once', async () => {
+    const conn = new FakeConn()
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('a', 'A'), acpServer('b', 'B')], 's')
+    await bridge.start()
+    await bridge.dispose()
+    await bridge.dispose()
+    const disconnects = conn.calls.filter(c => c.method === 'mcp/disconnect')
+    assert.equal(disconnects.length, 2)
+  })
+
+  it('does not hang on a silent client: discovery times out and reports diagnostics', async () => {
+    const conn = new FakeConn()
+    conn.extMethod = async () => new Promise(() => {}) // never resolves
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('quiet', 'Quiet')], 's', 200)
+    const t0 = Date.now()
+    await bridge.start()
+    const elapsed = Date.now() - t0
+    assert.ok(elapsed < 5000, `start() took ${elapsed}ms — should have timed out`)
+    assert.equal(bridge.tools.length, 0)
+    assert.ok(bridge.diagnostics.length > 0)
+    assert.ok(bridge.diagnostics[0].includes('Quiet'))
+    await bridge.dispose()
+  })
+
+  it('rejects a second start without replacing the active IPC server', async () => {
+    const bridge = new AcpMcpBridge(new FakeConn() as any, [acpServer('srv', 'IntelliJ')], 's')
+    await bridge.start()
+    await assert.rejects(() => bridge.start(), /already started/)
+    await bridge.dispose()
+  })
+
+  it('returns empty spawn settings when no ACP servers are provided', async () => {
+    const conn = new FakeConn()
+    const bridge = new AcpMcpBridge(conn as any, [], 's')
+    const settings = await bridge.start()
+    assert.deepEqual(settings.extensionPaths, [])
+    assert.equal(bridge.hasServers, false)
+  })
+})
+
+describe('McpIpcServer handshake', () => {
+  it('authenticates with correct token and delivers the catalog', async () => {
+    const server = await McpIpcServer.start('ipc-test')
+    const ep = server.endpoint()
+    server.setCatalog({
+      catalogId: 'catalog-1',
+      tools: [{ exposedName: 'ide_x_y', connectionId: 'c', remoteName: 'y', inputSchema: {} }]
+    })
+    const handshake = server.waitForHandshake()
+    const registration = server.waitForRegistration(1000)
+
+    const sock = createConnection(ep.endpoint)
+    const received: any[] = []
+    sock.setEncoding('utf8')
+    let buf = ''
+    sock.on('data', (d: Buffer) => {
+      buf += d.toString()
+      let i: number
+      while ((i = buf.indexOf('\n')) >= 0) {
+        received.push(JSON.parse(buf.slice(0, i)))
+        buf = buf.slice(i + 1)
+      }
+    })
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(
+      JSON.stringify({ type: 'hello', version: BRIDGE_IPC_VERSION, token: ep.token, sessionId: ep.sessionId }) + '\n'
+    )
+    const catalog = await handshake
+    await new Promise<void>(resolve => setTimeout(resolve, 100))
+    assert.equal(catalog.tools.length, 1)
+    assert.ok(received.some((m: any) => m.type === 'hello_ack'))
+    sock.write(
+      JSON.stringify({
+        type: 'catalog_registered',
+        registration: { catalogId: 'catalog-1', registered: [{ exposedName: 'ide_x_y' }], failed: [] }
+      }) + '\n'
+    )
+    assert.deepEqual(await registration, {
+      catalogId: 'catalog-1',
+      registered: [{ exposedName: 'ide_x_y' }],
+      failed: []
+    })
+    sock.destroy()
+    server.close()
+  })
+
+  it('rejects a registration acknowledgement that omits catalog tools', async () => {
+    const server = await McpIpcServer.start('ipc-bad-registration')
+    const ep = server.endpoint()
+    server.setCatalog({
+      catalogId: 'catalog-bad',
+      tools: [{ exposedName: 'ide_x_y', connectionId: 'c', remoteName: 'y', inputSchema: {}, schemaHash: 'hash-1' }]
+    })
+    const registration = server.waitForRegistration(1000)
+    const sock = createConnection(ep.endpoint)
+    let buffer = ''
+    let resolveHello: ((message: any) => void) | undefined
+    const hello = new Promise<any>(resolve => {
+      resolveHello = resolve
+    })
+    sock.setEncoding('utf8')
+    sock.on('data', (chunk: Buffer) => {
+      buffer += chunk.toString()
+      let index: number
+      while ((index = buffer.indexOf('\n')) >= 0) {
+        const line = buffer.slice(0, index).trim()
+        buffer = buffer.slice(index + 1)
+        if (line) resolveHello?.(JSON.parse(line))
+      }
+    })
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(JSON.stringify({ type: 'hello', version: BRIDGE_IPC_VERSION, token: ep.token, sessionId: ep.sessionId }) + '\n')
+    assert.equal((await hello).type, 'hello_ack')
+    sock.write(JSON.stringify({ type: 'catalog_registered', registration: { catalogId: 'catalog-bad', registered: [], failed: [] } }) + '\n')
+    await assert.rejects(registration, /omitted tools/)
+    sock.destroy()
+    server.close()
+  })
+
+  it('returns a completed handshake to late waiters', async () => {
+    const server = await McpIpcServer.start('ipc-late-waiter')
+    const ep = server.endpoint()
+    const sock = createConnection(ep.endpoint)
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(
+      JSON.stringify({ type: 'hello', version: BRIDGE_IPC_VERSION, token: ep.token, sessionId: ep.sessionId }) + '\n'
+    )
+    await new Promise(resolve => setTimeout(resolve, 50))
+
+    const catalog = await server.waitForHandshake()
+    assert.deepEqual(catalog, { tools: [] })
+    sock.destroy()
+    server.close()
+  })
+
+  it('rejects wrong tokens', async () => {
+    const server = await McpIpcServer.start('ipc-test2')
+    const ep = server.endpoint()
+    const sock = createConnection(ep.endpoint)
+    const received: any[] = []
+    sock.setEncoding('utf8')
+    let buf = ''
+    sock.on('data', (d: Buffer) => {
+      buf += d.toString()
+      let i: number
+      while ((i = buf.indexOf('\n')) >= 0) {
+        received.push(JSON.parse(buf.slice(0, i)))
+        buf = buf.slice(i + 1)
+      }
+    })
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(
+      JSON.stringify({ type: 'hello', version: BRIDGE_IPC_VERSION, token: 'wrong', sessionId: ep.sessionId }) + '\n'
+    )
+    await new Promise<void>(resolve => setTimeout(resolve, 100))
+    assert.ok(received.some((m: any) => m.type === 'error' && m.code === 'unauthorized'))
+    sock.destroy()
+    server.close()
+  })
+
+  it('rejects messages before authentication', async () => {
+    const server = await McpIpcServer.start('ipc-test3')
+    const ep = server.endpoint()
+    const sock = createConnection(ep.endpoint)
+    const received: any[] = []
+    sock.setEncoding('utf8')
+    let buf = ''
+    sock.on('data', (d: Buffer) => {
+      buf += d.toString()
+      let i: number
+      while ((i = buf.indexOf('\n')) >= 0) {
+        received.push(JSON.parse(buf.slice(0, i)))
+        buf = buf.slice(i + 1)
+      }
+    })
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(JSON.stringify({ type: 'call', id: '1', tool: 'ide_x', args: {} }) + '\n')
+    await new Promise<void>(resolve => setTimeout(resolve, 100))
+    assert.ok(received.some((m: any) => m.type === 'error' && m.code === 'unauthorized'))
+    sock.destroy()
+    server.close()
+  })
+})

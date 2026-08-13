@@ -14,6 +14,7 @@ import { isAbsolute, resolve as resolvePath } from 'node:path'
 import { PiRpcProcess, PiRpcSpawnError, type PiRpcEvent } from '../pi-rpc/process.js'
 import { maybeAuthRequiredError } from './auth-required.js'
 import { SessionStore } from './session-store.js'
+import { AcpMcpBridge } from './mcp-bridge.js'
 import { expandSlashCommand, type FileSlashCommand } from './slash-commands.js'
 import {
   bashCommand,
@@ -34,6 +35,9 @@ type SessionCreateParams = {
   conn: AgentSideConnection
   fileCommands?: import('./slash-commands.js').FileSlashCommand[]
   piCommand?: string
+  bridge?: AcpMcpBridge
+  extensionPaths?: string[]
+  env?: Record<string, string | undefined>
 }
 
 export type StopReason = 'end_turn' | 'cancelled' | 'error'
@@ -169,7 +173,7 @@ export class SessionManager {
     const s = this.sessions.get(sessionId)
     if (!s) return
     try {
-      s.proc.dispose?.()
+      void s.dispose()
     } catch {
       // ignore
     }
@@ -184,6 +188,20 @@ export class SessionManager {
     }
   }
 
+  async handleIncomingMcpMessage(
+    params: Record<string, unknown>,
+    notification: boolean
+  ): Promise<Record<string, unknown>> {
+    const connectionId = params.connectionId
+    if (typeof connectionId !== 'string') throw new Error('mcp/message is missing connectionId')
+    for (const session of this.sessions.values()) {
+      if (session.ownsMcpConnection(connectionId)) {
+        return session.handleIncomingMcpMessage(params, notification)
+      }
+    }
+    throw new Error(`Unknown MCP connection: ${connectionId}`)
+  }
+
   async create(params: SessionCreateParams): Promise<PiAcpSession> {
     // Let pi manage session persistence in its default location (~/.pi/agent/sessions/...)
     // so sessions are visible to the regular `pi` CLI.
@@ -191,7 +209,9 @@ export class SessionManager {
     try {
       proc = await PiRpcProcess.spawn({
         cwd: params.cwd,
-        piCommand: params.piCommand
+        piCommand: params.piCommand,
+        extensionPaths: params.extensionPaths,
+        env: params.env
       })
     } catch (e) {
       if (e instanceof PiRpcSpawnError) {
@@ -220,7 +240,8 @@ export class SessionManager {
       mcpServers: params.mcpServers,
       proc,
       conn: params.conn,
-      fileCommands: params.fileCommands ?? []
+      fileCommands: params.fileCommands ?? [],
+      bridge: params.bridge
     })
 
     this.sessions.set(sessionId, session)
@@ -247,7 +268,8 @@ export class SessionManager {
       mcpServers: params.mcpServers,
       proc: params.proc,
       conn: params.conn,
-      fileCommands: params.fileCommands ?? []
+      fileCommands: params.fileCommands ?? [],
+      bridge: params.bridge
     })
 
     this.sessions.set(sessionId, session)
@@ -266,6 +288,7 @@ export class PiAcpSession {
   readonly proc: PiRpcProcess
   private readonly conn: AgentSideConnection
   private readonly fileCommands: FileSlashCommand[]
+  private readonly bridge: AcpMcpBridge | undefined
 
   // Used to map abort semantics to ACP stopReason.
   // Applies to the currently running turn.
@@ -303,6 +326,7 @@ export class PiAcpSession {
     proc: PiRpcProcess
     conn: AgentSideConnection
     fileCommands?: FileSlashCommand[]
+    bridge?: AcpMcpBridge
   }) {
     this.sessionId = opts.sessionId
     this.cwd = opts.cwd
@@ -310,8 +334,21 @@ export class PiAcpSession {
     this.proc = opts.proc
     this.conn = opts.conn
     this.fileCommands = opts.fileCommands ?? []
+    this.bridge = opts.bridge
 
     this.proc.onEvent(ev => this.handlePiEvent(ev))
+  }
+
+  ownsMcpConnection(connectionId: string): boolean {
+    return this.bridge?.ownsConnection(connectionId) ?? false
+  }
+
+  handleIncomingMcpMessage(
+    params: Record<string, unknown>,
+    notification: boolean
+  ): Promise<Record<string, unknown>> {
+    if (!this.bridge) throw new Error('Session has no MCP bridge')
+    return this.bridge.handleIncomingMcpMessage(params, notification)
   }
 
   setStartupInfo(text: string) {
@@ -332,6 +369,18 @@ export class PiAcpSession {
       sessionUpdate: 'agent_message_chunk',
       content: { type: 'text', text: this.startupInfo }
     })
+  }
+
+  /**
+   * Idempotent session disposal: end queued work, dispose the IDE bridge
+   * (rejects pending bridge calls, closes IPC, disconnects ACP MCP servers
+   * exactly once), then terminate the owned pi subprocess.
+   */
+  async dispose(): Promise<void> {
+    for (const q of this.turnQueue) q.reject(new Error('session disposed'))
+    this.turnQueue.length = 0
+    await this.bridge?.dispose()
+    this.proc.dispose?.()
   }
 
   async prompt(message: string, images: unknown[] = []): Promise<StopReason> {
@@ -392,6 +441,8 @@ export class PiAcpSession {
 
     // Abort the currently running turn (if any). If nothing is running, this is a no-op.
     await this.proc.abort()
+    // Cancel active IDE bridge tool calls for this turn (without closing connections).
+    this.bridge?.cancelAll()
   }
 
   wasCancelRequested(): boolean {
