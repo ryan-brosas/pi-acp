@@ -15,9 +15,13 @@ const outDir = join(root, '.pi', 'work', 'close-dogfood-findings-f008-f033')
 const acpJsonPath = join(home, '.jetbrains', 'acp.json')
 const distPath = join(root, 'dist', 'index.js')
 const findings = []
+const redact = s =>
+  String(s ?? '')
+    .replaceAll(root, '<repo>')
+    .replaceAll(home, '<home>')
 const record = (kind, message) => {
-  findings.push({ kind, message })
-  console.log(`[${kind}] ${message}`)
+  findings.push({ kind, message: redact(message) })
+  console.log(`[${kind}] ${redact(message)}`)
 }
 
 mkdirSync(outDir, { recursive: true })
