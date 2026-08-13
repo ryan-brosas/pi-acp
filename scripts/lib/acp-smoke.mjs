@@ -82,7 +82,7 @@ export class SmokeHarness {
   constructor({
     dist = 'dist/index.js',
     cwd = process.cwd(),
-    env = null,
+    env = {},
     deadlineMs = DEFAULT_DEADLINE_MS,
     requestTimeoutMs = DEFAULT_REQUEST_TIMEOUT_MS,
     isolate = true,
@@ -90,7 +90,8 @@ export class SmokeHarness {
   } = {}) {
     this.dist = resolve(dist)
     this.cwd = cwd
-    this.env = env ?? process.env
+    this.envOverride = env
+    this.env = null
     this.isolate = isolate
     this.cleanupIsolation = cleanupIsolation
     this.isolation = null
@@ -116,10 +117,12 @@ export class SmokeHarness {
     if (this.child) return this
     // F-027: default dogfood runs against an isolated agent dir so neither the
     // adapter session map nor pi session JSONL touches the real user store.
-    if (this.isolate && this.env === process.env) {
+    this.env = { ...process.env }
+    if (this.isolate) {
       this.isolation = createIsolatedAgentEnv()
-      this.env = { ...process.env, ...this.isolation.env }
+      Object.assign(this.env, this.isolation.env)
     }
+    Object.assign(this.env, this.envOverride)
     this.child = spawn(process.execPath, [this.dist], {
       cwd: this.cwd,
       env: this.env,

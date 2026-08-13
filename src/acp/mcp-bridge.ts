@@ -22,6 +22,9 @@ const DEFAULT_RUNTIME_TIMEOUT_MS = 120_000
 const DEFAULT_MAX_PAGES = 32
 const DEFAULT_MAX_TOOLS = 512
 
+/** Single diagnostic text for tools/list_changed so both paths dedupe (F-023). */
+const LIST_CHANGED_DIAGNOSTIC = 'IDE bridge: tools/list_changed advertised; catalog is a session snapshot'
+
 export interface AcpMcpBridgeOptions {
   discoveryTimeoutMs?: number
   runtimeTimeoutMs?: number
@@ -340,7 +343,7 @@ export class AcpMcpBridge {
     return message => {
       const note =
         message.method === 'notifications/tools/list_changed'
-          ? `IDE bridge: ${server.name} advertised tools/list_changed; catalog is a session snapshot`
+          ? LIST_CHANGED_DIAGNOSTIC
           : `IDE bridge: ${server.name} sent unsupported MCP notification (${message.method})`
       if (!this.#diagnostics.includes(note)) this.#diagnostics.push(note)
       if (message.method === 'notifications/tools/list_changed') this.#catalogComplete = false
@@ -631,8 +634,7 @@ export class AcpMcpBridge {
     }
 
     if (method === 'notifications/tools/list_changed') {
-      const diagnostic = `IDE bridge: ${connectionId} advertised tools/list_changed; catalog is a session snapshot`
-      if (!this.#diagnostics.includes(diagnostic)) this.#diagnostics.push(diagnostic)
+      if (!this.#diagnostics.includes(LIST_CHANGED_DIAGNOSTIC)) this.#diagnostics.push(LIST_CHANGED_DIAGNOSTIC)
     } else {
       const diagnostic = `IDE bridge: unsupported server-originated MCP ${notification ? 'notification' : 'request'} (${method})`
       if (!this.#diagnostics.includes(diagnostic)) this.#diagnostics.push(diagnostic)

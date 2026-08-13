@@ -430,6 +430,24 @@ describe('AcpMcpBridge', () => {
     assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('session snapshot')))
     await bridge.dispose()
   })
+  it('dedupes tools/list_changed diagnostics across both notification paths (F-023)', async () => {
+    const conn = new FakeConn()
+    const bridge = new AcpMcpBridge(conn as any, [acpServer('srv-1', 'IntelliJ')], 'dedupe-list-changed')
+    await bridge.start()
+    // The same event arriving twice (or from a different path) must produce one diagnostic.
+    await bridge.handleIncomingMcpMessage(
+      { connectionId: 'conn-srv-1', method: 'notifications/tools/list_changed', params: {} },
+      true
+    )
+    await bridge.handleIncomingMcpMessage(
+      { connectionId: 'conn-srv-1', method: 'notifications/tools/list_changed', params: {} },
+      true
+    )
+    const listChanged = bridge.diagnostics.filter(d => d.includes('tools/list_changed'))
+    assert.equal(listChanged.length, 1)
+    assert.ok(listChanged[0].includes('session snapshot'))
+    await bridge.dispose()
+  })
 
   it('routes authenticated IPC calls to the remote MCP tool', async () => {
     const conn = new FakeConn()

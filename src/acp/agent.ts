@@ -1618,35 +1618,37 @@ function buildUpdateNotice(): string | null {
  * PI_ACP_DEBUG_BRIDGE=1 captures the exact descriptor the host sent.
  * Values are redacted except for known local-only keys.
  */
-function logBridgeDescriptors(mcpServers: NewSessionRequest['mcpServers'], cwd: string): void {
+export function sanitizeBridgeDescriptors(mcpServers: NewSessionRequest['mcpServers']): unknown {
   const servers = Array.isArray(mcpServers) ? mcpServers : []
+  return servers.map(server => {
+    const candidate = server as Record<string, unknown>
+    const args = Array.isArray(candidate.args) ? candidate.args : undefined
+    return {
+      name: candidate.name,
+      type: candidate.type,
+      command: typeof candidate.command === 'string' ? String(candidate.command).split('/').pop() : candidate.command,
+      args: args ? `[${args.length} arg(s), redacted]` : undefined,
+      env: Array.isArray(candidate.env)
+        ? (candidate.env as Array<{ name?: string; value?: string }>).map(item => ({
+            name: item.name,
+            value:
+              item.name === 'IJ_MCP_SERVER_PORT' || item.name === 'IJ_MCP_SESSION_ID'
+                ? item.value
+                : item.value
+                  ? `[redacted ${String(item.value).length} chars]`
+                  : undefined
+          }))
+        : candidate.env === undefined
+          ? undefined
+          : '[redacted non-array env]'
+    }
+  })
+}
+
+function logBridgeDescriptors(mcpServers: NewSessionRequest['mcpServers'], cwd: string): void {
   try {
     process.stderr.write(
-      `[pi-acp-jetbrain] session/new mcpServers (cwd=${cwd}): ${JSON.stringify(
-        servers.map(server => {
-          const candidate = server as Record<string, unknown>
-          const args = Array.isArray(candidate.args) ? candidate.args : undefined
-          return {
-            name: candidate.name,
-            type: candidate.type,
-            command: typeof candidate.command === 'string' ? candidate.command.split('/').pop() : candidate.command,
-            args: args ? `[${args.length} arg(s), redacted]` : undefined,
-            env: Array.isArray(candidate.env)
-              ? (candidate.env as Array<{ name?: string; value?: string }>).map(item => ({
-                  name: item.name,
-                  value:
-                    item.name === 'IJ_MCP_SERVER_PORT' || item.name === 'IJ_MCP_SESSION_ID'
-                      ? item.value
-                      : item.value
-                        ? `[redacted ${String(item.value).length} chars]`
-                        : undefined
-                }))
-              : candidate.env === undefined
-                ? undefined
-                : '[redacted non-array env]'
-          }
-        })
-      )}\n`
+      `[pi-acp-jetbrain] session/new mcpServers (cwd=${cwd}): ${JSON.stringify(sanitizeBridgeDescriptors(mcpServers))}\n`
     )
   } catch {
     // Never let debug logging break the session.
