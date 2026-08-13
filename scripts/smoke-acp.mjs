@@ -1,65 +1,29 @@
-import { spawn } from 'node:child_process'
+// Smoke: core ACP handshake + one prompt turn.
+// Requires a real model completion for the prompt.
+import { SmokeHarness, assert } from './lib/acp-smoke.mjs'
 
-const cwd = process.cwd()
+const h = new SmokeHarness().start()
+try {
+  await h.expectResult(1, 'initialize', { protocolVersion: 1 })
+  const created = await h.expectResult(2, 'session/new', { cwd: process.cwd(), mcpServers: [] })
+  assert(typeof created?.sessionId === 'string' && created.sessionId.length > 0, 'missing sessionId')
 
-// Build first so IntelliJ-style ACP stdio invocation (node dist/index.js) works.
-await new Promise((resolve, reject) => {
-  const p = spawn('npm', ['run', 'build'], { stdio: 'inherit', cwd })
-  p.on('exit', code => (code === 0 ? resolve() : reject(new Error(`build failed: ${code}`))))
-})
+  const promptResult = await h.expectResult(
+    3,
+    'session/prompt',
+    { sessionId: created.sessionId, prompt: [{ type: 'text', text: 'Say hello in one short sentence.' }] },
+    { timeoutMs: 60_000 }
+  )
+  assert(promptResult?.stopReason === 'end_turn', `stopReason=${promptResult?.stopReason}`)
+  const chunks = h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk')
+  assert(chunks.length > 0, 'no agent_message_chunk updates observed')
 
-const child = spawn('node', ['dist/index.js'], {
-  cwd,
-  stdio: ['pipe', 'pipe', 'inherit'],
-  env: process.env
-})
-
-child.stdout.setEncoding('utf8')
-child.stdout.on('data', chunk => {
-  process.stdout.write(chunk)
-})
-
-function send(obj) {
-  child.stdin.write(JSON.stringify(obj) + '\n')
+  await h.close()
+  h.assertExited(0)
+  console.log(`OK smoke-acp (dist ${h.distHash()}; ${chunks.length} chunks; stopReason ${promptResult.stopReason})`)
+} catch (err) {
+  await h.close().catch(() => {})
+  console.error(`FAIL smoke-acp: ${err.message}`)
+  if (h.stderr.length) console.error('adapter stderr tail:\n' + h.stderr.slice(-20).join(''))
+  process.exit(1)
 }
-
-// Basic ACP handshake + one prompt.
-send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: 1 } })
-send({ jsonrpc: '2.0', id: 2, method: 'session/new', params: { cwd: cwd, mcpServers: [] } })
-
-// We'll send prompt a moment later; sessionId is in response to id=2.
-let sessionId = null
-let buffer = ''
-child.stdout.on('data', chunk => {
-  buffer += chunk
-  const lines = buffer.split('\n')
-  buffer = lines.pop() ?? ''
-
-  for (const line of lines) {
-    if (!line.trim()) continue
-    let msg
-    try {
-      msg = JSON.parse(line)
-    } catch {
-      continue
-    }
-
-    if (msg?.id === 2 && msg?.result?.sessionId && !sessionId) {
-      sessionId = msg.result.sessionId
-      send({
-        jsonrpc: '2.0',
-        id: 3,
-        method: 'session/prompt',
-        params: {
-          sessionId,
-          prompt: [{ type: 'text', text: 'Say hello in one short sentence.' }]
-        }
-      })
-    }
-
-    if (msg?.id === 3) {
-      // Turn finished.
-      setTimeout(() => child.kill('SIGTERM'), 50)
-    }
-  }
-})

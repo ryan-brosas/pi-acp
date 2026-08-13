@@ -36,23 +36,39 @@ readline.createInterface({ input: process.stdin }).on('line', line => {
 
   let stdout = ''
   child.stdout.setEncoding('utf8')
-  child.stdout.on('data', chunk => { stdout += chunk })
-  child.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: 1 } }) + '\n')
-  child.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'session/new', params: { cwd: dir, mcpServers: [] } }) + '\n')
-
-  await waitFor(() => stdout.split('\n').some(line => line.includes('"id":2')))
-  child.stdin.end()
-  await new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('adapter did not exit')), 3_000)
-    child.once('exit', () => { clearTimeout(timer); resolve() })
+  child.stdout.on('data', chunk => {
+    stdout += chunk
   })
+  child.stdin.write(
+    JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: 1 } }) + '\n'
+  )
+  child.stdin.write(
+    JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'session/new', params: { cwd: dir, mcpServers: [] } }) + '\n'
+  )
 
-  assert.equal(existsSync(signalFile), true)
-  assert.equal(readFileSync(signalFile, 'utf8'), 'SIGTERM')
+  try {
+    await waitFor(() => stdout.split('\n').some(line => line.includes('"id":2')))
+    child.stdin.end()
+    await new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('adapter did not exit')), 10_000)
+      child.once('exit', () => {
+        clearTimeout(timer)
+        resolve()
+      })
+    })
+
+    assert.equal(existsSync(signalFile), true)
+    assert.equal(readFileSync(signalFile, 'utf8'), 'SIGTERM')
+  } finally {
+    // Never leave the spawned adapter running: a hung child keeps the test
+    // runner's stdio open and stalls the whole suite.
+    if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL')
+  }
 })
 
 async function waitFor(predicate: () => boolean): Promise<void> {
-  const deadline = Date.now() + 3_000
+  // 2.3s nominal; 10s headroom keeps this deterministic under loaded CI/IDE hosts.
+  const deadline = Date.now() + 10_000
   while (!predicate()) {
     if (Date.now() > deadline) throw new Error('timed out waiting for session/new response')
     await new Promise(resolve => setTimeout(resolve, 10))

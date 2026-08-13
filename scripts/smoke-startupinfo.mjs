@@ -1,57 +1,33 @@
-import { spawn } from 'node:child_process'
+// Smoke: session/new startup prelude and loaded build identity.
+// No model call: the prelude is generated from local context on session/new.
+import { SmokeHarness, assert, matches } from './lib/acp-smoke.mjs'
 
-const agent = spawn('node', ['dist/index.js'], { stdio: ['pipe', 'pipe', 'inherit'] })
+const h = new SmokeHarness().start()
+try {
+  const init = await h.expectResult(1, 'initialize', { protocolVersion: 1 })
+  assert(init?.agentInfo?.name === 'pi-acp-jetbrain', `unexpected agent name: ${init?.agentInfo?.name}`)
+  const build = init?.agentInfo?._meta?.piAcp?.build
+  assert(
+    build && typeof build.revision === 'string' && build.revision.length > 0,
+    `missing build identity: ${JSON.stringify(build)}`
+  )
 
-let buf = ''
-let ok = false
+  const created = await h.expectResult(2, 'session/new', { cwd: process.cwd(), mcpServers: [] })
+  assert(typeof created?.sessionId === 'string' && created.sessionId.length > 0, 'missing sessionId')
+  const startupInfo = created?._meta?.piAcp?.startupInfo
+  assert(typeof startupInfo === 'string' && startupInfo.length > 0, 'missing startupInfo')
+  matches(startupInfo, /## Context/, 'startupInfo Context section')
+  matches(startupInfo, /## Skills/, 'startupInfo Skills section')
+  matches(startupInfo, /## Extensions/, 'startupInfo Extensions section')
 
-agent.stdout.on('data', d => {
-  buf += d.toString('utf8')
-  let idx
-  while ((idx = buf.indexOf('\n')) >= 0) {
-    const line = buf.slice(0, idx)
-    buf = buf.slice(idx + 1)
-    if (!line.trim()) continue
-    try {
-      const msg = JSON.parse(line)
-      if (msg.id === 2 && msg.result?._meta?.piAcp?.startupInfo) {
-        const s = String(msg.result._meta.piAcp.startupInfo)
-        if (s.includes('## Context') && s.includes('## Skills') && s.includes('## Extensions')) {
-          ok = true
-          console.log('OK: startup info present in session/new _meta.piAcp.startupInfo')
-          agent.kill('SIGTERM')
-          process.exit(0)
-        }
-      }
-      if (msg.method === 'session/update') {
-        const up = msg.params?.update
-        if (up?.sessionUpdate === 'agent_message_chunk' && up?.content?.type === 'text') {
-          const t = String(up.content.text)
-          if (t.includes('## Context') && t.includes('## Skills') && t.includes('## Extensions')) {
-            ok = true
-            console.log('OK: startup info present in agent_message_chunk')
-            agent.kill('SIGTERM')
-            process.exit(0)
-          }
-        }
-      }
-    } catch {
-      // ignore
-    }
-  }
-})
-
-function send(obj) {
-  agent.stdin.write(JSON.stringify(obj) + '\n')
+  await h.close()
+  h.assertExited(0)
+  console.log(
+    `OK smoke-startupinfo (dist ${h.distHash()}; build ${build.revision}; startupInfo ${startupInfo.length} chars)`
+  )
+} catch (err) {
+  await h.close().catch(() => {})
+  console.error(`FAIL smoke-startupinfo: ${err.message}`)
+  if (h.stderr.length) console.error('adapter stderr tail:\n' + h.stderr.slice(-20).join(''))
+  process.exit(1)
 }
-
-send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: 1 } })
-send({ jsonrpc: '2.0', id: 2, method: 'session/new', params: { cwd: process.cwd(), mcpServers: [] } })
-
-setTimeout(() => {
-  if (!ok) {
-    console.error('FAIL: did not observe startup info')
-    agent.kill('SIGTERM')
-    process.exit(1)
-  }
-}, 6000)

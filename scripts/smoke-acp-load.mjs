@@ -1,120 +1,54 @@
-// Smoke test for ACP session/load in pi-acp-jetbrain
-//
-// Runs:
-// 1) initialize
-// 2) session/new
-// 3) session/prompt
-// 4) new process: session/load for the created sessionId
+// Smoke: session/load restores a session created by a previous adapter process.
+// Asserts the current LoadSessionResponse contract (object with configOptions,
+// models, modes, _meta) and history replay as session/update notifications.
+import { SmokeHarness, assert } from './lib/acp-smoke.mjs'
 
-import { spawn } from 'node:child_process'
+let sessionId
+const a = new SmokeHarness().start()
+try {
+  await a.expectResult(1, 'initialize', { protocolVersion: 1 })
+  const created = await a.expectResult(2, 'session/new', { cwd: process.cwd(), mcpServers: [] })
+  sessionId = created?.sessionId
+  assert(typeof sessionId === 'string' && sessionId.length > 0, 'missing sessionId')
+  const r = await a.expectResult(
+    3,
+    'session/prompt',
+    { sessionId, prompt: [{ type: 'text', text: 'Hello' }] },
+    { timeoutMs: 60_000 }
+  )
+  assert(r?.stopReason === 'end_turn', `create prompt stopReason=${r?.stopReason}`)
+} catch (err) {
+  await a.close().catch(() => {})
+  console.error(`FAIL smoke-acp-load (create phase): ${err.message}`)
+  process.exit(1)
+}
+await a.close()
+a.assertExited(0)
 
-function spawnAgent() {
-  const proc = spawn('node', ['dist/index.js'], { stdio: ['pipe', 'pipe', 'inherit'] })
-  proc.stdout.setEncoding('utf-8')
-
-  let buffer = ''
-  const listeners = []
-
-  proc.stdout.on('data', chunk => {
-    buffer += chunk
-    const lines = buffer.split('\n')
-    buffer = lines.pop() ?? ''
-
-    for (const line of lines) {
-      if (!line.trim()) continue
-      let msg
-      try {
-        msg = JSON.parse(line)
-      } catch {
-        continue
-      }
-      for (const l of listeners) l(msg)
-    }
-  })
-
-  return {
-    proc,
-    send(obj) {
-      proc.stdin.write(JSON.stringify(obj) + '\n')
-    },
-    onMessage(cb) {
-      listeners.push(cb)
-    },
-    kill() {
-      proc.kill('SIGTERM')
-    }
+const b = new SmokeHarness().start()
+try {
+  await b.expectResult(1, 'initialize', { protocolVersion: 1 })
+  const loaded = await b.expectResult(
+    2,
+    'session/load',
+    { sessionId, cwd: process.cwd(), mcpServers: [] },
+    { timeoutMs: 60_000 }
+  )
+  assert(loaded !== null && typeof loaded === 'object', 'session/load returned a non-object result')
+  for (const key of ['configOptions', 'models', 'modes']) {
+    assert(key in loaded, `session/load result missing ${key}`)
   }
+  assert(
+    loaded._meta?.piAcp?.startupInfo == null,
+    `expected null startupInfo on headless load, got ${JSON.stringify(loaded._meta?.piAcp?.startupInfo)}`
+  )
+  const replay = b.updates.length
+  assert(replay > 0, 'session/load did not replay history updates')
+  console.log(`OK smoke-acp-load (sessionId ${sessionId}; replay updates ${replay})`)
+} catch (err) {
+  await b.close().catch(() => {})
+  console.error(`FAIL smoke-acp-load (load phase): ${err.message}`)
+  process.exit(1)
 }
-
-async function createAndPrompt() {
-  const a = spawnAgent()
-
-  return await new Promise((resolve, reject) => {
-    let sessionId = null
-
-    a.onMessage(msg => {
-      if (msg?.id === 2 && msg?.result?.sessionId) {
-        sessionId = msg.result.sessionId
-        a.send({
-          jsonrpc: '2.0',
-          id: 3,
-          method: 'session/prompt',
-          params: { sessionId, prompt: [{ type: 'text', text: 'Hello' }] }
-        })
-      }
-
-      if (msg?.id === 3) {
-        a.kill()
-        if (!sessionId) reject(new Error('No sessionId'))
-        else resolve(sessionId)
-      }
-    })
-
-    a.proc.on('error', reject)
-
-    a.send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: 1 } })
-    a.send({ jsonrpc: '2.0', id: 2, method: 'session/new', params: { cwd: process.cwd(), mcpServers: [] } })
-
-    // If the agent exits before we complete, fail.
-    a.proc.on('exit', code => {
-      if (sessionId) return
-      reject(new Error(`agent exited early with code ${code}`))
-    })
-  })
-}
-
-async function loadAndCountReplay(sessionId) {
-  const a = spawnAgent()
-
-  return await new Promise((resolve, reject) => {
-    let updates = 0
-
-    a.onMessage(msg => {
-      if (msg?.method === 'session/update') updates++
-
-      if (msg?.id === 2) {
-        if (msg?.result !== null) {
-          reject(new Error('Expected session/load result to be null'))
-          return
-        }
-        a.kill()
-        resolve(updates)
-      }
-    })
-
-    a.proc.on('error', reject)
-
-    a.send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: 1 } })
-    a.send({
-      jsonrpc: '2.0',
-      id: 2,
-      method: 'session/load',
-      params: { sessionId, cwd: process.cwd(), mcpServers: [] }
-    })
-  })
-}
-
-const sessionId = await createAndPrompt()
-const replayUpdates = await loadAndCountReplay(sessionId)
-if (replayUpdates === 0) throw new Error('Expected session/load to replay updates')
-console.log('OK session/load smoke:', { sessionId, replayUpdates })
+await b.close()
+b.assertExited(0)

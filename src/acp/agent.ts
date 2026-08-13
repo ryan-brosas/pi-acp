@@ -28,6 +28,7 @@ import { SessionManager, type PiAcpSession } from './session.js'
 import { AcpMcpBridge } from './mcp-bridge.js'
 import type { BridgeSpawnSettings, BridgeTool } from './mcp-types.js'
 import { SessionStore } from './session-store.js'
+import { buildInfo } from '../build-info.js'
 import { PiRpcProcess } from '../pi-rpc/process.js'
 import { listPiSessions, findPiSession } from './pi-sessions.js'
 import { normalizePiAssistantText, normalizePiMessageText } from './translate/pi-messages.js'
@@ -320,7 +321,17 @@ export class PiAcpAgent implements ACPAgent {
       agentInfo: {
         name: pkg.name ?? 'pi-acp-jetbrain',
         title: 'pi ACP adapter',
-        version: pkg.version ?? '0.0.0'
+        version: pkg.version ?? '0.0.0',
+        _meta: {
+          piAcp: {
+            build: {
+              revision: buildInfo.revision,
+              buildTime: buildInfo.buildTime,
+              packageVersion: buildInfo.packageVersion,
+              isRelease: buildInfo.isRelease
+            }
+          }
+        }
       },
       // Zed currently uses ClientCapabilities._meta["terminal-auth"] to decide whether to show
       // the "Authenticate" banner/button. If not supported, we still return the method for the registry.
@@ -1698,6 +1709,11 @@ export function buildStartupInfo(opts: {
   void opts.fileCommands
 
   const md: string[] = []
+
+  const buildLine = `pi-acp-jetbrain ${buildInfo.packageVersion} (build ${buildInfo.revision}${buildInfo.buildTime ? ', ' + buildInfo.buildTime : ''})`
+  md.push(buildLine)
+  md.push('---')
+  md.push('')
 
   // pi version header
   try {

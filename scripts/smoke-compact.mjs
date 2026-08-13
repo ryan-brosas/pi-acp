@@ -1,59 +1,30 @@
-import { spawn } from 'node:child_process'
+// Smoke: /compact on a too-small session must surface the adapter's JSON-RPC
+// error (expected-negative oracle; the adapter maps pi's failed compact to an
+// ACP internal error). Any successful response fails this probe.
+import { SmokeHarness, assert } from './lib/acp-smoke.mjs'
 
-const cwd = process.cwd()
-
-await new Promise((resolve, reject) => {
-  const p = spawn('npm', ['run', 'build'], { stdio: 'inherit', cwd })
-  p.on('exit', code => (code === 0 ? resolve() : reject(new Error(`build failed: ${code}`))))
-})
-
-const child = spawn('node', ['dist/index.js'], {
-  cwd,
-  stdio: ['pipe', 'pipe', 'inherit'],
-  env: process.env
-})
-
-child.stdout.setEncoding('utf8')
-child.stdout.on('data', chunk => process.stdout.write(chunk))
-
-function send(obj) {
-  child.stdin.write(JSON.stringify(obj) + '\n')
+const h = new SmokeHarness().start()
+try {
+  await h.expectResult(1, 'initialize', { protocolVersion: 1 })
+  const created = await h.expectResult(2, 'session/new', { cwd: process.cwd(), mcpServers: [] })
+  const err = await h.expectError(
+    3,
+    'session/prompt',
+    { sessionId: created?.sessionId, prompt: [{ type: 'text', text: '/compact Keep it short' }] },
+    { code: -32603, messagePattern: /Internal error/ }
+  )
+  assert(
+    typeof err.details === 'string' && /Nothing to compact/.test(err.details),
+    `unexpected compact error detail: ${err.details}`
+  )
+  console.log(
+    'OK smoke-compact (expected negative: ACP error -32603, details "Nothing to compact (session too small)")'
+  )
+} catch (err) {
+  await h.close().catch(() => {})
+  console.error(`FAIL smoke-compact: ${err.message}`)
+  if (h.stderr.length) console.error('adapter stderr tail:\n' + h.stderr.slice(-20).join(''))
+  process.exit(1)
 }
-
-let sessionId = null
-let buffer = ''
-child.stdout.on('data', chunk => {
-  buffer += chunk
-  const lines = buffer.split('\n')
-  buffer = lines.pop() ?? ''
-
-  for (const line of lines) {
-    if (!line.trim()) continue
-    let msg
-    try {
-      msg = JSON.parse(line)
-    } catch {
-      continue
-    }
-
-    if (msg?.id === 2 && msg?.result?.sessionId && !sessionId) {
-      sessionId = msg.result.sessionId
-      send({
-        jsonrpc: '2.0',
-        id: 3,
-        method: 'session/prompt',
-        params: {
-          sessionId,
-          prompt: [{ type: 'text', text: '/compact Keep it short' }]
-        }
-      })
-    }
-
-    if (msg?.id === 3) {
-      setTimeout(() => child.kill('SIGTERM'), 50)
-    }
-  }
-})
-
-send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: 1 } })
-send({ jsonrpc: '2.0', id: 2, method: 'session/new', params: { cwd, mcpServers: [] } })
+await h.close()
+h.assertExited(0)

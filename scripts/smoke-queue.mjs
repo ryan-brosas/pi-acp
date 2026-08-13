@@ -1,67 +1,36 @@
-import { spawn } from 'node:child_process'
+// Smoke: two sequential prompt turns complete with end_turn.
+// Queue control semantics are pi-side (see findings F-014); the probe verifies
+// the adapter routes both turns and reports every JSON-RPC result.
+import { SmokeHarness, assert } from './lib/acp-smoke.mjs'
 
-const cwd = process.cwd()
+const h = new SmokeHarness().start()
+try {
+  await h.expectResult(1, 'initialize', { protocolVersion: 1 })
+  const created = await h.expectResult(2, 'session/new', { cwd: process.cwd(), mcpServers: [] })
+  const sessionId = created?.sessionId
+  assert(typeof sessionId === 'string' && sessionId.length > 0, 'missing sessionId')
 
-await new Promise((resolve, reject) => {
-  const p = spawn('npm', ['run', 'build'], { stdio: 'inherit', cwd })
-  p.on('exit', code => (code === 0 ? resolve() : reject(new Error(`build failed: ${code}`))))
-})
+  const r1 = await h.expectResult(
+    3,
+    'session/prompt',
+    { sessionId, prompt: [{ type: 'text', text: '/queue' }] },
+    { timeoutMs: 60_000 }
+  )
+  assert(r1?.stopReason === 'end_turn', `first turn stopReason=${r1?.stopReason}`)
+  const r2 = await h.expectResult(
+    4,
+    'session/prompt',
+    { sessionId, prompt: [{ type: 'text', text: '/queue all' }] },
+    { timeoutMs: 60_000 }
+  )
+  assert(r2?.stopReason === 'end_turn', `second turn stopReason=${r2?.stopReason}`)
 
-const child = spawn('node', ['dist/index.js'], {
-  cwd,
-  stdio: ['pipe', 'pipe', 'inherit'],
-  env: process.env
-})
-
-child.stdout.setEncoding('utf8')
-child.stdout.on('data', chunk => process.stdout.write(chunk))
-
-function send(obj) {
-  child.stdin.write(JSON.stringify(obj) + '\n')
+  console.log('OK smoke-queue (2 turns end_turn; queue control semantics are pi-side, see findings F-014)')
+} catch (err) {
+  await h.close().catch(() => {})
+  console.error(`FAIL smoke-queue: ${err.message}`)
+  if (h.stderr.length) console.error('adapter stderr tail:\n' + h.stderr.slice(-20).join(''))
+  process.exit(1)
 }
-
-let sessionId = null
-let stage = 0
-let buffer = ''
-child.stdout.on('data', chunk => {
-  buffer += chunk
-  const lines = buffer.split('\n')
-  buffer = lines.pop() ?? ''
-
-  for (const line of lines) {
-    if (!line.trim()) continue
-    let msg
-    try {
-      msg = JSON.parse(line)
-    } catch {
-      continue
-    }
-
-    if (msg?.id === 2 && msg?.result?.sessionId && !sessionId) {
-      sessionId = msg.result.sessionId
-      send({
-        jsonrpc: '2.0',
-        id: 3,
-        method: 'session/prompt',
-        params: { sessionId, prompt: [{ type: 'text', text: '/queue' }] }
-      })
-    }
-
-    if (msg?.id === 3 && stage === 0) {
-      stage = 1
-      send({
-        jsonrpc: '2.0',
-        id: 4,
-        method: 'session/prompt',
-        params: { sessionId, prompt: [{ type: 'text', text: '/queue all' }] }
-      })
-    }
-
-    if (msg?.id === 4) {
-      setTimeout(() => child.kill('SIGTERM'), 100)
-    }
-  }
-})
-
-send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: 1 } })
-send({ jsonrpc: '2.0', id: 2, method: 'session/new', params: { cwd, mcpServers: [] } })
+await h.close()
+h.assertExited(0)
