@@ -2,13 +2,13 @@
 
 ## Identity
 
-- **Name:** [Name]
-- **GitHub login:** [login]
-- **GitHub profile:** [https://github.com/<login>]
-- **Role:** [role]
-- **Repository relationship:** [owner / maintainer / contributor]
+- **Name:** Ryan Brosas
+- **GitHub login:** ryan-brosas
+- **GitHub profile:** https://github.com/ryan-brosas
+- **Role:** Repository owner
+- **Repository relationship:** owner (fork `pi-acp-jetbrain` of pi-acp)
 
-Evidence: [NEEDS CLARIFICATION: run `gh auth status`, `gh api user`, and `gh repo view` and record the verified profile here.]
+Evidence: verified via `gh api user` (login `ryan-brosas`, id `278091977`, name `Ryan Brosas`), repo-local git identity `Ryan Brosas <278091977+ryan-brosas@users.noreply.github.com>`, and remote `origin` = `https://github.com/ryan-brosas/pi-acp-jetbrain.git`.
 
 ## Project Direction
 
@@ -24,11 +24,12 @@ When proposing work:
 
 ## Communication Preferences
 
-- **Detail level:** [Concise / Detailed / Mixed]
+- **Detail level:** Detailed with concrete evidence; concise summaries for completion reports.
 - Include concrete file paths, evidence, constraints, edge cases, and verification results.
 - Explain architectural or workflow consequences when they affect future work.
 - State uncertainty directly and distinguish observed facts from inference.
 - For choices, provide a recommendation and explain the important tradeoff.
+- Report concrete identifiers verbatim: commit hashes, PR/issue numbers, artifact paths.
 
 Repository AGENTS.md style rules still apply to every response and override softer presentation preferences.
 
@@ -36,26 +37,26 @@ Repository AGENTS.md style rules still apply to every response and override soft
 
 Ask before:
 
-- Publishing, pushing, or opening a pull request unless the active request or repository workflow authorizes it.
+- Pushing or opening a pull request — never push unless explicitly requested.
 - Committing a change that would include unrelated user or concurrent-agent work.
 - Destructive or irreversible git operations (force-push, reset, clean, checkout overwrites).
 - Expanding scope beyond the active request.
 
 Auto-approve (pre-authorized):
 
-- Commits of completed, scoped work that pass the relevant verification gate.
+- Commits of completed, scoped work that pass the relevant verification gate — create an atomic, path-scoped commit with a detailed message after successful verification of a mutating request.
 - Evidence-backed discovery and read-only analysis.
+- The user-installed `scripts/auto-commit.mjs` watcher committing all non-ignored tracked and untracked repository changes after its safety scan (sole exception to path-scoped staging).
 
 Anything not listed here is [NEEDS CLARIFICATION: reason] until the user states a policy.
 
 ## Git Workflow
 
-- **Commit mode:** [Ask first / Auto-commit completed scoped work]
-- Stage only files changed for the active request; never use blanket staging in a dirty repository.
-- Do not include unrelated changes in a commit.
-- Run the relevant verification gate before committing.
-- Use the repository's terse conventional commit style when the history supports it (`feat:`, `fix:`, `docs:`, `chore:`).
-- Never force-push shared branches or bypass hooks.
+- **Commit mode:** Auto-commit completed scoped work — after successful verification of a mutating request, create an atomic, path-scoped commit automatically with a detailed message describing intent, implementation details, and verification performed.
+- **Staging rule:** stage only files changed for the active request; never use blanket staging in a dirty repository. The `scripts/auto-commit.mjs` watcher is the sole exception and may commit all non-ignored tracked and untracked changes after its safety scan (every 60 seconds).
+- **Commit style:** detailed conventional commits (`feat:`, `fix:`, `docs:`, `chore:`) with a message body describing intent, implementation details, and verification performed.
+- **Push / PR policy:** never push and never open pull requests unless explicitly requested.
+- **Protection rules:** never force-push `main`/`master`; never bypass hooks.
 
 ## Workflow Preferences
 
@@ -63,6 +64,7 @@ Anything not listed here is [NEEDS CLARIFICATION: reason] until the user states 
 - Prefer the smallest stable slice over broad speculative refactors.
 - Preserve existing and concurrent work in dirty repositories.
 - Verify behavior with commands when a runnable gate exists; use explicit structural inspection for prose-only/configuration repositories.
+- Run the canonical gate (`node scripts/check.mjs`) plus `npm test`, `npm run lint`, and `npm run typecheck` before reporting completion.
 - Report what was verified locally and what still requires a live or fresh-clone check.
 
 ## Technical Preferences
@@ -73,13 +75,14 @@ Anything not listed here is [NEEDS CLARIFICATION: reason] until the user states 
 
 ## Things to Remember
 
-1. [Durable preference or fact 1]
-2. [Durable preference or fact 2]
+1. GitHub account: `ryan-brosas` (id `278091977`, display name "Ryan Brosas"); repo-local git identity `Ryan Brosas <278091977+ryan-brosas@users.noreply.github.com>`; origin `https://github.com/ryan-brosas/pi-acp-jetbrain.git`; no commit signing key.
+2. Auto-commit watcher: `scripts/auto-commit.mjs` under user systemd service `pi-acp-auto-commit.service` — commits all non-ignored changes every 60 seconds, blocks commits on likely secrets, never pushes.
+3. Never push and never open pull requests unless explicitly requested.
 
 ## Unknowns
 
-- [NEEDS CLARIFICATION: fill identity fields via gh auth status / gh api user / gh repo view]
-- [NEEDS CLARIFICATION: confirm role, branch protection, and issue tracker choices]
+- Branch protection rules on `origin/main` — not verified (no push has been performed from this checkout).
+- Issue tracker / project board choices — not specified.
 
 ---
 
