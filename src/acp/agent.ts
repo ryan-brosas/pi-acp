@@ -302,7 +302,10 @@ export class PiAcpAgent implements ACPAgent {
 
     // ACP MCP bridge: connect client-provided ACP-transport MCP servers and
     // prepare the pi subprocess to expose their tools (best effort).
-    const bridge = new AcpMcpBridge(this.conn, params.mcpServers, '')
+    // The IPC session id is a bridge-internal correlation value (pipe naming,
+    // hello validation). The ACP session id only exists after pi spawns, so we
+    // generate one here and keep it stable for the pi subprocess env.
+    const bridge = new AcpMcpBridge(this.conn, params.mcpServers, crypto.randomUUID())
     const bridgeSettings = await bridge.start().catch(err => {
       this.bridgeDiagnostics.push(String(err?.message ?? err))
       return { extensionPaths: [], env: {} }

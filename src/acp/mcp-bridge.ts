@@ -289,10 +289,12 @@ function resolveBridgeExtensionPath(): string | null {
   if (cachedExtensionPath !== undefined) return cachedExtensionPath;
   const here = dirname(fileURLToPath(import.meta.url));
   const candidates = [
+    // built dist, installed package layout: <pkg>/dist/pi-extension/
+    join(here, "pi-extension", "acp-mcp-bridge.js"),
+    // built dist, source repo layout: <repo>/dist/pi-extension/
+    join(here, "..", "..", "dist", "pi-extension", "acp-mcp-bridge.js"),
     // source tree (tsx dev)
     join(here, "..", "pi-extension", "acp-mcp-bridge.ts"),
-    // built dist
-    join(here, "..", "..", "dist", "pi-extension", "acp-mcp-bridge.js"),
   ];
   cachedExtensionPath = candidates.find(c => existsSync(c)) ?? null;
   return cachedExtensionPath;
