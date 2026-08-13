@@ -53,4 +53,4 @@ setTimeout(() => {
     p.kill('SIGTERM')
     process.exit(1)
   }
-}, 1500)
+}, 8000)
