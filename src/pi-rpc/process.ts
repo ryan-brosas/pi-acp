@@ -83,11 +83,16 @@ type SpawnParams = {
 export class PiRpcProcess {
   private readonly child: ChildProcessWithoutNullStreams
   private readonly pending = new Map<string, { resolve: (v: PiRpcResponse) => void; reject: (e: unknown) => void }>()
+  private readonly exitPromise: Promise<void>
   private eventHandlers: Array<(ev: PiRpcEvent) => void> = []
   private readonly preludeLines: string[] = []
 
   private constructor(child: ChildProcessWithoutNullStreams) {
     this.child = child
+    this.exitPromise = new Promise(resolve => {
+      child.once('exit', () => resolve())
+      child.once('close', () => resolve())
+    })
 
     const rl = readline.createInterface({ input: child.stdout })
     rl.on('line', line => {
@@ -220,12 +225,40 @@ export class PiRpcProcess {
   }
 
   dispose(signal: NodeJS.Signals | number = 'SIGTERM'): void {
-    if (this.child.killed) return
+    if (this.child.killed || this.child.exitCode !== null || this.child.signalCode !== null) return
     try {
       this.child.kill(signal as any)
     } catch {
       // ignore
     }
+  }
+
+  async waitForExit(timeoutMs = 1_000): Promise<boolean> {
+    if (this.child.exitCode !== null || this.child.signalCode !== null) return true
+    this.dispose()
+    await Promise.race([
+      this.exitPromise,
+      new Promise(resolve => {
+        const timer = setTimeout(resolve, timeoutMs)
+        timer.unref?.()
+      })
+    ])
+    if (this.child.exitCode !== null || this.child.signalCode !== null) return true
+    // The child ignored SIGTERM; force termination and give it one more short
+    // grace period before reporting failure.
+    try {
+      this.child.kill('SIGKILL')
+    } catch {
+      // ignore
+    }
+    await Promise.race([
+      this.exitPromise,
+      new Promise(resolve => {
+        const timer = setTimeout(resolve, 500)
+        timer.unref?.()
+      })
+    ])
+    return this.child.exitCode !== null || this.child.signalCode !== null
   }
 
   /**

@@ -153,11 +153,12 @@ function toToolCallLocations(args: unknown, cwd: string, line?: number): ToolCal
 
 export class SessionManager {
   private sessions = new Map<string, PiAcpSession>()
+  private readonly closing = new Map<string, { session: PiAcpSession; promise: Promise<void> }>()
   private readonly store = new SessionStore()
 
   /** Dispose all sessions and their underlying pi subprocesses. */
   disposeAll(): void {
-    for (const [id] of this.sessions) this.close(id)
+    for (const id of [...this.sessions.keys()]) void this.closeSession(id).catch(() => undefined)
   }
 
   /** Get a registered session if it exists (no throw). */
@@ -170,22 +171,34 @@ export class SessionManager {
    * Used when clients explicitly reload a session and we want a fresh pi subprocess.
    */
   close(sessionId: string): void {
-    const s = this.sessions.get(sessionId)
-    if (!s) return
-    try {
-      void s.dispose()
-    } catch {
-      // ignore
-    }
+    void this.closeSession(sessionId).catch(() => undefined)
+  }
+
+  async closeSession(sessionId: string): Promise<void> {
+    const existing = this.closing.get(sessionId)
+    const session = this.sessions.get(sessionId)
+    if (!session) return
+    // A concurrent restore can install a new session under the same id while
+    // the previous one is still closing; only reuse the in-flight promise when
+    // it belongs to the exact session instance being closed.
+    if (existing && existing.session === session) return existing.promise
+
+    // Remove it before awaiting disposal so incoming MCP messages cannot route to a closing bridge.
     this.sessions.delete(sessionId)
+    const promise = session.dispose().finally(() => {
+      if (this.closing.get(sessionId)?.session === session) this.closing.delete(sessionId)
+    })
+    this.closing.set(sessionId, { session, promise })
+    await promise
   }
 
   /** Close all sessions except the one with `keepSessionId`. */
   closeAllExcept(keepSessionId: string): void {
-    for (const [id] of this.sessions) {
-      if (id === keepSessionId) continue
-      this.close(id)
-    }
+    void this.closeAllExceptAsync(keepSessionId).catch(() => undefined)
+  }
+
+  async closeAllExceptAsync(keepSessionId: string): Promise<void> {
+    await Promise.all([...this.sessions.keys()].filter(id => id !== keepSessionId).map(id => this.closeSession(id)))
   }
 
   async handleIncomingMcpMessage(
@@ -318,6 +331,7 @@ export class PiAcpSession {
   // Ensure `session/update` notifications are sent in order and can be awaited
   // before completing a `session/prompt` request.
   private lastEmit: Promise<void> = Promise.resolve()
+  private disposePromise: Promise<void> | undefined
 
   constructor(opts: {
     sessionId: string
@@ -343,10 +357,7 @@ export class PiAcpSession {
     return this.bridge?.ownsConnection(connectionId) ?? false
   }
 
-  handleIncomingMcpMessage(
-    params: Record<string, unknown>,
-    notification: boolean
-  ): Promise<Record<string, unknown>> {
+  handleIncomingMcpMessage(params: Record<string, unknown>, notification: boolean): Promise<Record<string, unknown>> {
     if (!this.bridge) throw new Error('Session has no MCP bridge')
     return this.bridge.handleIncomingMcpMessage(params, notification)
   }
@@ -377,10 +388,37 @@ export class PiAcpSession {
    * exactly once), then terminate the owned pi subprocess.
    */
   async dispose(): Promise<void> {
-    for (const q of this.turnQueue) q.reject(new Error('session disposed'))
-    this.turnQueue.length = 0
-    await this.bridge?.dispose()
-    this.proc.dispose?.()
+    if (this.disposePromise) return this.disposePromise
+    this.disposePromise = (async () => {
+      for (const q of this.turnQueue) q.reject(new Error('session disposed'))
+      this.turnQueue.length = 0
+      this.cancelRequested = true
+      this.bridge?.cancelAll()
+      try {
+        await this.bridge?.dispose()
+      } finally {
+        this.proc.dispose?.()
+        await this.proc.waitForExit?.()
+      }
+    })()
+    return this.disposePromise
+  }
+
+  get bridgeStatus() {
+    return this.bridge?.status
+  }
+
+  get bridgeTools() {
+    return this.bridge?.tools ?? []
+  }
+
+  get bridgeRegisteredTools() {
+    const registered = new Set((this.bridge?.registration?.registered ?? []).map(item => item.exposedName))
+    return (this.bridge?.tools ?? []).filter(tool => registered.has(tool.exposedName))
+  }
+
+  get hasMcpBridge(): boolean {
+    return this.bridge?.hasServers ?? false
   }
 
   async prompt(message: string, images: unknown[] = []): Promise<StopReason> {
