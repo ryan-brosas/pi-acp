@@ -1,11 +1,6 @@
 # Dependencies
 node_modules/
 
-# Build output
-/dist/
-/.dist/
-/.dist-cache/
-
 # Coverage output
 coverage/
 
