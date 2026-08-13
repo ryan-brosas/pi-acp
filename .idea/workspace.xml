@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef7418f2-4968-44ab-9516-c5113ce1cb93" name="Changes" comment="init --deep complete">
-      <change beforePath="$PROJECT_DIR$/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/AGENTS.md" afterDir="false" />
-    </list>
+    <list default="true" id="ef7418f2-4968-44ab-9516-c5113ce1cb93" name="Changes" comment="init --deep complete" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,23 +37,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.3896033877668523" />
-      <entry key="MS500" value="3.7107562344100837" />
-      <entry key="S2" value="8.146100476125635" />
-      <entry key="S5" value="10.199280478147472" />
-      <entry key="S10" value="11.04929652693167" />
-      <entry key="S30" value="11.682620954398603" />
-      <entry key="S60" value="12.055461763997757" />
-      <entry key="M2" value="13.449743847237029" />
-      <entry key="M5" value="29.810358366303344" />
-      <entry key="M10" value="68.90028901257547" />
-      <entry key="M15" value="104.96139472492568" />
-      <entry key="M30" value="193.38556885356004" />
-      <entry key="H1" value="298.10105315231885" />
-      <entry key="H2" value="385.78096928925214" />
-      <entry key="H4" value="443.68347999504726" />
-      <entry key="D1" value="501.2995164054522" />
-      <entry key="W1" value="512.1598894286499" />
+      <entry key="MS100" value="1.595948451180452" />
+      <entry key="MS500" value="4.884151527416343" />
+      <entry key="S2" value="11.685029495848978" />
+      <entry key="S5" value="15.416701210918957" />
+      <entry key="S10" value="17.603590780853626" />
+      <entry key="S30" value="22.665858435849096" />
+      <entry key="S60" value="26.575012416746052" />
+      <entry key="M2" value="31.45656272477865" />
+      <entry key="M5" value="46.68893161525922" />
+      <entry key="M10" value="82.04330727986442" />
+      <entry key="M15" value="117.17168167620555" />
+      <entry key="M30" value="206.48175733646096" />
+      <entry key="H1" value="315.2407611829692" />
+      <entry key="H2" value="408.06482559088016" />
+      <entry key="H4" value="470.066260443491" />
+      <entry key="D1" value="532.2369262792237" />
+      <entry key="W1" value="544.0046803503918" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -77,23 +75,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.35469606081664" />
-      <entry key="MS500" value="3.639280129152243" />
-      <entry key="S2" value="7.9473665392721005" />
-      <entry key="S5" value="10.063898477310026" />
-      <entry key="S10" value="10.968264873145458" />
-      <entry key="S30" value="11.652149094179345" />
-      <entry key="S60" value="12.039750606454795" />
-      <entry key="M2" value="13.44174299173792" />
-      <entry key="M5" value="29.806943629044717" />
-      <entry key="M10" value="68.89814549564419" />
-      <entry key="M15" value="104.95956968867516" />
-      <entry key="M30" value="193.38410135320186" />
-      <entry key="H1" value="298.0999979498668" />
-      <entry key="H2" value="385.78031380449784" />
-      <entry key="H4" value="443.6831114542766" />
-      <entry key="D1" value="501.2994483753075" />
-      <entry key="W1" value="512.1598795344559" />
+      <entry key="MS100" value="1.5630935723566486" />
+      <entry key="MS500" value="4.863465370353876" />
+      <entry key="S2" value="11.672672576324807" />
+      <entry key="S5" value="15.409898854263968" />
+      <entry key="S10" value="17.595388591536498" />
+      <entry key="S30" value="22.649329495466294" />
+      <entry key="S60" value="26.560137921440123" />
+      <entry key="M2" value="31.445504873417484" />
+      <entry key="M5" value="46.6826711244793" />
+      <entry key="M10" value="82.0393981543388" />
+      <entry key="M15" value="117.16861047158575" />
+      <entry key="M30" value="206.47962583601517" />
+      <entry key="H1" value="315.23935161744924" />
+      <entry key="H2" value="408.06398230442596" />
+      <entry key="H4" value="470.0657942037971" />
+      <entry key="D1" value="532.2368413031465" />
+      <entry key="W1" value="544.0046680170271" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -122,7 +120,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "feat/intellij-mcp-stdio-bridge",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/utopia/work/project/pi-acp",
     "node.js.detected.package.eslint": "true",
