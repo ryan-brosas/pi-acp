@@ -131,6 +131,7 @@ Point IntelliJ to the built `dist/index.js`:
 
 - `PI_ACP_ENABLE_EMBEDDED_CONTEXT=true` advertises ACP `promptCapabilities.embeddedContext` support to the client.
 - `PI_ACP_DEBUG_BRIDGE=1` logs the sanitized `session/new.mcpServers` descriptor to stderr on every new session. IntelliJ pipes the adapter's stderr into `idea.log`, so this captures the exact descriptor the host sent (values redacted except `IJ_MCP_SERVER_PORT`/`IJ_MCP_SESSION_ID`).
+- `PI_ACP_SESSION_MAP=<path>` overrides where the adapter persists its session map (default `~/.pi/pi-acp/session-map.json`); the smoke matrix uses a per-run temporary path so dogfood never touches the real store (F-027).
 - Default: unset/any other value means `false`.
 - When disabled, compliant ACP clients should avoid sending embedded `resource` blocks. If they send them anyway, `pi-acp-jetbrain` still degrades gracefully by converting them into plain-text prompt context.
 

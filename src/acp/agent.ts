@@ -1003,7 +1003,10 @@ export class PiAcpAgent implements ACPAgent {
   async cancel(params: CancelNotification): Promise<void> {
     const session = this.sessions.maybeGet(params.sessionId)
     if (!session) return
-    await session.cancel()
+    // ACP cancel is a notification; never block message dispatch on pi's abort RPC
+    // (which can be slow when pi is mid-turn). Queue clearing is synchronous inside
+    // session.cancel(); the rest runs in the background (F-018).
+    void session.cancel().catch(() => {})
   }
 
   async listSessions(params: ListSessionsRequest): Promise<ListSessionsResponse> {

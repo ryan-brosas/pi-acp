@@ -8,12 +8,53 @@
 
 import { spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, readFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join, resolve } from 'node:path'
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000
 const DEFAULT_DEADLINE_MS = 120_000
 const GRACE_MS = 5_000
+
+// Entries of the real ~/.pi/agent that stay writable/temp in the overlay so the
+// smoke matrix never writes session or cache data into the user's store.
+const ISOLATE_TEMP_DIRS = ['sessions', 'cache', 'fabric']
+
+/**
+ * Builds an isolated agent dir overlay (F-027): symlink the real pi config so
+ * provider auth/models keep working, keep sessions/cache/fabric in a temp dir,
+ * and point the adapter session map at the same temp dir.
+ */
+function createIsolatedAgentEnv() {
+  const real = resolve(process.env.HOME ?? '', '.pi', 'agent')
+  const base = mkdtempSync(join(tmpdir(), 'pi-acp-smoke-'))
+  try {
+    for (const name of readdirSync(real)) {
+      if (ISOLATE_TEMP_DIRS.includes(name)) continue
+      try {
+        symlinkSync(join(real, name), join(base, name))
+      } catch {
+        // best-effort: missing entries or permission quirks are non-fatal
+      }
+    }
+  } catch {
+    // real agent dir missing: proceed with an empty overlay
+  }
+  for (const dir of ISOLATE_TEMP_DIRS) mkdirSync(join(base, dir), { recursive: true })
+  return {
+    env: {
+      PI_CODING_AGENT_DIR: base,
+      PI_ACP_SESSION_MAP: join(base, 'pi-acp-session-map.json')
+    },
+    cleanup: () => {
+      try {
+        rmSync(base, { recursive: true, force: true })
+      } catch {
+        // best-effort
+      }
+    }
+  }
+}
 
 /** JSON-RPC error surfaced by the adapter (or a harness timeout). */
 export class SmokeError extends Error {
@@ -41,13 +82,18 @@ export class SmokeHarness {
   constructor({
     dist = 'dist/index.js',
     cwd = process.cwd(),
-    env = process.env,
+    env = null,
     deadlineMs = DEFAULT_DEADLINE_MS,
-    requestTimeoutMs = DEFAULT_REQUEST_TIMEOUT_MS
+    requestTimeoutMs = DEFAULT_REQUEST_TIMEOUT_MS,
+    isolate = true,
+    cleanupIsolation = true
   } = {}) {
     this.dist = resolve(dist)
     this.cwd = cwd
-    this.env = env
+    this.env = env ?? process.env
+    this.isolate = isolate
+    this.cleanupIsolation = cleanupIsolation
+    this.isolation = null
     this.deadlineMs = deadlineMs
     this.requestTimeoutMs = requestTimeoutMs
     this.child = null
@@ -68,6 +114,12 @@ export class SmokeHarness {
 
   start() {
     if (this.child) return this
+    // F-027: default dogfood runs against an isolated agent dir so neither the
+    // adapter session map nor pi session JSONL touches the real user store.
+    if (this.isolate && this.env === process.env) {
+      this.isolation = createIsolatedAgentEnv()
+      this.env = { ...process.env, ...this.isolation.env }
+    }
     this.child = spawn(process.execPath, [this.dist], {
       cwd: this.cwd,
       env: this.env,
@@ -140,6 +192,13 @@ export class SmokeHarness {
     })
   }
 
+  /** Fire-and-forget JSON-RPC notification (no response id, e.g. session/cancel). */
+  notify(method, params) {
+    if (!this.child) throw new Error('harness not started')
+    const payload = params === undefined ? { jsonrpc: '2.0', method } : { jsonrpc: '2.0', method, params }
+    this.child.stdin.write(JSON.stringify(payload) + '\n')
+  }
+
   /** Resolve with the result object; reject on JSON-RPC error or timeout. */
   async expectResult(id, method, params, opts = {}) {
     const resp = await this.request(id, method, params, opts)
@@ -204,7 +263,14 @@ export class SmokeHarness {
       await exited
     }
     if (this.deadlineTimer) clearTimeout(this.deadlineTimer)
+    if (this.cleanupIsolation) this.removeIsolation()
     return this.exitInfo
+  }
+
+  removeIsolation() {
+    if (!this.isolation) return
+    this.isolation.cleanup()
+    this.isolation = null
   }
 
   assertExited(expectedCode = 0) {
