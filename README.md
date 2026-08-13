@@ -31,6 +31,10 @@ The local IntelliJ integration is experimental: IntelliJ's installed ACP impleme
 - `pi-acp-jetbrain` emits a “startup info” block into the session (pi version, context, skills, prompts, extensions, and IDE bridge status - similar to `pi` in the terminal). You can disable it by setting `quietStartup: true` in pi settings (`~/.pi/agent/settings.json` or `<project>/.pi/settings.json`). When `quietStartup` is enabled, `pi-acp-jetbrain` will still emit a 'New version available' message if the installed pi version is outdated.
 - Session history: `session/load` maps to pi's session files, so sessions can be resumed both in `pi` and in the ACP client.
 
+## Operating layer
+
+The repository ships an operating layer for pi: **9 prompt commands**, **100 skill files** (90 leaves in 10 packs), and **12 format templates**.
+
 ## Prerequisites
 
 Make sure pi is installed
@@ -53,10 +57,10 @@ IntelliJ ships an ACP host; register `pi-acp-jetbrain` as an agent server in Int
 {
   "agent_servers": {
     "pi-acp-jetbrain": {
-      "command": "/home/utopia/work/inspo/pi-acp/dist/index.js",
+      "command": "/path/to/pi-acp-jetbrain/dist/index.js",
       "args": [],
       "env": {
-        "PI_ACP_PI_COMMAND": "/home/utopia/.local/bin/pi",
+        "PI_ACP_PI_COMMAND": "/path/to/pi",
         "PI_ACP_DEBUG_BRIDGE": "1"
       }
     }
@@ -218,7 +222,7 @@ Project layout:
   - MCP text/images/resources and structured content map into Pi content/details; `isError` becomes a failed Pi tool.
   - Private IPC validates catalog identity, tool names, and schema hashes in per-tool registration acknowledgements and reports partial registration health.
   - Server-originated ACP MCP notifications are diagnosed; `tools/list_changed` requires a new session and unsupported server requests are rejected.
-- The IntelliJ allowlist is controlled by `/home/utopia/.jetbrains/acp.json`. The current 40-tool profile includes controlled debugger start/control/breakpoint workflows while excluding terminal, database, universal execution, arbitrary debugger expression evaluation, and variable mutation. An explicit `idea_mcp_allowed_tools` list is a deny-all mask plus named tools; omitting it means AllowAll in the installed build and should be treated as a deliberate security/context decision.
+- The IntelliJ allowlist is controlled by `~/.jetbrains/acp.json`. The current 40-tool profile includes controlled debugger start/control/breakpoint workflows while excluding terminal, database, universal execution, arbitrary debugger expression evaluation, and variable mutation. An explicit `idea_mcp_allowed_tools` list is a deny-all mask plus named tools; omitting it means AllowAll in the installed build and should be treated as a deliberate security/context decision.
 - The bridge uses an immutable per-session catalog. After changing IntelliJ MCP settings or the allowlist, start a new ACP chat.
 
 - Assistant streaming is currently sent as `agent_message_chunk` (no separate thought stream).

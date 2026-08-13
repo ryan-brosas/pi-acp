@@ -13,3 +13,10 @@ dist
 # Pi/Fabric harness session state
 .pi/fabric/
 .veda/
+
+# IntelliJ user-local workspace state
+.idea/workspace.xml
+
+# Generated pi operating-layer runtime state
+.pi/MEMORY.md
+.pi/implementation-notes.md
