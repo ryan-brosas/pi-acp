@@ -48,11 +48,13 @@ export class AcpMcpBridge {
   #ipc: McpIpcServer | undefined;
   #pending = new Map<string, { connectionId: string; remoteName: string; cancelled: boolean }>();
   #closed = false;
+  readonly #discoveryTimeoutMs: number;
 
-  constructor(conn: AgentSideConnection, mcpServers: McpServer[], sessionId: string) {
+  constructor(conn: AgentSideConnection, mcpServers: McpServer[], sessionId: string, discoveryTimeoutMs = 10_000) {
     this.#conn = conn;
     this.#servers = mcpServers;
     this.sessionId = sessionId;
+    this.#discoveryTimeoutMs = discoveryTimeoutMs;
   }
 
   get hasServers(): boolean {
@@ -69,6 +71,21 @@ export class AcpMcpBridge {
    * Fails only on protocol-invalid responses; an individual server failure
    * omits that server's tools and keeps a diagnostic in startupInfo.
    */
+  /** Bounds a single discovery RPC; a silent client must never block session creation. */
+  async #withTimeout<T>(label: string, promise: Promise<T>, ms = this.#discoveryTimeoutMs): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+        }),
+      ]);
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+
   async start(): Promise<BridgeSpawnSettings> {
     if (!this.hasServers) {
       return { extensionPaths: [], env: {} };
@@ -93,7 +110,7 @@ export class AcpMcpBridge {
 
     for (const server of acpServers) {
       try {
-        const response = (await this.#conn.extMethod("mcp/connect", { acpId: server.id })) as {
+        const response = (await this.#withTimeout(`mcp/connect ${server.name}`, this.#conn.extMethod("mcp/connect", { acpId: server.id }))) as {
           connectionId?: string;
         };
         const connectionId = response?.connectionId;
@@ -107,7 +124,7 @@ export class AcpMcpBridge {
         });
 
         // MCP initialize over ACP.
-        await this.#conn.extMethod("mcp/message", {
+        await this.#withTimeout(`initialize ${server.name}`, this.#conn.extMethod("mcp/message", {
           connectionId,
           method: "initialize",
           params: {
@@ -115,19 +132,19 @@ export class AcpMcpBridge {
             capabilities: {},
             clientInfo: { name: "pi-acp", version: "0.0.33" },
           },
-        });
-        await this.#conn.extMethod("mcp/message", {
+        }));
+        await this.#withTimeout(`initialized ${server.name}`, this.#conn.extMethod("mcp/message", {
           connectionId,
           method: "notifications/initialized",
           params: {},
-        });
+        }));
 
         // Discover remote tools.
-        const listResult = (await this.#conn.extMethod("mcp/message", {
+        const listResult = (await this.#withTimeout(`tools/list ${server.name}`, this.#conn.extMethod("mcp/message", {
           connectionId,
           method: "tools/list",
           params: {},
-        })) as { tools?: Array<{ name: string; description?: string; inputSchema?: Record<string, unknown> }> };
+        }))) as { tools?: Array<{ name: string; description?: string; inputSchema?: Record<string, unknown> }> };
         const remoteTools = Array.isArray(listResult?.tools) ? listResult.tools : [];
 
         for (const tool of remoteTools) {

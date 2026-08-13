@@ -88,6 +88,20 @@ describe("AcpMcpBridge", () => {
     assert.equal(disconnects.length, 2);
   });
 
+  it("does not hang on a silent client: discovery times out and reports diagnostics", async () => {
+    const conn = new FakeConn();
+    conn.extMethod = async () => new Promise(() => {}); // never resolves
+    const bridge = new AcpMcpBridge(conn as any, [acpServer("quiet", "Quiet")], "s", 200);
+    const t0 = Date.now();
+    const settings = await bridge.start();
+    const elapsed = Date.now() - t0;
+    assert.ok(elapsed < 5000, `start() took ${elapsed}ms — should have timed out`);
+    assert.equal(bridge.tools.length, 0);
+    assert.ok(bridge.diagnostics.length > 0);
+    assert.ok(bridge.diagnostics[0].includes("Quiet"));
+    await bridge.dispose();
+  });
+
   it("returns empty spawn settings when no ACP servers are provided", async () => {
     const conn = new FakeConn();
     const bridge = new AcpMcpBridge(conn as any, [], "s");
