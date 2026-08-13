@@ -232,12 +232,19 @@ export class SmokeHarness {
     const hit = this.updates.find(predicate)
     if (hit) return Promise.resolve(hit)
     return new Promise((resolvePromise, reject) => {
-      const timer = setTimeout(() => reject(new Error(`waitForUpdate timed out after ${timeoutMs}ms`)), timeoutMs)
+      let interval = null
+      const finish = () => {
+        if (interval) clearInterval(interval)
+      }
+      const timer = setTimeout(() => {
+        finish()
+        reject(new Error(`waitForUpdate timed out after ${timeoutMs}ms`))
+      }, timeoutMs)
       timer.unref?.()
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         const found = this.updates.find(predicate)
         if (found) {
-          clearInterval(interval)
+          finish()
           clearTimeout(timer)
           resolvePromise(found)
         }

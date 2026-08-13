@@ -52,7 +52,7 @@ import { maybeAuthRequiredError } from './auth-required.js'
 import { isAbsolute } from 'node:path'
 import { existsSync, readFileSync, realpathSync, readdirSync, statSync, unlinkSync } from 'node:fs'
 import type { AvailableCommand } from '@agentclientprotocol/sdk'
-import { join, dirname, basename, relative } from 'node:path'
+import { join, dirname, basename, relative, sep } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 type ThinkingLevel = 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh'
@@ -1010,7 +1010,9 @@ export class PiAcpAgent implements ACPAgent {
     // ACP cancel is a notification; never block message dispatch on pi's abort RPC
     // (which can be slow when pi is mid-turn). Queue clearing is synchronous inside
     // session.cancel(); the rest runs in the background (F-018).
-    void session.cancel().catch(() => {})
+    void session.cancel().catch(e => {
+      process.stderr.write(`[pi-acp-jetbrain] session/cancel abort failed: ${String((e as Error)?.message ?? e)}\n`)
+    })
   }
 
   async listSessions(params: ListSessionsRequest): Promise<ListSessionsResponse> {
@@ -1756,7 +1758,7 @@ export function buildStartupInfo(opts: {
     const fromCwd = relative(opts.cwd, p)
     if (!fromCwd.startsWith('..') && !fromCwd.startsWith('/') && !/^[A-Za-z]:/.test(fromCwd)) return fromCwd
     const home = process.env.HOME ?? ''
-    if (home && p.startsWith(home)) return `~${p.slice(home.length)}`
+    if (home && p.startsWith(home + sep)) return `~${p.slice(home.length + sep.length)}`
     return basename(p)
   }
   const contextItems: string[] = []

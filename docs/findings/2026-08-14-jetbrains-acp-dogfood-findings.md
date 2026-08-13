@@ -5,7 +5,7 @@
 **Branch:** `main`
 **Audited revision:** `b7e5ae9e05752bff097b381b8eca6ed639822477`
 **Audience:** implementation and release handoff
-**Status:** findings open; document-only pass
+**Status:** findings resolved or evidence-recorded; host acceptance pending (see §16)
 
 > Direct headless results, historical live-host evidence, and unavailable fresh-host checks are separated below.
 
@@ -1194,6 +1194,44 @@ Implemented in commit `6fcec7a` (`feat(smoke): shared bounded harness, honest pr
 - Start a fresh IntelliJ chat so a new PID loads the rebuilt `dist` (existing PID 60824 predates commit `6fcec7a`).
 - Confirm the startup prelude shows the new build line and `initialize.agentInfo._meta.piAcp.build.revision` matches the on-disk bundle.
 - Open follow-ups for the remaining P2/P3 findings (see section 7), notably F-006 (non-empty MCP descriptor lane), F-018 (cancellation), F-019 (list/load/delete lifecycle), and F-027 (isolated session store).
+
+## 16. Closure status (F-008 through F-033)
+
+Resolution recorded 2026-08-14 after the F-008–F-033 campaign (work record `.pi/work/close-dogfood-findings-f008-f033/`).
+
+| F     | Priority | Status                                                    | Evidence                                                                                                                               |
+| ----- | -------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| F-008 | P1       | Implemented (runner); host confirmation pending           | `scripts/dogfood-ide.mjs` flags PIDs started before the dist rebuild; README documents fresh-chat-after-rebuild                        |
+| F-009 | P2       | Evidence captured; user action pending                    | dogfood-ide run: PID 7810 still runs the inspo checkout; PIDs 305xxx run the published npm 0.0.33 package. Close stale chats manually. |
+| F-010 | P2       | Implemented                                               | smoke-startupinfo 32 KB prelude budget + per-section profile (6.1 KB measured); smoke-acp 64 KB session/new budget (26.7 KB measured)  |
+| F-011 | P2       | Implemented                                               | `buildStartupInfo` uses cwd-relative / `~` labels; prelude shrank 9,596 → 6,175 chars                                                  |
+| F-012 | P2       | Implemented                                               | changelog lookup uses `getPiCommand(PI_ACP_PI_COMMAND)` (F-024); probe reports round-trip honestly                                     |
+| F-013 | P2       | Implemented                                               | smoke-export detects `pi-session-*.html`, verifies structure, cleans up                                                                |
+| F-014 | P2       | Documented                                                | queue control is pi-side; smoke-queue asserts two end_turn turns                                                                       |
+| F-015 | P2       | Implemented                                               | probes run against one recorded dist hash (commit `6fcec7a`)                                                                           |
+| F-016 | P2       | Implemented                                               | `dogfood-report.mjs` prints concise per-probe summaries and preserves redacted failure tails                                           |
+| F-017 | P2       | Implemented                                               | harness `close()`/`assertExited`; entrypoint-shutdown suite hardening                                                                  |
+| F-018 | P2       | Implemented                                               | smoke-cancel: cancelled stopReason, no late chunks, follow-up turn; adapter cancel is non-blocking                                     |
+| F-019 | P2       | Implemented                                               | smoke-lifecycle: create/list/seed/close/load-replay/delete/idempotent-delete on the built dist                                         |
+| F-020 | P2       | Implemented                                               | smoke-negative: unknown prompt/load, relative cwd, cancel no-op, idempotent delete, version clamp, bogus cursor                        |
+| F-021 | P2       | Implemented for the fixture bridge; real-IDE call pending | smoke-mcp-fixture invoked `ide_fixture_echo` through the full adapter+pi IPC path; fresh-chat IDE call remains                         |
+| F-022 | P3       | Implemented                                               | README documents conditional `xdebug_*` registration                                                                                   |
+| F-023 | P3       | Implemented                                               | shared `LIST_CHANGED_DIAGNOSTIC` dedupe across both paths + unit test                                                                  |
+| F-024 | P2       | Implemented                                               | changelog lookup resolves the configured pi command                                                                                    |
+| F-025 | P3       | Implemented                                               | package description generalized to JetBrains IDEs primary host                                                                         |
+| F-026 | P3       | Implemented                                               | `validate-smoke-inventory.mjs` in canonical; unregistered probe fails the gate (proven)                                                |
+| F-027 | P2       | Implemented                                               | `PI_ACP_SESSION_MAP` override + symlink-overlay agent dir; all 13 probes isolated; cleanup asserted; real store untouched              |
+| F-028 | P2       | Implemented                                               | `sanitizeBridgeDescriptors` deny-by-default redaction + nested-value tests; fixture probe asserts no secret in stderr                  |
+| F-029 | P3       | Implemented                                               | README "IDE log noise" section (benign and actionable patterns)                                                                        |
+| F-030 | P3       | Implemented                                               | `dogfood-ide.mjs` records unavailable reasons and the fresh-chat checklist                                                             |
+| F-031 | P3       | Implemented                                               | check.yml matrix on Node 20 and 24                                                                                                     |
+| F-032 | P3       | Implemented                                               | `dogfood-report.mjs` emits versioned JSON (schema `pi-acp.dogfood-report.v1`) + Markdown, redacted                                     |
+| F-033 | P2       | Runner + runbook implemented; acceptance pending          | `dogfood-ide.mjs` + §9 runbook; requires a fresh chat: new PID, build revision, SSE, tool call, inspections, cancel, restore, shutdown |
+
+### Still required
+
+- Fresh IntelliJ chat for F-033 acceptance and the real-IDE halves of F-008/F-009/F-021: new PID after the dist rebuild, `_meta.piAcp.build.revision` match, an IDE tool call, inspection ids, cancel/restore/shutdown.
+- Close stale chats (PID 7810 inspo checkout; PIDs 305xxx published-package launches) once the local entry is confirmed.
 
 ---
 

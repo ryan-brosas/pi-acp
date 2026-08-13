@@ -27,8 +27,8 @@ for (const f of probes) {
     ok(`${rel} reachable via package scripts`)
   }
   const text = readFileSync(join(root, rel), 'utf8')
-  if (!text.includes("from './lib/acp-smoke.mjs'")) {
-    fail(`${rel} does not import the shared harness (deadline/isolation ownership)`)
+  if (!text.includes("from './lib/acp-smoke.mjs'") || !/new SmokeHarness\s*\(/.test(text)) {
+    fail(`${rel} does not import and construct the shared harness (deadline/isolation ownership)`)
   }
 }
 
