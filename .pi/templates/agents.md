@@ -58,6 +58,10 @@ Evidence: [paths or command output]
   and list the affected files, history, infrastructure, or data.
 - Never expose, invent, or commit credentials.
 - Preserve unrelated working-tree changes and scope staging by path.
+- After successful verification of a mutating request, create an atomic,
+  path-scoped commit automatically. Use a detailed message describing intent,
+  implementation details, and verification performed. Never push unless
+  explicitly requested.
 - [Add a project-specific production or data boundary only when verified.]
 
 ## Repository invariants
