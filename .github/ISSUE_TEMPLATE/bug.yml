@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a defect or failing behavior
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Exact commands or steps that trigger the failure.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+      description: What should happen and what happens instead.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [prompts, skills, fabric, cgc, templates, docs, workflow, other]
+    validations:
+      required: true
+  - type: input
+    id: artifact
+    attributes:
+      label: Artifact path
+      description: ".pi/work/<issue>-<slug>/ once /fix or /create runs."
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Failure evidence
+      description: Output tails, exit codes, or file:line references.
+    validations:
+      required: false

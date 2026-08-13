@@ -1,0 +1,54 @@
+name: Feature
+description: New capability or enhancement for this repository
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What should this capability do?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Observable checks; each needs a verification command or manual check.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [prompts, skills, fabric, cgc, templates, docs, workflow, other]
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options: [P0, P1, P2, P3]
+    validations:
+      required: false
+  - type: input
+    id: artifact
+    attributes:
+      label: Artifact path
+      description: ".pi/work/<issue>-<slug>/ once /create runs; derived from this issue number."
+    validations:
+      required: false
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification plan
+      description: Commands or manual checks that prove completion.
+    validations:
+      required: false
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk and rollback
+      description: What could break and how to roll back.
+    validations:
+      required: false

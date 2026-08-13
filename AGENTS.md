@@ -75,7 +75,8 @@ For real validation, test with JetBrains IntelliJ (the primary ACP host) or a he
 
 ## Source control
 
-- **DO NOT** commit unless explicitly asked!
+- After successful verification of a mutating request, create an atomic, path-scoped commit automatically. Use a detailed message describing intent, important implementation details, and verification performed. Never push unless explicitly requested.
+- The user-installed `scripts/auto-commit.mjs` watcher is the sole exception to path-scoped staging: it may commit all non-ignored tracked and untracked repository changes after its safety scan.
 
 ## Client information
 

@@ -1,0 +1,568 @@
+{
+  "generated": "2026-08-12",
+  "note": "Skill ledger for the Pi-tailored template. Skills are organized into progressive-disclosure packs: ten visible pack routers, four always-visible core safety skills, and hidden leaves loaded on demand. Membership is owned by .pi/skills/packs.json; node scripts/validate-skill-packs.mjs is the structural gate.",
+  "removed": [
+    {
+      "name": "brave-search",
+      "reason": "Brave Search MCP not installed; replaced by the codex-websearch leaf (openai_websearch extension) in the Pi Fabric migration"
+    },
+    {
+      "name": "diagnostics",
+      "reason": "wraps removed OpenCode diagnostics tool + aislop/fallow custom tools (plugin/ removed)"
+    },
+    {
+      "name": "memory",
+      "reason": "duplicates Pi native memory/sessions (memory.recall, docs/sessions.md)"
+    },
+    {
+      "name": "subagent-driven-development",
+      "reason": "OpenCode task() subagent dispatch; superseded by Pi Fabric agents/handoff"
+    },
+    {
+      "name": "webclaw",
+      "reason": "no webclaw CLI, MCP server, or extension on the host; disconnected 2026-08-12; browser fallbacks now use plain fetch/curl"
+    }
+  ],
+  "retained": [
+    {
+      "name": "accessibility-audit",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "agent-code-quality-gate",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "api-and-interface-design",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "api-implementation",
+      "status": "retained",
+      "pack": "pack-backend",
+      "modelVisible": false
+    },
+    {
+      "name": "app-experience-mapping",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "backend-architecture",
+      "status": "retained",
+      "pack": "pack-backend",
+      "modelVisible": false
+    },
+    {
+      "name": "background-jobs",
+      "status": "retained",
+      "pack": "pack-backend",
+      "modelVisible": false
+    },
+    {
+      "name": "black-box-experience-review",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "brainstorming",
+      "status": "retained",
+      "pack": "core",
+      "modelVisible": true
+    },
+    {
+      "name": "browser-testing-with-devtools",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "browser-tools",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "cgc-inspiration-workflow",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "chrome-devtools",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "ci-cd-and-automation",
+      "status": "retained",
+      "pack": "pack-platform",
+      "modelVisible": false
+    },
+    {
+      "name": "cloudflare",
+      "status": "retained",
+      "pack": "pack-platform",
+      "modelVisible": false
+    },
+    {
+      "name": "code-cleanup",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "code-review-and-quality",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "codex-websearch",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "container-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "core-data-expert",
+      "status": "retained",
+      "pack": "pack-data",
+      "modelVisible": false
+    },
+    {
+      "name": "debugging-and-error-recovery",
+      "status": "retained",
+      "pack": "core",
+      "modelVisible": true
+    },
+    {
+      "name": "deep-module-design",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "defense-in-depth",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "deprecation-and-migration",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "design-system-audit",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "design-taste-frontend",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "development-lifecycle",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "distributed-systems-patterns",
+      "status": "retained",
+      "pack": "pack-backend",
+      "modelVisible": false
+    },
+    {
+      "name": "django-development",
+      "status": "retained",
+      "pack": "pack-backend",
+      "modelVisible": false
+    },
+    {
+      "name": "documentation-and-adrs",
+      "status": "retained",
+      "pack": "pack-authoring",
+      "modelVisible": false
+    },
+    {
+      "name": "dotnet-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "elixir-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "evidence-router",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "fabric-native-execution",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "fallow",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "fastapi-development",
+      "status": "retained",
+      "pack": "pack-backend",
+      "modelVisible": false
+    },
+    {
+      "name": "figma",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "flask-development",
+      "status": "retained",
+      "pack": "pack-backend",
+      "modelVisible": false
+    },
+    {
+      "name": "frontend-design",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "gemini-large-context",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "git-workflow-and-versioning",
+      "status": "retained",
+      "pack": "pack-platform",
+      "modelVisible": false
+    },
+    {
+      "name": "github-contribution-opportunities",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "go-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "grill-me",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "grill-with-docs",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "high-end-visual-design",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "incremental-implementation",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "industrial-brutalist-ui",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "java-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "minimalist-ui",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "mockup-to-code",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "notion-workspace",
+      "status": "retained",
+      "pack": "pack-authoring",
+      "modelVisible": false
+    },
+    {
+      "name": "opensrc",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "pdf-extract",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    },
+    {
+      "name": "performance-optimization",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "php-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "planning-and-task-breakdown",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "playwright",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "polar",
+      "status": "retained",
+      "pack": "pack-data",
+      "modelVisible": false
+    },
+    {
+      "name": "prototype",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "python-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "react-best-practices",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "redesign-existing-projects",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "resend",
+      "status": "retained",
+      "pack": "pack-data",
+      "modelVisible": false
+    },
+    {
+      "name": "root-cause-tracing",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "ruby-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "rust-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "security-and-hardening",
+      "status": "retained",
+      "pack": "core",
+      "modelVisible": true
+    },
+    {
+      "name": "service-observability",
+      "status": "retained",
+      "pack": "pack-backend",
+      "modelVisible": false
+    },
+    {
+      "name": "shell-development",
+      "status": "retained",
+      "pack": "pack-toolchains",
+      "modelVisible": false
+    },
+    {
+      "name": "shipping-and-launch",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "source-driven-development",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "spec-driven-development",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "supabase",
+      "status": "retained",
+      "pack": "pack-data",
+      "modelVisible": false
+    },
+    {
+      "name": "supabase-postgres-best-practices",
+      "status": "retained",
+      "pack": "pack-data",
+      "modelVisible": false
+    },
+    {
+      "name": "swift-concurrency",
+      "status": "retained",
+      "pack": "pack-apple",
+      "modelVisible": false
+    },
+    {
+      "name": "swiftui-expert-skill",
+      "status": "retained",
+      "pack": "pack-apple",
+      "modelVisible": false
+    },
+    {
+      "name": "task-scoped-execution",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "test-driven-development",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "testing-anti-patterns",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "typescript-coding-standards",
+      "status": "retained",
+      "pack": "pack-quality",
+      "modelVisible": false
+    },
+    {
+      "name": "upwork-proposals",
+      "status": "retained",
+      "pack": "pack-authoring",
+      "modelVisible": false
+    },
+    {
+      "name": "using-git-worktrees",
+      "status": "retained",
+      "pack": "pack-platform",
+      "modelVisible": false
+    },
+    {
+      "name": "ux-review",
+      "status": "retained",
+      "pack": "pack-frontend",
+      "modelVisible": false
+    },
+    {
+      "name": "veda-lane",
+      "status": "retained",
+      "pack": "pack-delivery",
+      "modelVisible": false
+    },
+    {
+      "name": "vercel-deploy-claimable",
+      "status": "retained",
+      "pack": "pack-platform",
+      "modelVisible": false
+    },
+    {
+      "name": "verification-before-completion",
+      "status": "retained",
+      "pack": "core",
+      "modelVisible": true
+    },
+    {
+      "name": "writing-skills",
+      "status": "retained",
+      "pack": "pack-authoring",
+      "modelVisible": false
+    },
+    {
+      "name": "zoom-out",
+      "status": "retained",
+      "pack": "pack-research",
+      "modelVisible": false
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+name: Research
+description: Evidence-driven investigation before implementation
+title: "[research]: "
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Research question
+      description: One bounded question with clear scope.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What is known already and why this question matters.
+    validations:
+      required: false
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: What decision or artifact the research should enable.
+    validations:
+      required: false
+  - type: input
+    id: artifact
+    attributes:
+      label: Artifact path
+      description: ".pi/work/<issue>-<slug>/research.md once /research persists findings."
+    validations:
+      required: false
