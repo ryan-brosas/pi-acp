@@ -2,22 +2,22 @@
 
 ACP ([Agent Client Protocol](https://agentclientprotocol.com/overview/introduction)) adapter for [`pi`](https://github.com/earendil-works/pi) coding agent (fka shitty coding agent).
 
-`pi-acp` communicates **ACP JSON-RPC 2.0 over stdio** to an ACP client (e.g. Zed editor) and spawns `pi --mode rpc`, bridging requests/events between the two.
+`pi-acp` communicates **ACP JSON-RPC 2.0 over stdio** to an ACP client (primarily JetBrains IntelliJ) and spawns `pi --mode rpc`, bridging requests/events between the two.
 
 ## Status
 
-This is an MVP-style adapter intended to be useful today and easy to iterate on. Some ACP features may be not implemented or are not supported (see [Limitations](#limitations)). Development is centered around [Zed](https://zed.dev) editor support, other clients may have varying levels of compatibility.
+This is an MVP-style adapter intended to be useful today and easy to iterate on. Some ACP features may be not implemented or are not supported (see [Limitations](#limitations)). Development is centered around JetBrains IntelliJ support (the adapter's primary ACP host); other ACP clients may have varying levels of compatibility.
 
 Expect some minor breaking changes.
 
-The local IntelliJ integration is experimental: IntelliJ's installed ACP implementation supplies its private IDE MCP server as a stdio descriptor (`idea.sh`), and `pi-acp` bridges it into Pi as `ide_<server>_<tool>` tools. The IntelliJ launcher script forwards the stdio command to the already-running IDE and exits 0 without speaking MCP, so `pi-acp` prefers a direct connection to the IDE's in-process SSE endpoint when the descriptor carries `IJ_MCP_SERVER_PORT`, and falls back to the stdio child only if that endpoint is unreachable. The draft ACP MCP transport remains supported for other hosts. A fresh IntelliJ `pi-acp-local` chat is still required before claiming complete end-to-end IntelliJ-hosted success.
+The local IntelliJ integration is experimental: IntelliJ's installed ACP implementation supplies its private IDE MCP server as a stdio descriptor (`idea.sh`), and `pi-acp` bridges it into Pi as `ide_<server>_<tool>` tools. The IntelliJ launcher script forwards the stdio command to the already-running IDE and exits 0 without speaking MCP, so `pi-acp` prefers a direct connection to the IDE's in-process SSE endpoint when the descriptor carries `IJ_MCP_SERVER_PORT`, and falls back to the stdio child only if that endpoint is unreachable. The draft ACP MCP transport remains supported for other hosts. The IntelliJ path is verified end to end: a live IntelliJ host registered all discovered IDE tools with pi, pi invoked `ide_idea_get_file_problems` through the bridge and received the IDE's inspection result, and session teardown left no orphan processes.
 
 ## Features
 
 - Streams assistant output as ACP `agent_message_chunk`
 - Maps pi tool execution to ACP `tool_call` / `tool_call_update`
   - Tool call locations are surfaced when available for ACP clients that support opening the referenced file/context
-  - Relative file paths from pi are resolved against the session cwd before being emitted as ACP tool locations, which enables follow-along features in clients like Zed
+  - Relative file paths from pi are resolved against the session cwd before being emitted as ACP tool locations, which enables follow-along features in clients like IntelliJ
   - For `edit`, `pi-acp` attempts to infer a 1-based line number from a unique `oldText` match in the pre-edit file snapshot and includes it in the emitted tool location when possible
   - For `edit`, `pi-acp` snapshots the file before the tool runs and emits an ACP **structured diff** (`oldText`/`newText`) on completion when possible
 - Session persistence
@@ -28,8 +28,8 @@ The local IntelliJ integration is experimental: IntelliJ's installed ACP impleme
   - Adds a small set of built-in commands for headless/editor usage
   - Supports skill commands (if enabled in pi settings, they appear as `/skill:skill-name` in the ACP client)
 - Skills are loaded by pi directly and are available in ACP sessions
-- (Zed) `pi-acp` emits “startup info” block into the session (pi version, context, skills, prompts, extensions - similar to `pi` in the terminal). You can disable it by setting `quietStartup: true` in pi settings (`~/.pi/agent/settings.json` or `<project>/.pi/settings.json`). When `quietStartup` is enabled, `pi-acp` will still emit a 'New version available' message if the installed pi version is outdated.
-- (Zed) Session history is supported in Zed starting with [`v0.225.0`](https://zed.dev/releases/preview/0.225.0). Session loading / history maps to pi's session files. Sessions can be resumed both in `pi` and in the ACP client.
+- `pi-acp` emits a “startup info” block into the session (pi version, context, skills, prompts, extensions, and IDE bridge status - similar to `pi` in the terminal). You can disable it by setting `quietStartup: true` in pi settings (`~/.pi/agent/settings.json` or `<project>/.pi/settings.json`). When `quietStartup` is enabled, `pi-acp` will still emit a 'New version available' message if the installed pi version is outdated.
+- Session history: `session/load` maps to pi's session files, so sessions can be resumed both in `pi` and in the ACP client.
 
 ## Prerequisites
 
@@ -45,11 +45,32 @@ npm install -g @earendil-works/pi-coding-agent
 
 ## Install
 
-### Add pi-acp to your ACP client, e.g. [Zed](https://zed.dev/docs/agents/external-agents/)
+### Add pi-acp to JetBrains IntelliJ
 
-#### Using ACP Registry in Zed or other clients that support it:
+IntelliJ ships an ACP host; register `pi-acp` as an agent server in IntelliJ's ACP settings (`~/.jetbrains/acp.json`). This is the configuration used for day-to-day development:
 
-In Zed launch the registry with `zed: acp registry` command and select `pi ACP` adapter from the list. This will automatically add the agent server configuration to your `settings.json` and keep it up to date:
+```json
+{
+  "agent_servers": {
+    "pi-acp-local": {
+      "command": "/home/utopia/work/inspo/pi-acp/dist/index.js",
+      "args": [],
+      "env": {
+        "PI_ACP_PI_COMMAND": "/home/utopia/.local/bin/pi",
+        "PI_ACP_DEBUG_BRIDGE": "1"
+      }
+    }
+  }
+}
+```
+
+IntelliJ passes its private IDE MCP server per chat; the bridge exposes the IDE's semantic tools to pi as `ide_<server>_<tool>` extension tools (see [Limitations](#limitations)).
+
+### Other ACP clients (e.g. Zed)
+
+#### Using ACP Registry
+
+In clients that support it (e.g. `zed: acp registry` in Zed), select the `pi ACP` adapter from the list. This will automatically add the agent server configuration to your `settings.json` and keep it up to date:
 
 ```json
   "agent_servers": {
@@ -61,7 +82,7 @@ In Zed launch the registry with `zed: acp registry` command and select `pi ACP` 
 
 #### Using with `npx` (no global install needed, always loads the latest version):
 
-Add the following to your Zed `settings.json`:
+Add the following to your ACP client's agent server settings:
 
 ```json
   "agent_servers": {
@@ -118,7 +139,7 @@ Point your ACP client to the built `dist/index.js`:
 - Default: unset/any other value means `false`.
 - When disabled, compliant ACP clients should avoid sending embedded `resource` blocks. If they send them anyway, `pi-acp` still degrades gracefully by converting them into plain-text prompt context.
 
-You can add the environment variable in the Zed settings with:
+You can add the environment variable in your ACP client's agent server config (IntelliJ's `~/.jetbrains/acp.json` or a generic client such as Zed):
 
 ```json
   "agent_servers": {
@@ -158,8 +179,8 @@ Loaded from:
 
 Other built-in commands:
 
-- `/model` - not implemented (use the model selector UI in Zed)
-- `/thinking` - maps to 'mode' selector in Zed
+- `/model` - not implemented (use the model selector UI in the ACP client)
+- `/thinking` - maps to the client's model 'mode' selector
 - `/clear` - not implemented (use ACP client 'new' command)
 
 #### 3) Skill commands
@@ -171,7 +192,7 @@ Other built-in commands:
 ## Authentication (ACP Registry support)
 
 This agent supports **Terminal Auth** for the [ACP Registry](https://agentclientprotocol.com/get-started/registry).
-In Zed, this will show an **Authenticate** banner that launches pi in a terminal.
+Clients supporting terminal auth (e.g. Zed) will show an **Authenticate** banner that launches pi in a terminal.
 Launch pi in a terminal for interactive login/setup:
 
 ```bash

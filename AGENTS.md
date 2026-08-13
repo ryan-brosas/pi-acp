@@ -57,7 +57,7 @@ Quick sanity test (example):
 # echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":1}}' | node dist/index.js
 ```
 
-For real validation, test with an ACP client (e.g. Zed external agent).
+For real validation, test with JetBrains IntelliJ (the primary ACP host) or a headless ACP client such as `scripts/smoke-*.mjs`.
 
 ## Coding guidelines
 
@@ -79,9 +79,9 @@ For real validation, test with an ACP client (e.g. Zed external agent).
 
 ## Client information
 
-- Current ACP client is Zed
+- Current ACP client is JetBrains IntelliJ (dogfooded through `~/.jetbrains/acp.json` → `pi-acp-local`)
 
 ## References
 
 - Local ACP repo with protocol documentation and specs: `~/Dev/learning/agent-client-protocol`
-- Local Zed repo `~/Dev/learning/zed/zed`
+- IntelliJ ACP config: `~/.jetbrains/acp.json`; adapter stderr lands in `~/.cache/JetBrains/IntelliJIdea*/log/idea.log`
