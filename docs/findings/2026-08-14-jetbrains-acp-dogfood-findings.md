@@ -70,7 +70,7 @@ The latest candidate therefore still requires a fresh JetBrains chat.
 - Package: `0.0.33`.
 - Node: `v26.7.0`.
 - Pi: `0.84.1`.
-- Adapter: `/home/utopia/work/project/pi-acp/dist/index.js`.
+- Adapter: `~/work/project/pi-acp/dist/index.js` (deployed via `~/.jetbrains/acp.json`).
 - Dist hash: `7c60bd761b7e0097e72c1e07d11c67942ce7d98433af586b567e977ac4dd1dc8`.
 - Dist built: `2026-08-14 05:19:22 +0800`.
 - Current project PID: `60824`, started `04:51:54`.
@@ -1163,6 +1163,37 @@ That PID is historical evidence only.
 Implement F-001 through F-005, add build identity, rebuild once, and run the fresh-host checklist.
 Do not treat PID 60824 as candidate evidence.
 Do not call compact, changelog, or export successful until their assertions are corrected.
+
+## 15. Implementation log (2026-08-14)
+
+Implemented in commit `6fcec7a` (`feat(smoke): shared bounded harness, honest probes, loaded build identity`); verified at that revision.
+
+### Resolved findings
+
+- **F-001 — Implemented.** `scripts/smoke-acp-load.mjs` asserts the current `LoadSessionResponse` object contract (`configOptions`, `models`, `modes`, `_meta`), replay updates > 0, and null startup info on a headless load; it previously asserted the legacy null result and failed.
+- **F-002 — Implemented.** `scripts/smoke-compact.mjs` is an expected-negative oracle: it requires the ACP error -32603 with details containing `Nothing to compact (session too small)` and fails on any successful response.
+- **F-003 — Implemented.** All nine probes distinguish result and error envelopes via `scripts/lib/acp-smoke.mjs` (`expectResult` / `expectError`) and fail on unexpected JSON-RPC errors.
+- **F-004 — Implemented.** The shared harness bounds every request (default 30s, prompts 60s), suite deadline (120s), update waits, and shutdown (SIGTERM with 5s grace, SIGKILL escalation); each probe asserts clean adapter exit.
+- **F-005 — Implemented (package-script reachability).** `npm run smoke` builds once and runs startupinfo + acp; `npm run smoke:full` runs all nine probes against one build; `smoke:core` aliases `smoke`. CI documents why the full matrix stays local (spawns the `pi` binary and makes real model calls; GitHub runners do not provision either).
+- **F-007 — Implemented.** `src/build-info.ts` exposes `revision`, `buildTime`, `packageVersion`, `isRelease` (tsup-injected `__PI_ACP_BUILD_REVISION__` / `__PI_ACP_BUILD_TIME__` with dev fallbacks); `initialize` reports `agentInfo._meta.piAcp.build` and the startup prelude carries a build line; `smoke-startupinfo` asserts the identity. Covered by `test/unit/build-info.test.ts`.
+- **F-016 — Implemented.** Probes no longer rebuild per script; the package scripts build once and the harness prints the dist sha256.
+- **F-017 — Implemented.** The harness `close()` awaits adapter exit; `test/unit/entrypoint-shutdown.test.ts` hardened (10s windows, kill-on-failure) so a hung child can never stall the suite.
+- **F-013 — Partially.** `smoke-export` now detects newly created `pi-session-*.html` artifacts in cwd, verifies structural HTML (`<!DOCTYPE html>`, `Session Export` title, size), and cleans up; artifact path-parsing remains pi-side.
+- **F-012/F-014 — Status quo documented.** `smoke-changelog` and `smoke-queue` assert round-trip completion and report semantic content; pi-side semantics (installation lookup, queue control) remain open follow-ups.
+
+### Verification at 6fcec7a
+
+- `node scripts/check.mjs` exit 0 (`repository check: ok`).
+- `npm test` 144 pass / 0 fail (includes `build-info` and hardened `entrypoint-shutdown`).
+- `npm run lint`, `npm run typecheck`, `npm run build` exit 0.
+- `npm run smoke:full` — all nine probes OK: startupinfo (build identity asserted), acp (3 chunks, end_turn), acp-load (2 replay updates), session (stats text), modes (mode/config updates), queue (2 turns), changelog (20 KB text), export (artifact verified and cleaned), compact (expected -32603).
+- Prettier clean on all changed files; dist rebuilt with build identity.
+
+### Still required
+
+- Start a fresh IntelliJ chat so a new PID loads the rebuilt `dist` (existing PID 60824 predates commit `6fcec7a`).
+- Confirm the startup prelude shows the new build line and `initialize.agentInfo._meta.piAcp.build.revision` matches the on-disk bundle.
+- Open follow-ups for the remaining P2/P3 findings (see section 7), notably F-006 (non-empty MCP descriptor lane), F-018 (cancellation), F-019 (list/load/delete lifecycle), and F-027 (isolated session store).
 
 ---
 
