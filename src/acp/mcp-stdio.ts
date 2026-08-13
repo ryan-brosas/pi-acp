@@ -1,5 +1,6 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
 import { createInterface, type Interface } from 'node:readline'
+import { basename } from 'node:path'
 import type { McpServerStdio } from '@agentclientprotocol/sdk'
 
 export type JsonRpcId = number | string
@@ -24,6 +25,40 @@ type PendingRequest = {
   timer: ReturnType<typeof setTimeout>
 }
 
+export type StdioMcpPhase =
+  | 'spawn'
+  | 'initialize'
+  | 'initialized_notification'
+  | 'tools_list'
+  | 'runtime_call'
+  | 'close'
+
+export class StdioMcpError extends Error {
+  readonly phase: StdioMcpPhase
+  readonly launchSummary: string
+  readonly exitCode?: number
+  readonly signal?: NodeJS.Signals
+  readonly sanitizedStderr?: string
+
+  constructor(
+    phase: StdioMcpPhase,
+    message: string,
+    opts: { launchSummary: string; exitCode?: number; signal?: NodeJS.Signals; sanitizedStderr?: string }
+  ) {
+    super(message)
+    this.name = 'StdioMcpError'
+    this.phase = phase
+    this.launchSummary = opts.launchSummary
+    this.exitCode = opts.exitCode
+    this.signal = opts.signal
+    this.sanitizedStderr = opts.sanitizedStderr
+  }
+}
+
+function launchSummary(server: McpServerStdio, cwd: string): string {
+  return `command=${basename(server.command)}; args=${server.args.length}; env=${server.env.length}; cwd=${cwd}`
+}
+
 const MAX_STDERR_TAIL = 2_048
 const MAX_STDERR_DIAGNOSTIC = 512
 
@@ -40,10 +75,19 @@ function sanitizeStderr(value: string): string {
     .slice(-MAX_STDERR_DIAGNOSTIC)
 }
 
-function exitError(code: number | null, signal: NodeJS.Signals | null, stderr: string): Error {
+function exitError(code: number | null, signal: NodeJS.Signals | null, stderr: string, summary: string): StdioMcpError {
   const status = code === null ? `signal=${signal ?? 'unknown'}` : `code=${code}`
   const detail = sanitizeStderr(stderr)
-  return new Error(`MCP stdio server exited (${status}${detail ? `; stderr: ${detail}` : ''})`)
+  return new StdioMcpError(
+    'spawn',
+    `MCP stdio server exited (${status}; ${summary}${detail ? `; stderr: ${detail}` : ''})`,
+    {
+      launchSummary: summary,
+      ...(code === null ? {} : { exitCode: code }),
+      ...(signal === null ? {} : { signal }),
+      ...(detail ? { sanitizedStderr: detail } : {})
+    }
+  )
 }
 
 /** Minimal MCP stdio client for ACP-provided servers. */
@@ -57,11 +101,14 @@ export class StdioMcpClient {
   #closed = false
   #closePromise: Promise<void> | undefined
   readonly #onNotification: ((message: JsonRpcNotification) => void) | undefined
+  readonly #launchSummary: string
 
   private constructor(
     child: ChildProcessWithoutNullStreams,
+    launchSummaryText: string,
     onNotification?: (message: JsonRpcNotification) => void
   ) {
+    this.#launchSummary = launchSummaryText
     this.#onNotification = onNotification
     this.#child = child
     child.stderr.setEncoding('utf8')
@@ -72,7 +119,7 @@ export class StdioMcpClient {
     this.#lines.on('line', line => this.#handleLine(line))
     this.#exit = new Promise(resolve => {
       child.once('close', (code, signal) => {
-        this.#failPending(exitError(code, signal, this.#stderrTail))
+        this.#failPending(exitError(code, signal, this.#stderrTail, this.#launchSummary))
         resolve()
       })
       child.once('error', error => this.#failPending(asError(error)))
@@ -88,19 +135,24 @@ export class StdioMcpClient {
     const env: NodeJS.ProcessEnv = { ...process.env }
     for (const variable of server.env) env[variable.name] = variable.value
 
+    const summary = launchSummary(server, cwd)
     const child = spawn(server.command, server.args, {
       cwd,
       env,
       stdio: 'pipe',
       shell: process.platform === 'win32' && /\\.(?:cmd|bat)$/i.test(server.command)
     })
-    const client = new StdioMcpClient(child, onNotification)
+    const client = new StdioMcpClient(child, summary, onNotification)
     try {
       await client.#waitForSpawn()
       return client
     } catch (error) {
       await client.close()
-      throw error
+      if (error instanceof StdioMcpError) throw error
+      throw new StdioMcpError('spawn', `MCP stdio server failed to spawn (${summary})`, {
+        launchSummary: summary,
+        ...(error instanceof Error ? { cause: error.message } : {})
+      } as any)
     }
   }
 

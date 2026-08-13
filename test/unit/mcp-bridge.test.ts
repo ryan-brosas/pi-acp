@@ -3,8 +3,9 @@ import assert from 'node:assert/strict'
 import { AcpMcpBridge } from '../../src/acp/mcp-bridge.js'
 import { McpIpcServer } from '../../src/acp/mcp-ipc.js'
 import { BRIDGE_IPC_VERSION } from '../../src/acp/mcp-types.js'
-import { createConnection } from 'node:net'
+import { createConnection, createServer } from 'node:net'
 import { createInterface } from 'node:readline'
+import { createFakeSseServer } from './helpers/fake-sse-server.js'
 
 /** Records extMethod traffic and answers with canned MCP responses. */
 class FakeConn {
@@ -143,7 +144,13 @@ describe('AcpMcpBridge', () => {
         failed: []
       }
     }
+    const registrationPromise = bridge.waitForRegistration(1_000)
     sock.write(JSON.stringify(registration) + '\n')
+    const acknowledged = await registrationPromise
+    assert.equal(acknowledged.registered.length, 1)
+    assert.equal(bridge.status.discovered, 1)
+    assert.equal(bridge.status.registered, 1)
+    assert.equal(bridge.status.failed, 0)
     sock.write(
       JSON.stringify({
         type: 'call',
@@ -304,6 +311,69 @@ describe('AcpMcpBridge', () => {
     await bridge.dispose()
     assert.equal(bridge.lifecycle, 'closed')
     await assert.rejects(() => bridge.start(), /already closed/)
+  })
+
+  it('reports malformed command-shaped descriptors instead of silently ignoring them', async () => {
+    const bridge = new AcpMcpBridge(
+      new FakeConn() as any,
+      [{ name: 'Broken', command: process.execPath, args: 'not-an-array', env: [] } as any],
+      'malformed-descriptor'
+    )
+
+    const settings = await bridge.start()
+    assert.equal(bridge.hasServers, true)
+    assert.equal(settings.extensionPaths.length, 1)
+    assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('invalid stdio descriptor')))
+    assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('phase=descriptor_validation')))
+    assert.ok(bridge.diagnostics.every(diagnostic => !diagnostic.includes('not-an-array')))
+    await bridge.dispose()
+  })
+
+  it('reports registration failures separately from discovered tools', async () => {
+    const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'partial-registration')
+    const settings = await bridge.start()
+    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+    const lines = createInterface({ input: sock })
+    const iterator = lines[Symbol.asyncIterator]()
+    const nextMessage = async (): Promise<any> => {
+      const next = await iterator.next()
+      if (next.done) throw new Error('IPC socket closed before the expected message')
+      return JSON.parse(next.value)
+    }
+    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    sock.write(
+      JSON.stringify({
+        type: 'hello',
+        version: BRIDGE_IPC_VERSION,
+        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
+        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
+      }) + '\n'
+    )
+    const helloAck = await nextMessage()
+    const registrationPromise = bridge.waitForRegistration(1_000)
+    sock.write(
+      JSON.stringify({
+        type: 'catalog_registered',
+        registration: {
+          catalogId: helloAck.catalog.catalogId,
+          registered: [],
+          failed: [
+            {
+              exposedName: bridge.tools[0].exposedName,
+              schemaHash: bridge.tools[0].schemaHash,
+              message: 'fake registration failure'
+            }
+          ]
+        }
+      }) + '\n'
+    )
+    await registrationPromise
+    assert.equal(bridge.status.discovered, 1)
+    assert.equal(bridge.status.registered, 0)
+    assert.equal(bridge.status.failed, 1)
+    lines.close()
+    sock.destroy()
+    await bridge.dispose()
   })
 
   it('records unsupported inbound ACP MCP messages without changing the catalog', async () => {
@@ -514,9 +584,16 @@ describe('McpIpcServer handshake', () => {
       }
     })
     await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-    sock.write(JSON.stringify({ type: 'hello', version: BRIDGE_IPC_VERSION, token: ep.token, sessionId: ep.sessionId }) + '\n')
+    sock.write(
+      JSON.stringify({ type: 'hello', version: BRIDGE_IPC_VERSION, token: ep.token, sessionId: ep.sessionId }) + '\n'
+    )
     assert.equal((await hello).type, 'hello_ack')
-    sock.write(JSON.stringify({ type: 'catalog_registered', registration: { catalogId: 'catalog-bad', registered: [], failed: [] } }) + '\n')
+    sock.write(
+      JSON.stringify({
+        type: 'catalog_registered',
+        registration: { catalogId: 'catalog-bad', registered: [], failed: [] }
+      }) + '\n'
+    )
     await assert.rejects(registration, /omitted tools/)
     sock.destroy()
     server.close()
@@ -584,5 +661,195 @@ describe('McpIpcServer handshake', () => {
     assert.ok(received.some((m: any) => m.type === 'error' && m.code === 'unauthorized'))
     sock.destroy()
     server.close()
+  })
+
+  it('prefers SSE when the descriptor advertises IJ_MCP_SERVER_PORT, never spawning stdio', async () => {
+    const fake = await createFakeSseServer({ authToken: 'fallback-token' })
+    let bridge: AcpMcpBridge | undefined
+    try {
+      bridge = new AcpMcpBridge(
+        new FakeConn() as any,
+        [
+          {
+            name: 'idea',
+            command: process.execPath,
+            args: ['--input-type=module', '-e', 'process.exit(0)'],
+            env: [
+              { name: 'IJ_MCP_SERVER_PORT', value: String(fake.port) },
+              { name: 'IJ_MCP_AUTH_TOKEN', value: 'fallback-token' }
+            ]
+          }
+        ],
+        'sse-fallback-session'
+      )
+      const settings = await bridge.start()
+
+      assert.equal(bridge.lifecycle, 'ready')
+      assert.equal(bridge.tools.length, 1)
+      assert.equal(bridge.tools[0].exposedName, 'ide_idea_open_file_in_editor')
+      assert.ok(bridge.tools[0].connectionId.startsWith('sse-'))
+      assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('connected over SSE (transport=sse')))
+      assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('auth=token')))
+      assert.ok(fake.requests.length > 0)
+      assert.ok(
+        fake.requests.every(
+          request =>
+            request.headers['ij_mcp_auth_token'] === 'fallback-token' &&
+            request.headers.authorization === 'Bearer fallback-token'
+        )
+      )
+
+      const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+      const lines = createInterface({ input: sock })
+      const iterator = lines[Symbol.asyncIterator]()
+      const nextMessage = async (): Promise<any> => {
+        const next = await iterator.next()
+        if (next.done) throw new Error('IPC socket closed before the expected message')
+        return JSON.parse(next.value)
+      }
+      await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+      sock.write(
+        JSON.stringify({
+          type: 'hello',
+          version: BRIDGE_IPC_VERSION,
+          token: settings.env.PI_ACP_MCP_IPC_TOKEN,
+          sessionId: settings.env.PI_ACP_MCP_SESSION_ID
+        }) + '\n'
+      )
+      const ack = await nextMessage()
+      assert.equal(ack.type, 'hello_ack')
+
+      const registrationPromise = bridge.waitForRegistration(1_000)
+      sock.write(
+        JSON.stringify({
+          type: 'catalog_registered',
+          registration: {
+            catalogId: ack.catalog.catalogId,
+            registered: bridge.tools.map(tool => ({ exposedName: tool.exposedName, schemaHash: tool.schemaHash })),
+            failed: []
+          }
+        }) + '\n'
+      )
+      const registration = await registrationPromise
+      assert.equal(registration.registered.length, 1)
+
+      sock.write(JSON.stringify({ type: 'call', id: '1', tool: bridge.tools[0].exposedName, args: {} }) + '\n')
+      const result = await nextMessage()
+      assert.equal(result.type, 'result')
+      assert.deepEqual(result.result, { content: [{ type: 'text', text: 'sse-ok' }] })
+
+      lines.close()
+      sock.destroy()
+    } finally {
+      await bridge?.dispose()
+      await fake.close()
+    }
+  })
+
+  it('notes a missing IJ_MCP_AUTH_TOKEN when the descriptor advertises an SSE port', async () => {
+    const fake = await createFakeSseServer()
+    let bridge: AcpMcpBridge | undefined
+    try {
+      bridge = new AcpMcpBridge(
+        new FakeConn() as any,
+        [
+          {
+            name: 'idea',
+            command: process.execPath,
+            args: ['--input-type=module', '-e', 'process.exit(0)'],
+            env: [{ name: 'IJ_MCP_SERVER_PORT', value: String(fake.port) }]
+          }
+        ],
+        'sse-no-token-session'
+      )
+      await bridge.start()
+      assert.equal(bridge.tools.length, 1)
+      assert.ok(
+        bridge.diagnostics.some(diagnostic => diagnostic.includes('IJ_MCP_SERVER_PORT without IJ_MCP_AUTH_TOKEN'))
+      )
+      assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('auth=none')))
+    } finally {
+      await bridge?.dispose()
+      await fake.close()
+    }
+  })
+
+  it('reports SSE as unavailable when the IDE rejects the token', async () => {
+    const fake = await createFakeSseServer({ authToken: 'expected-token' })
+    let bridge: AcpMcpBridge | undefined
+    try {
+      bridge = new AcpMcpBridge(
+        new FakeConn() as any,
+        [
+          {
+            name: 'idea',
+            command: process.execPath,
+            args: ['--input-type=module', '-e', 'process.exit(0)'],
+            env: [
+              { name: 'IJ_MCP_SERVER_PORT', value: String(fake.port) },
+              { name: 'IJ_MCP_AUTH_TOKEN', value: 'wrong-token' }
+            ]
+          }
+        ],
+        'sse-rejected-session'
+      )
+      await bridge.start()
+      assert.equal(bridge.tools.length, 0)
+      assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('SSE unavailable')))
+      assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('HTTP 401')))
+    } finally {
+      await bridge?.dispose()
+      await fake.close()
+    }
+  })
+
+  it('falls back to stdio when the advertised SSE endpoint is unreachable', async () => {
+    const deadPort = await new Promise<number>(resolve => {
+      const probe = createServer()
+      probe.listen(0, '127.0.0.1', () => {
+        const port = (probe.address() as { port: number }).port
+        probe.close(() => resolve(port))
+      })
+    })
+    const server = stdioServer('IntelliJ')
+    const bridge = new AcpMcpBridge(
+      new FakeConn() as any,
+      [{ ...server, env: [{ name: 'IJ_MCP_SERVER_PORT', value: String(deadPort) }] }],
+      'sse-dead-port-session'
+    )
+    try {
+      await bridge.start()
+      assert.equal(bridge.lifecycle, 'ready')
+      assert.ok(bridge.tools.length >= 1)
+      assert.ok(bridge.tools[0].connectionId.startsWith('stdio-'))
+      assert.ok(bridge.diagnostics.some(diagnostic => diagnostic.includes('SSE unavailable')))
+      assert.ok(!bridge.diagnostics.some(diagnostic => diagnostic.includes('unavailable (transport=stdio')))
+    } finally {
+      await bridge.dispose()
+    }
+  })
+
+  it('keeps bridge diagnostics scoped to the bridge instance', async () => {
+    const failing = new AcpMcpBridge(
+      new FakeConn() as any,
+      [
+        {
+          name: 'Broken',
+          command: process.execPath,
+          args: ['--input-type=module', '-e', "process.stderr.write('boom'); process.exit(7)"],
+          env: []
+        }
+      ],
+      'scoped-failing-session'
+    )
+    await failing.start()
+    assert.ok(failing.diagnostics.some(diagnostic => diagnostic.includes('code=7')))
+
+    const healthy = new AcpMcpBridge(new FakeConn() as any, [], 'scoped-healthy-session')
+    await healthy.start()
+    assert.deepEqual(healthy.diagnostics, [])
+
+    await failing.dispose()
+    await healthy.dispose()
   })
 })

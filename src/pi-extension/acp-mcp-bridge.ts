@@ -102,10 +102,7 @@ function literal(value: unknown): TSchema | undefined {
   return undefined
 }
 
-export function schemaToTypeBox(
-  schema: JsonSchema,
-  state: ConversionState = createConversionState()
-): TSchema {
+export function schemaToTypeBox(schema: JsonSchema, state: ConversionState = createConversionState()): TSchema {
   collectReferences(schema, state)
   state.nodes++
   if (state.depth > MAX_SCHEMA_DEPTH || state.nodes > MAX_SCHEMA_NODES) {
@@ -270,9 +267,9 @@ function hasSchemaProperty(schema: JsonSchema, name: string): boolean {
   const properties = schema.properties
   return Boolean(
     properties &&
-      typeof properties === 'object' &&
-      !Array.isArray(properties) &&
-      Object.prototype.hasOwnProperty.call(properties, name)
+    typeof properties === 'object' &&
+    !Array.isArray(properties) &&
+    Object.prototype.hasOwnProperty.call(properties, name)
   )
 }
 

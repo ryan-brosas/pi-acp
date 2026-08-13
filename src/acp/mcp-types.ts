@@ -77,6 +77,15 @@ export interface AcpMcpConnection {
 
 export type BridgeLifecycle = 'idle' | 'starting' | 'ready' | 'closing' | 'closed'
 
+export interface BridgeStatus {
+  lifecycle: BridgeLifecycle
+  discovered: number
+  registered: number
+  failed: number
+  catalogComplete: boolean
+  diagnostics: string[]
+}
+
 /** NDJSON messages exchanged with the pi extension over the private socket. */
 export type BridgeIpcMessage =
   | { type: 'hello'; version: number; token: string; sessionId: string }
