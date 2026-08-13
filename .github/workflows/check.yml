@@ -11,11 +11,15 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 24] # engines >=20; 24 is the current CI baseline (F-031)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: ${{ matrix.node }}
       - run: npm ci
       - run: node scripts/check.mjs
       - run: npm test

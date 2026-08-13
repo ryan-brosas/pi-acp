@@ -30,6 +30,7 @@ import type { BridgeSpawnSettings, BridgeTool } from './mcp-types.js'
 import { SessionStore } from './session-store.js'
 import { buildInfo } from '../build-info.js'
 import { PiRpcProcess } from '../pi-rpc/process.js'
+import { getPiCommand } from '../pi-rpc/command.js'
 import { listPiSessions, findPiSession } from './pi-sessions.js'
 import { normalizePiAssistantText, normalizePiMessageText } from './translate/pi-messages.js'
 import { toolResultToText } from './translate/pi-tools.js'
@@ -769,8 +770,11 @@ export class PiAcpAgent implements ACPAgent {
           // 1) Locate the installed pi package by resolving the `pi` executable.
           // On Node installs, `pi` typically resolves to .../@earendil-works/pi-coding-agent/dist/cli.js
           try {
+            // Use the configured pi command (PI_ACP_PI_COMMAND) so the changelog
+            // lookup matches the executable the adapter actually spawns (F-024).
+            const piCommand = getPiCommand(process.env.PI_ACP_PI_COMMAND)
             const whichCmd = process.platform === 'win32' ? 'where' : 'which'
-            const which = spawnSync(whichCmd, ['pi'], { encoding: 'utf-8' })
+            const which = spawnSync(whichCmd, [piCommand], { encoding: 'utf-8' })
             const piPath = String(which.stdout ?? '')
               .split(/\r?\n/)[0]
               ?.trim()
