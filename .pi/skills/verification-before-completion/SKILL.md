@@ -35,6 +35,8 @@ Pure prose changes (review the diff); claims backed by a directly observable art
 | "Code matches spec" | Diff or path + line range |
 | "Bug is fixed" | Regression test fails without, passes with |
 | "Shipped" | All + commit / PR link |
+| "IDE inspections clean" | `lint_files`/`get_file_problems` output for changed files, no errors |
+| "Independent review passes" | Reviewer report with no unresolved P0/P1 findings |
 
 Lower levels (prose, code review) are inspection, not verification.
 

@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { buildBridgeStartupInfo, buildStartupInfo } from '../../src/acp/agent.js'
 
-test('buildStartupInfo gives semantic-first IntelliJ guidance', () => {
+test('buildStartupInfo gives semantic-first JetBrains IDE guidance', () => {
   const startupInfo = buildStartupInfo({
     cwd: '/workspace/project',
     fileCommands: [],
@@ -32,6 +32,8 @@ test('buildStartupInfo gives semantic-first IntelliJ guidance', () => {
   })
 
   assert.match(startupInfo, /## IDE Tools/)
+  assert.match(startupInfo, /JetBrains IDE MCP bridge/)
+  assert.doesNotMatch(startupInfo, /IntelliJ MCP bridge/)
   assert.match(startupInfo, /3 tools registered/)
   assert.match(startupInfo, /\/workspace\/project/)
   assert.match(startupInfo, /search_symbol, get_file_problems/)
@@ -67,6 +69,8 @@ test('buildBridgeStartupInfo distinguishes discovered and registered tools', () 
 
   assert.match(startupInfo, /## IDE Bridge/)
   assert.match(startupInfo, /## IDE Tools/)
+  assert.match(startupInfo, /JetBrains IDE MCP bridge/)
+  assert.doesNotMatch(startupInfo, /IntelliJ MCP bridge/)
   assert.match(startupInfo, /2 tools registered/)
   assert.match(startupInfo, /3 discovered/)
   assert.match(startupInfo, /1 registration failed/)

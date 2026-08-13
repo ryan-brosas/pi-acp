@@ -72,6 +72,8 @@ For real validation, test with JetBrains IntelliJ (the primary ACP host) or a he
 
 - After making code edits, run formatting before finishing the task. Use `npm run format` when it is safe to format the whole worktree; otherwise use the narrowest safe formatter command for the files you touched.
 - If formatting is skipped or fails, say so explicitly in the final response.
+- When the JetBrains IDE MCP catalog is exposed, run IDE inspections (`lint_files` / `get_file_problems`) on changed source and report findings; say so explicitly when IDE tools are unavailable.
+- An independent reviewer must review the final diff and report no unresolved P0/P1 findings before completion.
 
 ## Operating rules
 

@@ -68,7 +68,7 @@ IntelliJ ships an ACP host; register `pi-acp-jetbrain` as an agent server in Int
 }
 ```
 
-IntelliJ passes its private IDE MCP server per chat; the bridge exposes the IDE's semantic tools to pi as `ide_<server>_<tool>` extension tools (see [Limitations](#limitations)).
+IntelliJ passes its private IDE MCP server per chat; the bridge exposes the IDE's semantic tools to pi as `ide_<server>_<tool>` extension tools (see [Limitations](#limitations)). The same bridge is designed for any JetBrains IDE that ships ACP plus the integrated MCP server (IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, RubyMine, RustRover, Rider, CLion, DataGrip, DataSpell); per JetBrains documentation ACP and the integrated MCP server are available across these products. Tools are discovered dynamically, so product-specific capabilities surface per IDE and every tool stays optional.
 
 ### Package installation for IntelliJ
 

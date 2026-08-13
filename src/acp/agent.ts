@@ -1676,9 +1676,9 @@ export function buildBridgeStartupInfo(opts: {
   const failed = opts.status.failed > 0 ? `; ${opts.status.failed} registration failed` : ''
   const registeredNames = tools.map(tool => tool.remoteName).join(', ')
   addSection('IDE Tools', [
-    `IntelliJ MCP bridge: ${opts.status.registered} tool${opts.status.registered === 1 ? '' : 's'} registered (${opts.status.discovered} discovered${failed})${partial}.`,
+    `JetBrains IDE MCP bridge: ${opts.status.registered} tool${opts.status.registered === 1 ? '' : 's'} registered (${opts.status.discovered} discovered${failed})${partial}.`,
     `Project context: ${opts.cwd}; projectPath is injected for tools that declare it unless explicitly overridden.`,
-    preferred.length ? `Prefer semantic IntelliJ workflows when applicable: ${preferred.join(', ')}.` : '',
+    preferred.length ? `Prefer semantic JetBrains IDE workflows when applicable: ${preferred.join(', ')}.` : '',
     registeredNames ? `Registered remote tools: ${registeredNames}` : ''
   ])
 
@@ -1736,7 +1736,7 @@ export function buildStartupInfo(opts: {
     addSection('IDE Bridge', bridgeDiagnostics)
   }
 
-  // IntelliJ MCP guidance. Keep this short and operational: the model already receives
+  // JetBrains IDE MCP guidance. Keep this short and operational: the model already receives
   // individual tool schemas, but it benefits from an explicit semantic-first workflow.
   if (opts.bridgeTools?.length) {
     const preferred = [
@@ -1759,11 +1759,11 @@ export function buildStartupInfo(opts: {
       (opts.bridgeStatus?.catalogComplete ?? opts.bridgeCatalogComplete) === false ? ' (catalog is partial)' : ''
     const registrationNote = failedCount > 0 ? `; ${failedCount} registration failed` : ''
     addSection('IDE Tools', [
-      `IntelliJ MCP bridge: ${registeredCount} tool${registeredCount === 1 ? '' : 's'} registered (${discovered} discovered${registrationNote})${status}.`,
+      `JetBrains IDE MCP bridge: ${registeredCount} tool${registeredCount === 1 ? '' : 's'} registered (${discovered} discovered${registrationNote})${status}.`,
       `Project context: ${opts.bridgeProjectPath ?? opts.cwd}; projectPath is injected for tools that declare it unless explicitly overridden.`,
       preferred.length > 0
-        ? `Prefer semantic IntelliJ workflows when applicable: ${preferred.join(', ')}.`
-        : 'Prefer the registered IntelliJ tools for IDE-aware navigation, inspections, and refactoring.',
+        ? `Prefer semantic JetBrains IDE workflows when applicable: ${preferred.join(', ')}.`
+        : 'Prefer the registered JetBrains IDE tools for IDE-aware navigation, inspections, and refactoring.',
       `Registered remote tools: ${registered}`
     ])
   }

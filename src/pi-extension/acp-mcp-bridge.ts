@@ -273,7 +273,7 @@ function hasSchemaProperty(schema: JsonSchema, name: string): boolean {
   )
 }
 
-/** Add stable IntelliJ project context without mutating the model-provided arguments. */
+/** Add stable JetBrains IDE project context without mutating the model-provided arguments. */
 export function prepareToolArguments(
   tool: Pick<BridgeTool, 'inputSchema'>,
   args: Record<string, unknown>,
@@ -303,7 +303,7 @@ function toolDescription(tool: BridgeTool): string {
       break
     case 'get_file_problems':
     case 'lint_files':
-      notes.push('Prefer IntelliJ inspections for IDE-aware diagnostics instead of text-only checks.')
+      notes.push('Prefer JetBrains IDE inspections for IDE-aware diagnostics instead of text-only checks.')
       break
     case 'rename_refactoring':
       notes.push('Use for semantic rename and verify the affected files afterward.')

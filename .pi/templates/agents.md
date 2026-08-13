@@ -101,4 +101,6 @@ Omit this section when no enforced convention exists.
 
 A completion claim requires the exit code and inspected output from the golden
 check. If CI or deployment exists, state the exact watch or live verification
-command.
+command. When an IDE MCP catalog is exposed, run IDE inspections on changed
+files and report findings; obtain an independent review with no unresolved
+P0/P1 findings. State explicitly when IDE tools are unavailable.

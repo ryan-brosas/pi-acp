@@ -59,7 +59,7 @@ Follow the verification protocol: `.pi/skills/verification-before-completion/ref
 
 **Default:** run the canonical gate in full. This repository's gate has no incremental mode; `--full`/`--no-cache` only bypass the verification cache.
 
-**Execution order:** run the canonical gate `node scripts/check.mjs` (always full). This repository has no install, typecheck, lint, test, build, or format commands; the canonical gate is the verified completion check.
+**Execution order:** run the canonical gate `node scripts/check.mjs` (always full) plus the adapter gates `npm test`, `npm run lint`, and `npm run typecheck` (and `npm run build` for release work). The canonical gate is the template check; the npm gates are the adapter checks.
 
 For browser/manual local-web requirements, use stable URLs as verification evidence. A reachable URL supplements, but never replaces, the canonical gate evidence.
 
@@ -74,10 +74,15 @@ Report results with a mode column:
 | Notion workspace         | PASS   | full | 0.4s   |
 | Release hygiene          | PASS   | full | 0.2s   |
 | git diff --check         | PASS   | full | 0.1s   |
-| Build     | SKIP   | —           | —      |
+| Test                      | PASS   | full | 3.5s   |
+| Lint                      | PASS   | full | 0.8s   |
+| Typecheck                 | PASS   | full | 2.0s   |
+| Build                     | SKIP   | —    | —      |
 ```
 
 **Inspecting output matters:** "0 tests run", "all skipped", and "compiled with warnings" are not passes. Read the exit code and the output tail.
+
+**IDE layer:** when the JetBrains IDE MCP catalog is exposed, run `lint_files`/`get_file_problems` on changed source and report findings; an independent reviewer must report no unresolved P0/P1 findings. If IDE tools are unavailable, report that explicitly — it is neither a pass nor a failure by itself.
 
 **After all gates pass**, record to the verification cache:
 ```bash

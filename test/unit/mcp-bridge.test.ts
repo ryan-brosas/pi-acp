@@ -12,7 +12,7 @@ class FakeConn {
   calls: Array<{ method: string; params: any }> = []
   notifications: Array<{ method: string; params: any }> = []
   failConnect = false
-  tools = [
+  tools: Array<{ name: string; description: string; inputSchema: Record<string, unknown> }> = [
     {
       name: 'open_file_in_editor',
       description: 'Open a file',
@@ -168,6 +168,42 @@ describe('AcpMcpBridge', () => {
     lines.close()
     sock.destroy()
     await bridge.dispose()
+  })
+
+  it('discovers product-specific capability subsets without requiring a fixed JetBrains IDE catalog', async () => {
+    const profiles = [
+      { name: 'IntelliJ IDEA', slug: 'intellij_idea', tools: ['search_symbol', 'get_file_problems', 'build_project'] },
+      { name: 'WebStorm', slug: 'webstorm', tools: ['search_symbol', 'lint_files', 'reformat_file'] },
+      { name: 'PyCharm', slug: 'pycharm', tools: ['search_symbol', 'get_file_problems', 'execute_run_configuration'] },
+      { name: 'Rider', slug: 'rider', tools: ['search_symbol', 'get_symbol_info', 'build_project'] }
+    ]
+
+    for (const profile of profiles) {
+      const conn = new FakeConn()
+      conn.tools = profile.tools.map(name => ({
+        name,
+        description: name,
+        inputSchema: { type: 'object', properties: {} }
+      }))
+      const bridge = new AcpMcpBridge(
+        conn as any,
+        [acpServer(`srv-${profile.slug}`, profile.name)],
+        `profile-${profile.slug}`
+      )
+
+      await bridge.start()
+
+      assert.deepEqual(
+        bridge.tools.map(tool => tool.remoteName),
+        profile.tools
+      )
+      assert.deepEqual(
+        bridge.tools.map(tool => tool.exposedName),
+        profile.tools.map(tool => `ide_${profile.slug}_${tool}`)
+      )
+      assert.equal(bridge.status.discovered, profile.tools.length)
+      await bridge.dispose()
+    }
   })
 
   it('discovers bounded cursor pages and computes catalog identity', async () => {
