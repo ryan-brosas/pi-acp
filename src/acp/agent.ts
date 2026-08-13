@@ -25,6 +25,7 @@ import {
 } from '@agentclientprotocol/sdk'
 import { getAuthMethods } from './auth.js'
 import { SessionManager, type PiAcpSession } from './session.js'
+import { AcpMcpBridge } from './mcp-bridge.js'
 import { SessionStore } from './session-store.js'
 import { PiRpcProcess } from '../pi-rpc/process.js'
 import { listPiSessions, findPiSession } from './pi-sessions.js'
@@ -125,6 +126,7 @@ export class PiAcpAgent implements ACPAgent {
   private readonly sessions = new SessionManager()
   private readonly store = new SessionStore()
   private readonly restoringSessions = new Map<string, Promise<PiAcpSession>>()
+  private readonly bridgeDiagnostics: string[] = []
 
   dispose(): void {
     this.sessions.disposeAll()
@@ -196,14 +198,26 @@ export class PiAcpAgent implements ACPAgent {
 
       const cwd = opts?.cwd ?? stored.cwd
 
+      // ACP MCP bridge: connect client-provided ACP-transport MCP servers and
+      // prepare the pi subprocess to expose their tools (best effort; failures
+      // degrade to ordinary pi-acp sessions without IDE tools).
+      const bridge = new AcpMcpBridge(this.conn, opts?.mcpServers ?? [], sessionId)
+      const bridgeSettings = await bridge.start().catch(err => {
+        this.bridgeDiagnostics.push(String(err?.message ?? err))
+        return { extensionPaths: [], env: {} }
+      })
+
       let proc: PiRpcProcess
       try {
         proc = await PiRpcProcess.spawn({
           cwd,
           sessionPath: stored.sessionFile,
-          piCommand: process.env.PI_ACP_PI_COMMAND
+          piCommand: process.env.PI_ACP_PI_COMMAND,
+          extensionPaths: bridgeSettings.extensionPaths,
+          env: bridgeSettings.env
         })
       } catch (e: any) {
+        await bridge.dispose()
         if (e?.name === 'PiRpcSpawnError') {
           throw RequestError.internalError({ code: e?.code }, String(e?.message ?? e))
         }
@@ -216,8 +230,15 @@ export class PiAcpAgent implements ACPAgent {
         mcpServers: opts?.mcpServers ?? [],
         conn: this.conn,
         proc,
-        fileCommands
+        fileCommands,
+        bridge
       })
+
+      // Wait for the pi extension to authenticate (bounded); never fail the
+      // session on a slow/absent handshake.
+      if (bridgeSettings.extensionPaths.length > 0) {
+        await bridge.waitForHandshake().catch(() => undefined)
+      }
 
       this.lastSessionCwd = cwd
       this.store.upsert({ sessionId, cwd, sessionFile: stored.sessionFile })
@@ -253,7 +274,7 @@ export class PiAcpAgent implements ACPAgent {
       }),
       agentCapabilities: {
         loadSession: true,
-        mcpCapabilities: { http: false, sse: false },
+        mcpCapabilities: { http: false, sse: false, acp: true },
         promptCapabilities: {
           image: true,
           audio: false,
@@ -279,14 +300,27 @@ export class PiAcpAgent implements ACPAgent {
     const fileCommands = loadSlashCommands(params.cwd)
     const enableSkillCommands = getEnableSkillCommands(params.cwd)
 
-    // Pi doesn't support mcpServers, but we accept and store.
+    // ACP MCP bridge: connect client-provided ACP-transport MCP servers and
+    // prepare the pi subprocess to expose their tools (best effort).
+    const bridge = new AcpMcpBridge(this.conn, params.mcpServers, '')
+    const bridgeSettings = await bridge.start().catch(err => {
+      this.bridgeDiagnostics.push(String(err?.message ?? err))
+      return { extensionPaths: [], env: {} }
+    })
     const session = await this.sessions.create({
       cwd: params.cwd,
       mcpServers: params.mcpServers,
       conn: this.conn,
       fileCommands,
-      piCommand: process.env.PI_ACP_PI_COMMAND
+      piCommand: process.env.PI_ACP_PI_COMMAND,
+      bridge,
+      extensionPaths: bridgeSettings.extensionPaths,
+      env: bridgeSettings.env
     })
+    // Handshake is bounded and best-effort; failures degrade gracefully.
+    if (bridgeSettings.extensionPaths.length > 0) {
+      await bridge.waitForHandshake().catch(() => undefined)
+    }
 
     // Fetch state + models once (parallel) to reduce startup latency.
     let state: any = null
@@ -363,7 +397,8 @@ export class PiAcpAgent implements ACPAgent {
       : buildStartupInfo({
           cwd: params.cwd,
           fileCommands,
-          updateNotice
+          updateNotice,
+          bridgeDiagnostics: this.bridgeDiagnostics
         })
 
     if (preludeText)
@@ -1489,6 +1524,7 @@ function buildStartupInfo(opts: {
   cwd: string
   fileCommands: ReturnType<typeof loadSlashCommands>
   updateNotice: string | null
+  bridgeDiagnostics?: string[]
 }): string {
   void opts.fileCommands
 
@@ -1524,6 +1560,11 @@ function buildStartupInfo(opts: {
   const contextPath = join(opts.cwd, 'AGENTS.md')
   if (existsSync(contextPath)) contextItems.push(contextPath)
   addSection('Context', contextItems)
+
+  // IDE bridge diagnostics (ACP MCP bridge status)
+  if (opts.bridgeDiagnostics?.length) {
+    addSection('IDE Bridge', opts.bridgeDiagnostics)
+  }
 
   // Skills
   const skillsItems: string[] = []

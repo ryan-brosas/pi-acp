@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "entries": {
+    "topology/hosts/a29a8e5c4ff14ee0258275738c1aa70b649f0c1a7e343587ea9ef73eb95bb8c3": {
+      "key": "topology/hosts/a29a8e5c4ff14ee0258275738c1aa70b649f0c1a7e343587ea9ef73eb95bb8c3",
+      "value": {
+        "format": 1,
+        "id": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "rootId": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "identity": {
+          "id": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+          "name": "main",
+          "kind": "main",
+          "sessionId": "019ff8c0-f71f-7f8a-85c4-eb55aa288ef5"
+        },
+        "startedAt": 1786584824817,
+        "updatedAt": 1786584826306,
+        "expiresAt": 1786584841306
+      },
+      "version": 2,
+      "updatedAt": 1786584826307,
+      "updatedBy": {
+        "id": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "name": "main",
+        "kind": "main",
+        "sessionId": "019ff8c0-f71f-7f8a-85c4-eb55aa288ef5"
+      }
+    },
+    "topology/participants/a29a8e5c4ff14ee0258275738c1aa70b649f0c1a7e343587ea9ef73eb95bb8c3": {
+      "key": "topology/participants/a29a8e5c4ff14ee0258275738c1aa70b649f0c1a7e343587ea9ef73eb95bb8c3",
+      "value": {
+        "format": 1,
+        "id": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "kind": "root",
+        "rootId": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "ownerHostId": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "ownerIdentityId": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "name": "main",
+        "status": "idle",
+        "runner": "pi",
+        "transport": "host",
+        "capabilities": [],
+        "cwd": "/home/utopia/work/inspo/pi-acp",
+        "sessionId": "019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "model": "openai-codex/gpt-5.6-luna",
+        "thinking": "max",
+        "startedAt": 1786584824817,
+        "updatedAt": 1786584826306,
+        "pendingMessages": false,
+        "controlProtocol": "v1"
+      },
+      "version": 2,
+      "updatedAt": 1786584826309,
+      "updatedBy": {
+        "id": "session:019ff8c0-f71f-7f8a-85c4-eb55aa288ef5",
+        "name": "main",
+        "kind": "main",
+        "sessionId": "019ff8c0-f71f-7f8a-85c4-eb55aa288ef5"
+      }
+    }
+  },
+  "versions": {
+    "topology/hosts/a29a8e5c4ff14ee0258275738c1aa70b649f0c1a7e343587ea9ef73eb95bb8c3": 2,
+    "sessions/019ff8c0-f71f-7f8a-85c4-eb55aa288ef5": 1,
+    "topology/participants/a29a8e5c4ff14ee0258275738c1aa70b649f0c1a7e343587ea9ef73eb95bb8c3": 2
+  },
+  "tombstoneOrder": [
+    "sessions/019ff8c0-f71f-7f8a-85c4-eb55aa288ef5"
+  ]
+}

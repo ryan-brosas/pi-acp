@@ -80,7 +80,9 @@ test('PiAcpAgent: prompt auto-restores a missing session from SessionStore', asy
       {
         cwd: '/tmp/store-project',
         sessionPath: '/tmp/store-project/session.jsonl',
-        piCommand: process.env.PI_ACP_PI_COMMAND
+        piCommand: process.env.PI_ACP_PI_COMMAND,
+        extensionPaths: [],
+        env: {}
       }
     ])
     assert.deepEqual(promptCalls, [{ message: 'hello again', images: [] }])
@@ -173,7 +175,9 @@ test('PiAcpAgent: setSessionConfigOption auto-restores via pi session discovery 
       {
         cwd: '/tmp/fallback-project',
         sessionPath: sessionFile,
-        piCommand: process.env.PI_ACP_PI_COMMAND
+        piCommand: process.env.PI_ACP_PI_COMMAND,
+        extensionPaths: [],
+        env: {}
       }
     ])
     assert.deepEqual(setModelCalls, [{ provider: 'test', modelId: 'beta' }])
