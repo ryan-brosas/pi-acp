@@ -1,26 +1,28 @@
 {
-  "name": "pi-acp",
+  "name": "pi-acp-jetbrain",
   "version": "0.0.33",
-  "description": "ACP adapter for pi coding agent",
+  "description": "JetBrains IntelliJ ACP adapter for pi coding agent",
   "license": "MIT",
   "author": "Sergii Kozak <svkozak@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/svkozak/pi-acp.git"
+    "url": "https://github.com/ryan-brosas/pi-acp-jetbrain.git"
   },
   "publishConfig": {
     "access": "public",
     "provenance": true
   },
   "bugs": {
-    "url": "https://github.com/svkozak/pi-acp/issues"
+    "url": "https://github.com/ryan-brosas/pi-acp-jetbrain/issues"
   },
-  "homepage": "https://github.com/svkozak/pi-acp#readme",
+  "homepage": "https://github.com/ryan-brosas/pi-acp-jetbrain#readme",
   "keywords": [
     "acp",
     "agent-client-protocol",
     "pi-coding-agent",
-    "adapter"
+    "adapter",
+    "jetbrains",
+    "intellij"
   ],
   "engines": {
     "node": ">=20"

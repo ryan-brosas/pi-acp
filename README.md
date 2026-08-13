@@ -1,8 +1,8 @@
-# pi-acp
+# pi-acp-jetbrain
 
 ACP ([Agent Client Protocol](https://agentclientprotocol.com/overview/introduction)) adapter for [`pi`](https://github.com/earendil-works/pi) coding agent (fka shitty coding agent).
 
-`pi-acp` communicates **ACP JSON-RPC 2.0 over stdio** to an ACP client (primarily JetBrains IntelliJ) and spawns `pi --mode rpc`, bridging requests/events between the two.
+`pi-acp-jetbrain` communicates **ACP JSON-RPC 2.0 over stdio** to an ACP client (primarily JetBrains IntelliJ) and spawns `pi --mode rpc`, bridging requests/events between the two.
 
 ## Status
 
@@ -10,7 +10,7 @@ This is an MVP-style adapter intended to be useful today and easy to iterate on.
 
 Expect some minor breaking changes.
 
-The local IntelliJ integration is experimental: IntelliJ's installed ACP implementation supplies its private IDE MCP server as a stdio descriptor (`idea.sh`), and `pi-acp` bridges it into Pi as `ide_<server>_<tool>` tools. The IntelliJ launcher script forwards the stdio command to the already-running IDE and exits 0 without speaking MCP, so `pi-acp` prefers a direct connection to the IDE's in-process SSE endpoint when the descriptor carries `IJ_MCP_SERVER_PORT`, and falls back to the stdio child only if that endpoint is unreachable. The draft ACP MCP transport remains supported for other hosts. The IntelliJ path is verified end to end: a live IntelliJ host registered all discovered IDE tools with pi, pi invoked `ide_idea_get_file_problems` through the bridge and received the IDE's inspection result, and session teardown left no orphan processes.
+The local IntelliJ integration is experimental: IntelliJ's installed ACP implementation supplies its private IDE MCP server as a stdio descriptor (`idea.sh`), and `pi-acp-jetbrain` bridges it into Pi as `ide_<server>_<tool>` tools. The IntelliJ launcher script forwards the stdio command to the already-running IDE and exits 0 without speaking MCP, so `pi-acp-jetbrain` prefers a direct connection to the IDE's in-process SSE endpoint when the descriptor carries `IJ_MCP_SERVER_PORT`, and falls back to the stdio child only if that endpoint is unreachable. The draft ACP MCP transport remains supported for other hosts. The IntelliJ path is verified end to end: a live IntelliJ host registered all discovered IDE tools with pi, pi invoked `ide_idea_get_file_problems` through the bridge and received the IDE's inspection result, and session teardown left no orphan processes.
 
 ## Features
 
@@ -18,17 +18,17 @@ The local IntelliJ integration is experimental: IntelliJ's installed ACP impleme
 - Maps pi tool execution to ACP `tool_call` / `tool_call_update`
   - Tool call locations are surfaced when available for ACP clients that support opening the referenced file/context
   - Relative file paths from pi are resolved against the session cwd before being emitted as ACP tool locations, which enables follow-along features in clients like IntelliJ
-  - For `edit`, `pi-acp` attempts to infer a 1-based line number from a unique `oldText` match in the pre-edit file snapshot and includes it in the emitted tool location when possible
-  - For `edit`, `pi-acp` snapshots the file before the tool runs and emits an ACP **structured diff** (`oldText`/`newText`) on completion when possible
+  - For `edit`, `pi-acp-jetbrain` attempts to infer a 1-based line number from a unique `oldText` match in the pre-edit file snapshot and includes it in the emitted tool location when possible
+  - For `edit`, `pi-acp-jetbrain` snapshots the file before the tool runs and emits an ACP **structured diff** (`oldText`/`newText`) on completion when possible
 - Session persistence
   - pi stores its own sessions in `~/.pi/agent/sessions/...`
-  - `pi-acp` stores a small mapping file at `~/.pi/pi-acp/session-map.json` so `session/load` can reattach to a previous pi session file
+  - `pi-acp-jetbrain` stores a small mapping file at `~/.pi/pi-acp/session-map.json` so `session/load` can reattach to a previous pi session file
 - Slash commands
   - Loads file-based slash commands compatible with pi’s conventions
   - Adds a small set of built-in commands for headless/editor usage
   - Supports skill commands (if enabled in pi settings, they appear as `/skill:skill-name` in the ACP client)
 - Skills are loaded by pi directly and are available in ACP sessions
-- `pi-acp` emits a “startup info” block into the session (pi version, context, skills, prompts, extensions, and IDE bridge status - similar to `pi` in the terminal). You can disable it by setting `quietStartup: true` in pi settings (`~/.pi/agent/settings.json` or `<project>/.pi/settings.json`). When `quietStartup` is enabled, `pi-acp` will still emit a 'New version available' message if the installed pi version is outdated.
+- `pi-acp-jetbrain` emits a “startup info” block into the session (pi version, context, skills, prompts, extensions, and IDE bridge status - similar to `pi` in the terminal). You can disable it by setting `quietStartup: true` in pi settings (`~/.pi/agent/settings.json` or `<project>/.pi/settings.json`). When `quietStartup` is enabled, `pi-acp-jetbrain` will still emit a 'New version available' message if the installed pi version is outdated.
 - Session history: `session/load` maps to pi's session files, so sessions can be resumed both in `pi` and in the ACP client.
 
 ## Prerequisites
@@ -45,14 +45,14 @@ npm install -g @earendil-works/pi-coding-agent
 
 ## Install
 
-### Add pi-acp to JetBrains IntelliJ
+### Add pi-acp-jetbrain to JetBrains IntelliJ
 
-IntelliJ ships an ACP host; register `pi-acp` as an agent server in IntelliJ's ACP settings (`~/.jetbrains/acp.json`). This is the configuration used for day-to-day development:
+IntelliJ ships an ACP host; register `pi-acp-jetbrain` as an agent server in IntelliJ's ACP settings (`~/.jetbrains/acp.json`). This is the configuration used for day-to-day development:
 
 ```json
 {
   "agent_servers": {
-    "pi-acp-local": {
+    "pi-acp-jetbrain": {
       "command": "/home/utopia/work/inspo/pi-acp/dist/index.js",
       "args": [],
       "env": {
@@ -66,50 +66,40 @@ IntelliJ ships an ACP host; register `pi-acp` as an agent server in IntelliJ's A
 
 IntelliJ passes its private IDE MCP server per chat; the bridge exposes the IDE's semantic tools to pi as `ide_<server>_<tool>` extension tools (see [Limitations](#limitations)).
 
-### Other ACP clients (e.g. Zed)
+### Package installation for IntelliJ
 
-#### Using ACP Registry
-
-In clients that support it (e.g. `zed: acp registry` in Zed), select the `pi ACP` adapter from the list. This will automatically add the agent server configuration to your `settings.json` and keep it up to date:
+#### Using `npx`
 
 ```json
+{
   "agent_servers": {
-    "pi-acp": {
-      "type": "registry",
-    },
-  }
-```
-
-#### Using with `npx` (no global install needed, always loads the latest version):
-
-Add the following to your ACP client's agent server settings:
-
-```json
-  "agent_servers": {
-    "pi": {
-      "type": "custom",
+    "pi-acp-jetbrain": {
       "command": "npx",
-      "args": ["-y", "pi-acp"],
+      "args": ["-y", "pi-acp-jetbrain"],
       "env": {}
     }
   }
+}
 ```
 
 #### Global install
 
+The npm package is `pi-acp-jetbrain`; the installed executable remains `pi-acp` for compatibility.
+
 ```bash
-npm install -g pi-acp
+npm install -g pi-acp-jetbrain
 ```
 
 ```json
+{
   "agent_servers": {
-    "pi": {
-      "type": "custom",
+    "pi-acp-jetbrain": {
       "command": "pi-acp",
       "args": [],
       "env": {}
     }
   }
+}
 ```
 
 #### From source
@@ -119,17 +109,18 @@ npm install
 npm run build
 ```
 
-Point your ACP client to the built `dist/index.js`:
+Point IntelliJ to the built `dist/index.js`:
 
 ```json
+{
   "agent_servers": {
-    "pi": {
-      "type": "custom",
+    "pi-acp-jetbrain": {
       "command": "node",
-      "args": ["/path/to/pi-acp/dist/index.js"],
+      "args": ["/path/to/pi-acp-jetbrain/dist/index.js"],
       "env": {}
     }
   }
+}
 ```
 
 ### Environment variables
@@ -137,16 +128,15 @@ Point your ACP client to the built `dist/index.js`:
 - `PI_ACP_ENABLE_EMBEDDED_CONTEXT=true` advertises ACP `promptCapabilities.embeddedContext` support to the client.
 - `PI_ACP_DEBUG_BRIDGE=1` logs the sanitized `session/new.mcpServers` descriptor to stderr on every new session. IntelliJ pipes the adapter's stderr into `idea.log`, so this captures the exact descriptor the host sent (values redacted except `IJ_MCP_SERVER_PORT`/`IJ_MCP_SESSION_ID`).
 - Default: unset/any other value means `false`.
-- When disabled, compliant ACP clients should avoid sending embedded `resource` blocks. If they send them anyway, `pi-acp` still degrades gracefully by converting them into plain-text prompt context.
+- When disabled, compliant ACP clients should avoid sending embedded `resource` blocks. If they send them anyway, `pi-acp-jetbrain` still degrades gracefully by converting them into plain-text prompt context.
 
-You can add the environment variable in your ACP client's agent server config (IntelliJ's `~/.jetbrains/acp.json` or a generic client such as Zed):
+Add environment variables to the IntelliJ agent entry in `~/.jetbrains/acp.json`:
 
 ```json
   "agent_servers": {
-    "pi": {
-      "type": "custom",
+    "pi-acp-jetbrain": {
       "command": "node",
-      "args": ["/path/to/pi-acp/dist/index.js"],
+      "args": ["/path/to/pi-acp-jetbrain/dist/index.js"],
       "env": {
           "PI_ACP_ENABLE_EMBEDDED_CONTEXT": "true",
       }
@@ -156,7 +146,7 @@ You can add the environment variable in your ACP client's agent server config (I
 
 ### Slash commands
 
-`pi-acp` supports slash commands:
+`pi-acp-jetbrain` supports slash commands:
 
 #### 1) File-based commands (aka prompts)
 
@@ -189,11 +179,9 @@ Other built-in commands:
 
 **Note**: Slash commands provided by pi extensions are not currently supported.
 
-## Authentication (ACP Registry support)
+## Authentication
 
-This agent supports **Terminal Auth** for the [ACP Registry](https://agentclientprotocol.com/get-started/registry).
-Clients supporting terminal auth (e.g. Zed) will show an **Authenticate** banner that launches pi in a terminal.
-Launch pi in a terminal for interactive login/setup:
+The adapter advertises **Terminal Auth** metadata. IntelliJ can launch the compatible `pi-acp --terminal-login` command for interactive provider login/setup:
 
 ```bash
 pi-acp --terminal-login
@@ -235,7 +223,7 @@ Project layout:
 
 - Assistant streaming is currently sent as `agent_message_chunk` (no separate thought stream).
 - Queue is implemented client-side and should work like pi's `one-at-a-time`
-- ~~ACP clients don't yet suport session history, but ACP sessions from `pi-acp` can be `/resume`d in pi directly~~
+- ~~ACP clients don't yet suport session history, but ACP sessions from `pi-acp-jetbrain` can be `/resume`d in pi directly~~
 
 ## License
 

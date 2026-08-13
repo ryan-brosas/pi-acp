@@ -1,4 +1,4 @@
-# pi-acp (ACP adapter for pi-coding-agent)
+# pi-acp-jetbrain (ACP adapter for pi-coding-agent)
 
 This repository implements an **Agent Client Protocol (ACP)** adapter for **pi** (`@earendil-works/pi-coding-agent`) without modifying pi.
 
@@ -79,7 +79,7 @@ For real validation, test with JetBrains IntelliJ (the primary ACP host) or a he
 
 ## Client information
 
-- Current ACP client is JetBrains IntelliJ (dogfooded through `~/.jetbrains/acp.json` → `pi-acp-local`)
+- Current ACP client is JetBrains IntelliJ (dogfooded through `~/.jetbrains/acp.json` → `pi-acp-jetbrain`)
 
 ## References
 

@@ -1,5 +1,5 @@
 /**
- * Private types for the ACP MCP bridge (pi-acp → IntelliJ private IJ MCP session).
+ * Private types for the ACP MCP bridge (pi-acp-jetbrain → IntelliJ private IJ MCP session).
  * The bridge connects client-provided ACP and stdio MCP servers and exposes their
  * tools inside the pi subprocess over an authenticated local IPC channel.
  */

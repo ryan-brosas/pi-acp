@@ -249,7 +249,7 @@ export class PiAcpAgent implements ACPAgent {
 
       // MCP bridge: connect client-provided ACP or stdio MCP servers and
       // prepare the pi subprocess to expose their tools (best effort; failures
-      // degrade to ordinary pi-acp sessions without IDE tools).
+      // degrade to ordinary pi-acp-jetbrain sessions without IDE tools).
       const { bridge, settings: bridgeSettings } = await this.startBridge(opts?.mcpServers ?? [], sessionId, cwd)
 
       let proc: PiRpcProcess
@@ -318,7 +318,7 @@ export class PiAcpAgent implements ACPAgent {
     return {
       protocolVersion: requested === supportedVersion ? requested : supportedVersion,
       agentInfo: {
-        name: pkg.name ?? 'pi-acp',
+        name: pkg.name ?? 'pi-acp-jetbrain',
         title: 'pi ACP adapter',
         version: pkg.version ?? '0.0.0'
       },
@@ -1608,7 +1608,7 @@ function logBridgeDescriptors(mcpServers: NewSessionRequest['mcpServers'], cwd: 
   const servers = Array.isArray(mcpServers) ? mcpServers : []
   try {
     process.stderr.write(
-      `[pi-acp] session/new mcpServers (cwd=${cwd}): ${JSON.stringify(
+      `[pi-acp-jetbrain] session/new mcpServers (cwd=${cwd}): ${JSON.stringify(
         servers.map(server => {
           const candidate = server as Record<string, unknown>
           const args = Array.isArray(candidate.args) ? candidate.args : undefined
@@ -1905,5 +1905,5 @@ function readNearestPackageJson(metaUrl: string): {
   } catch {
     // ignore
   }
-  return { name: 'pi-acp', version: '0.0.0' }
+  return { name: 'pi-acp-jetbrain', version: '0.0.0' }
 }

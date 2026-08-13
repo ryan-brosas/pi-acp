@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process'
 
 const cwd = process.cwd()
 
-// Build first so Zed-style invocation (node dist/index.js) works.
+// Build first so IntelliJ-style ACP stdio invocation (node dist/index.js) works.
 await new Promise((resolve, reject) => {
   const p = spawn('npm', ['run', 'build'], { stdio: 'inherit', cwd })
   p.on('exit', code => (code === 0 ? resolve() : reject(new Error(`build failed: ${code}`))))

@@ -1,5 +1,5 @@
 /**
- * Bundled pi extension for the ACP MCP bridge (pi-acp).
+ * Bundled pi extension for the ACP MCP bridge (pi-acp-jetbrain).
  *
  * The extension receives an immutable, session-scoped catalog over authenticated
  * IPC, registers each remote tool independently, acknowledges registration, and

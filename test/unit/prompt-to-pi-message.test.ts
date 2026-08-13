@@ -52,7 +52,7 @@ test('promptToPiMessage: includes audio as marker', () => {
 
   const { message, images } = promptToPiMessage([{ type: 'audio', mimeType: 'audio/wav', data }] as any)
 
-  assert.equal(message, '\n[Audio] (audio/wav, 3 bytes) not supported by pi-acp')
+  assert.equal(message, '\n[Audio] (audio/wav, 3 bytes) not supported by pi-acp-jetbrain')
   assert.deepEqual(images, [])
 })
 
