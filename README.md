@@ -224,10 +224,22 @@ Project layout:
   - Server-originated ACP MCP notifications are diagnosed; `tools/list_changed` requires a new session and unsupported server requests are rejected.
 - The IntelliJ allowlist is controlled by `~/.jetbrains/acp.json`. The current 40-tool profile includes controlled debugger start/control/breakpoint workflows while excluding terminal, database, universal execution, arbitrary debugger expression evaluation, and variable mutation. An explicit `idea_mcp_allowed_tools` list is a deny-all mask plus named tools; omitting it means AllowAll in the installed build and should be treated as a deliberate security/context decision.
 - The bridge uses an immutable per-session catalog. After changing IntelliJ MCP settings or the allowlist, start a new ACP chat.
+- Debugger tools (`xdebug_*`) are conditional: they register only while an IDE debug session is live; the registered catalog is otherwise stable for the chat. If debugger tools are absent from a fresh chat's tool list, start a debug session and begin a new chat (F-022).
+- After rebuilding the adapter, start a new chat: Node does not reload replaced files and IntelliJ reuses running agent processes. Verify the loaded bundle via `initialize.agentInfo._meta.piAcp.build` revision on a fresh PID (F-008).
+- The smoke matrix bounds the startup prelude (`startupInfo` ≤ 32 KB) and the `session/new` payload (≤ 64 KB) and prints measured sizes each run (F-010).
 
 - Assistant streaming is currently sent as `agent_message_chunk` (no separate thought stream).
 - Queue is implemented client-side and should work like pi's `one-at-a-time`
 - ~~ACP clients don't yet suport session history, but ACP sessions from `pi-acp-jetbrain` can be `/resume`d in pi directly~~
+
+### IDE log noise
+
+Known benign patterns in the IDE log do not indicate an adapter fault (F-029):
+
+- `Agent not installed` can appear for a healthy local command agent; the adapter launches `pi` directly and does not require a JetBrains Marketplace plugin.
+- `tools/list_changed` diagnostics: the catalog is a per-session snapshot; the IDE re-advertising tools does not change the current chat's catalog. Start a new chat to refresh.
+
+Actionable patterns: any `IDE bridge: ... unavailable` diagnostic means discovery or a spawn failed and the chat has a partial catalog — check `idea.log` for the reason and start a new chat after fixing the cause.
 
 ## License
 

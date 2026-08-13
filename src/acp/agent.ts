@@ -51,7 +51,7 @@ import { maybeAuthRequiredError } from './auth-required.js'
 import { isAbsolute } from 'node:path'
 import { existsSync, readFileSync, realpathSync, readdirSync, statSync, unlinkSync } from 'node:fs'
 import type { AvailableCommand } from '@agentclientprotocol/sdk'
-import { join, dirname, basename } from 'node:path'
+import { join, dirname, basename, relative } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 type ThinkingLevel = 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh'
@@ -1741,9 +1741,18 @@ export function buildStartupInfo(opts: {
   }
 
   // Context
+  // Prefer cwd-relative or ~ labels over machine-specific absolute paths so the
+  // prelude stays portable (F-011).
+  const displayPath = (p: string): string => {
+    const fromCwd = relative(opts.cwd, p)
+    if (!fromCwd.startsWith('..') && !fromCwd.startsWith('/') && !/^[A-Za-z]:/.test(fromCwd)) return fromCwd
+    const home = process.env.HOME ?? ''
+    if (home && p.startsWith(home)) return `~${p.slice(home.length)}`
+    return basename(p)
+  }
   const contextItems: string[] = []
   const contextPath = join(opts.cwd, 'AGENTS.md')
-  if (existsSync(contextPath)) contextItems.push(contextPath)
+  if (existsSync(contextPath)) contextItems.push(displayPath(contextPath))
   addSection('Context', contextItems)
 
   // IDE bridge diagnostics (ACP MCP bridge status)
@@ -1795,7 +1804,7 @@ export function buildStartupInfo(opts: {
         try {
           const st = statSync(p)
           if (st.isFile() && e.toLowerCase().endsWith('.md')) {
-            skillsItems.push(p)
+            skillsItems.push(displayPath(p))
           }
         } catch {
           // ignore
@@ -1826,7 +1835,7 @@ export function buildStartupInfo(opts: {
           if (st.isDirectory()) {
             stack.push(p)
           } else if (st.isFile() && name === 'SKILL.md') {
-            skillsItems.push(p)
+            skillsItems.push(displayPath(p))
           }
         }
       }
@@ -1866,7 +1875,7 @@ export function buildStartupInfo(opts: {
   const extDir = join(process.env.HOME ?? '', '.pi', 'agent', 'extensions')
   try {
     const exts = readdirSync(extDir).filter(f => f.endsWith('.ts') || f.endsWith('.js'))
-    for (const f of exts) extItems.push(join(extDir, f))
+    for (const f of exts) extItems.push(displayPath(join(extDir, f)))
   } catch {
     // ignore
   }

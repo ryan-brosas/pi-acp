@@ -20,10 +20,20 @@ try {
   matches(startupInfo, /## Skills/, 'startupInfo Skills section')
   matches(startupInfo, /## Extensions/, 'startupInfo Extensions section')
 
+  // F-010: payload budget. The prelude carries the local skill/prompt inventory;
+  // a pathological regression (duplicated sections, leaked dumps) must fail.
+  const STARTUP_BUDGET = 32_000 // chars; current nominal ~9.6k
+  assert(startupInfo.length <= STARTUP_BUDGET, `startupInfo ${startupInfo.length} chars exceeds ${STARTUP_BUDGET}`)
+  const profile = startupInfo
+    .split('\n## ')
+    .slice(1)
+    .map(s => `${s.split('\n')[0]}=${s.length}`)
+    .join('; ')
+
   await h.close()
   h.assertExited(0)
   console.log(
-    `OK smoke-startupinfo (dist ${h.distHash()}; build ${build.revision}; startupInfo ${startupInfo.length} chars)`
+    `OK smoke-startupinfo (dist ${h.distHash()}; build ${build.revision}; startupInfo ${startupInfo.length} chars; sections: ${profile})`
   )
 } catch (err) {
   await h.close().catch(() => {})

@@ -1,7 +1,7 @@
 {
   "name": "pi-acp-jetbrain",
   "version": "0.0.33",
-  "description": "JetBrains IntelliJ ACP adapter for pi coding agent",
+  "description": "ACP adapter for the pi coding agent (JetBrains IDEs primary host)",
   "license": "MIT",
   "author": "Sergii Kozak <svkozak@gmail.com>",
   "repository": {
