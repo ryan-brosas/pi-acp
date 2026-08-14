@@ -465,9 +465,9 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     if (!endpoint || !token || !sessionId) {
       if (ideMode === 'prefer') ideState = 'native_fallback'
       else ideState = 'required_unavailable'
-      pi.on('session_shutdown', () => releaseBridgeInstance(instanceScope, owner))
       return
     }
+    ideState = 'awaiting_catalog'
   } else if (!endpoint || !token || !sessionId) {
     return
   }
@@ -644,11 +644,10 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         return
       }
       signal?.addEventListener('abort', onAbort, { once: true })
-      let ok = false
+      let ok = true
       try {
-        if (sock && !sock.destroyed) {
-          ok = sock.write(JSON.stringify({ type: 'call', id: requestId, tool: tool.exposedName, args }) + '\n')
-        }
+        if (!sock || sock.destroyed) ok = false
+        else sock.write(JSON.stringify({ type: 'call', id: requestId, tool: tool.exposedName, args }) + '\n')
       } catch {
         ok = false
       }
@@ -669,18 +668,32 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     if (mode === 'off' || MUTATION_REMOTE_NAMES.has(tool.remoteName) || root === undefined) return result
     const structured = result.details.structuredContent
     if (!structured || typeof structured !== 'object' || Array.isArray(structured)) return result
-    let hit = false
-    for (const key of RESULT_PATH_KEYS) {
-      const value = (structured as Record<string, unknown>)[key]
-      const values = Array.isArray(value) ? value : typeof value === 'string' ? [value] : []
-      for (const entry of values) {
-        if (typeof entry !== 'string' || !isAbsolute(entry)) continue
-        if (!isInside(resolve(root), resolve(entry))) {
-          hit = true
-          break
+    const candidates: string[] = []
+    const collect = (value: unknown, depth: number): void => {
+      if (depth > 4) return
+      if (typeof value === 'string') {
+        candidates.push(value)
+        return
+      }
+      if (Array.isArray(value)) {
+        for (const item of value) collect(item, depth + 1)
+        return
+      }
+      if (value && typeof value === 'object') {
+        for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+          if (RESULT_PATH_KEYS.has(key)) collect(child, depth + 1)
+          else if (child && typeof child === 'object') collect(child, depth + 1)
         }
       }
-      if (hit) break
+    }
+    collect(structured, 0)
+    let hit = false
+    for (const entry of candidates) {
+      if (!isAbsolute(entry)) continue
+      if (!isInside(resolve(root), resolve(entry))) {
+        hit = true
+        break
+      }
     }
     if (!hit) return result
     if (mode === 'required') {
@@ -1046,14 +1059,21 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     return targets
   }
   let pendingOld: string | undefined
+  let inHunk = false
   for (const line of lines) {
     const trimmed = line.trim()
+    if (/^@@\s/.test(trimmed)) {
+      inHunk = true
+      continue
+    }
     const oldHeader = /^---\s+(.+)$/.exec(trimmed)
     const newHeader = /^\+\+\+\s+(.+)$/.exec(trimmed)
     if (oldHeader) {
       pendingOld = oldHeader[1].trim()
+      inHunk = false
       continue
     }
+    if (inHunk) continue
     if (newHeader && pendingOld !== undefined) {
       const oldPath = stripPrefix(pendingOld)
       const newPath = stripPrefix(newHeader[1].trim())
@@ -1132,7 +1152,7 @@ export function buildMutationPlan(tool: BridgeTool, args: Record<string, unknown
           postOpen.push(normalizeProjectPath(projectRoot, target.destination, true).path)
           continue
         }
-        preOpen.push(normalizeProjectPath(projectRoot, target.destination, target.kind !== 'delete').path)
+        preOpen.push(normalizeProjectPath(projectRoot, target.destination, true).path)
       }
       break
     }

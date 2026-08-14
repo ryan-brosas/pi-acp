@@ -643,4 +643,94 @@ describe('IntelliJ-first coding mode policy', () => {
     const again = await read.execute('t27b', { filePath: 'src/a.ts' })
     assert.equal(again.content[0].text, 'ok')
   })
+}
+  it('rejects symlink escapes for delete targets', async () => {
+    const proj = mkdtempSync(join(tmpdir(), 'piap-'))
+    const outside = mkdtempSync(join(tmpdir(), 'piap-out-'))
+    mkdirSync(join(proj, 'src'))
+    symlinkSync(outside, join(proj, 'link'), 'dir')
+    try {
+      const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG, undefined, proj)
+      emitCatalog()
+      const apply = rt.registered.find((t: any) => t.name === 'ide_idea_apply_patch')
+      const patch = ['--- a/link/evil.ts', '+++ /dev/null'].join('\n')
+      await assert.rejects(() => apply.execute('t23d', { patch }), /outside|escape|root/i)
+      assert.equal(socket.calls.length, 0)
+    } finally {
+      rmSync(proj, { recursive: true, force: true })
+      rmSync(outside, { recursive: true, force: true })
+    }
+  })
+
+  it('guidance reflects awaiting-catalog state before registration', async () => {
+    const prefer = await guidanceFor('prefer', FULL_CATALOG, false)
+    assert.ok(prefer.guidance)
+    assert.match(prefer.guidance.systemPrompt, /not ready yet|waiting/i)
+    const req = await guidanceFor('required', FULL_CATALOG, false)
+    assert.ok(req.guidance)
+    assert.match(req.guidance.systemPrompt, /stay disabled|waiting/i)
+  })
+
+  it('required without credentials does not throw on shutdown', () => {
+    const prevMode = process.env.PI_ACP_IDE_MODE
+    process.env.PI_ACP_IDE_MODE = 'required'
+    const rt = makeFakeRuntime()
+    const ext = createAcpMcpBridgeExtension({ instanceScope: {} })
+    try {
+      ext(rt.pi)
+    } finally {
+      if (prevMode === undefined) delete process.env.PI_ACP_IDE_MODE
+      else process.env.PI_ACP_IDE_MODE = prevMode
+    }
+    const natives = ['read', 'edit', 'write', 'grep', 'find', 'ls']
+    assert.deepEqual(rt.active.filter(n => natives.includes(n)), [])
+    for (const handler of rt.handlers.get('session_shutdown') ?? []) {
+      assert.doesNotThrow(() => handler({}, null))
+    }
+  })
+
+  it('write returning false is backpressure, not failure', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    socket.write = function (data: string): boolean {
+      this.writes.push(data)
+      const msg = JSON.parse(data)
+      if (msg.type === 'call') {
+        this.calls.push({ id: msg.id, tool: msg.tool, args: msg.args })
+        this.emit('data', Buffer.from(JSON.stringify({ type: 'result', id: msg.id, result: this.replyValue }) + '\n'))
+      }
+      return false
+    }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    const result = await read.execute('bp1', { filePath: 'src/a.ts' })
+    assert.equal(result.content[0].text, 'ok')
+    assert.equal(socket.calls.length, 1)
+  })
+
+  it('does not parse hunk content lines as file headers', () => {
+    const patch = [
+      '--- a/src/a.ts',
+      '+++ b/src/a.ts',
+      '@@ -1,3 +1,3 @@',
+      '-old',
+      '+new',
+      '+++ this line is content, not a header',
+      '--- not a header either'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    assert.equal(targets.length, 1)
+    assert.equal(targets[0].kind, 'update')
+    assert.equal(targets[0].destination, 'src/a.ts')
+  })
+
+  it('detects nested out-of-root result paths', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'tree' }],
+      structuredContent: { results: [{ filePath: '/other/repo/x.ts' }] }
+    }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t24c', { filePath: 'src/a.ts' }), /outside|root/i)
+  })
 })
