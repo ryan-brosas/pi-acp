@@ -11,6 +11,14 @@ describe('default IDE deny-list', () => {
     assert.equal(isDefaultDenied('xdebug_control_session', extra), true)
   })
 
+  it('denies every xdebug_* remote name by prefix (the live catalog grows beyond the pinned names)', () => {
+    const extra = new Set<string>()
+    assert.equal(isDefaultDenied('xdebug_remove_breakpoint', extra), true)
+    assert.equal(isDefaultDenied('xdebug_run_to_line', extra), true)
+    assert.equal(isDefaultDenied('xdebug_future_tool_name', extra), true)
+    assert.equal(isDefaultDenied('xdebug', extra), false)
+  })
+
   it('keeps ordinary IDE tools off the deny-list', () => {
     const extra = new Set<string>()
     assert.equal(isDefaultDenied('lint_files', extra), false)

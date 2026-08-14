@@ -126,9 +126,10 @@ type RemoteToolsPage = { tools?: RemoteTool[]; nextCursor?: string }
 /**
  * Remote tools the IDE MCP server may expose that stay outside the default
  * profile (AGENTS.md): universal execution, debugger launch/control, and
- * breakpoint mutation. Explicitly re-allow a reviewed tool with
- * PI_ACP_IDE_EXTRA_TOOLS (comma-separated remote names); AllowAll is never
- * implied by this list.
+ * breakpoint mutation. Every `xdebug_*` remote name is denied by prefix (the
+ * live catalog keeps growing beyond the names pinned here), plus the explicit
+ * names below. Explicitly re-allow a reviewed tool with PI_ACP_IDE_EXTRA_TOOLS
+ * (comma-separated remote names); AllowAll is never implied by this list.
  */
 const DEFAULT_IDE_DENYLIST = [
   'execute_tool',
@@ -147,7 +148,10 @@ export function extraAllowSet(): ReadonlySet<string> {
 }
 
 export function isDefaultDenied(remoteName: string, extra: ReadonlySet<string>): boolean {
-  return (DEFAULT_IDE_DENYLIST as readonly string[]).includes(remoteName) && !extra.has(remoteName)
+  return (
+    (remoteName.startsWith('xdebug_') || (DEFAULT_IDE_DENYLIST as readonly string[]).includes(remoteName)) &&
+    !extra.has(remoteName)
+  )
 }
 
 export class AcpMcpBridge {
