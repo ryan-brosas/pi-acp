@@ -616,6 +616,49 @@ export class AcpMcpBridge {
     return registration
   }
 
+  /**
+   * True when a tool with this exposed or remote name is in the catalog.
+   * Used by the adapter-side inspection gate to probe for IDE analysis tools
+   * (lint_files / get_file_problems) without routing through the pi IPC path.
+   */
+  hasRemoteTool(name: string): boolean {
+    return this.#findTool(name) !== undefined
+  }
+
+  /**
+   * Invoke a bridged IDE tool directly from the adapter and return its raw MCP
+   * result. Used by the post-turn inspection gate; throws on unknown tool,
+   * transport error, or timeout. Runs on the bridge's own connection, not the
+   * pi IPC path, so it works even after the pi child has gone idle.
+   */
+  async callRemoteTool(name: string, args: Record<string, unknown>, timeoutMs?: number): Promise<unknown> {
+    const tool = this.#findTool(name)
+    if (!tool) throw new Error(`Unknown IDE tool: ${name}`)
+    const timeout = timeoutMs ?? this.#runtimeTimeoutMs
+    const stdioClient = this.#stdioClients.get(tool.connectionId)
+    if (stdioClient) return stdioClient.request('tools/call', { name: tool.remoteName, arguments: args }, timeout)
+    const sseClient = this.#sseClients.get(tool.connectionId)
+    if (sseClient) return sseClient.request('tools/call', { name: tool.remoteName, arguments: args }, timeout)
+    return this.#withTimeout(
+      `tools/call ${tool.remoteName}`,
+      this.#conn.extMethod('mcp/message', {
+        connectionId: tool.connectionId,
+        method: 'tools/call',
+        params: { name: tool.remoteName, arguments: args }
+      }),
+      timeout
+    )
+  }
+
+  #findTool(name: string): BridgeTool | undefined {
+    const byExposed = this.#tools.get(name)
+    if (byExposed) return byExposed
+    for (const tool of this.#tools.values()) {
+      if (tool.remoteName === name) return tool
+    }
+    return undefined
+  }
+
   ownsConnection(connectionId: string): boolean {
     return [...this.#connections.values()].some(connection => connection.connectionId === connectionId)
   }

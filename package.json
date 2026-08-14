@@ -47,9 +47,10 @@
     "smoke:core": "npm run smoke",
     "smoke:sessions": "node scripts/smoke-cancel.mjs && node scripts/smoke-lifecycle.mjs && node scripts/smoke-negative.mjs",
     "smoke:mcp-fixture": "node scripts/smoke-mcp-fixture.mjs",
+    "smoke:ide-inspect": "npm run build && node scripts/smoke-ide-inspect.mjs",
     "dogfood:report": "node scripts/dogfood-report.mjs",
     "dogfood:ide": "node scripts/dogfood-ide.mjs",
-    "smoke:full": "npm run build && node scripts/smoke-startupinfo.mjs && node scripts/smoke-acp.mjs && node scripts/smoke-acp-load.mjs && node scripts/smoke-session.mjs && node scripts/smoke-modes.mjs && node scripts/smoke-queue.mjs && node scripts/smoke-changelog.mjs && node scripts/smoke-export.mjs && node scripts/smoke-compact.mjs && node scripts/smoke-cancel.mjs && node scripts/smoke-lifecycle.mjs && node scripts/smoke-negative.mjs && node scripts/smoke-mcp-fixture.mjs",
+    "smoke:full": "npm run build && node scripts/smoke-startupinfo.mjs && node scripts/smoke-acp.mjs && node scripts/smoke-acp-load.mjs && node scripts/smoke-session.mjs && node scripts/smoke-modes.mjs && node scripts/smoke-queue.mjs && node scripts/smoke-changelog.mjs && node scripts/smoke-export.mjs && node scripts/smoke-compact.mjs && node scripts/smoke-cancel.mjs && node scripts/smoke-lifecycle.mjs && node scripts/smoke-negative.mjs && node scripts/smoke-mcp-fixture.mjs && node scripts/smoke-ide-inspect.mjs",
     "prepack": "npm run build",
     "prepublishOnly": "npm run test && npm run lint && npm run typecheck && npm run build"
   },

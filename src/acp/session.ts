@@ -448,6 +448,11 @@ export class PiAcpSession {
     return this.bridge?.hasServers ?? false
   }
 
+  /** The session's MCP bridge, for adapter-side inspection/tool use. */
+  get mcpBridge(): AcpMcpBridge | undefined {
+    return this.bridge
+  }
+
   async prompt(message: string, images: unknown[] = []): Promise<StopReason> {
     // pi RPC mode disables slash command expansion, so we do it here.
     const expandedMessage = expandSlashCommand(message, this.fileCommands)

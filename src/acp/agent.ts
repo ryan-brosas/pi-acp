@@ -48,6 +48,7 @@ import { loadSlashCommands, parseCommandArgs, toAvailableCommands } from './slas
 import { getAgentDir, getEnableSkillCommands, getQuietStartup } from './pi-settings.js'
 import { toAvailableCommandsFromPiGetCommands } from './pi-commands.js'
 import { maybeAuthRequiredError } from './auth-required.js'
+import { runEnforcedInspection, inspectionSummary, type IdeInspectionOutcome } from './ide-inspection.js'
 import { isAbsolute } from 'node:path'
 import { existsSync, readFileSync, realpathSync, readdirSync, statSync, unlinkSync } from 'node:fs'
 import type { AvailableCommand } from '@agentclientprotocol/sdk'
@@ -1012,7 +1013,47 @@ export class PiAcpAgent implements ACPAgent {
         _meta: { piAcp: { error: session.lastError ?? 'pi prompt failed (no diagnostic retained)' } }
       }
     }
+
+    if (result === 'end_turn') {
+      const inspection = await this.enforceIdeInspection(session)
+      if (inspection) {
+        return { stopReason: 'end_turn', _meta: { piAcp: { inspection } } }
+      }
+    }
+
     return { stopReason: result }
+  }
+
+  /**
+   * Deterministic post-turn IDE inspection gate (F-021/F-030). Runs the IDE's
+   * own lint_files/get_file_problems tools over this turn's changed files via
+   * the bridge connection, persists a report, and surfaces a summary. Never
+   * throws: an unavailable bridge/tool or any failure degrades to a diagnostic
+   * instead of breaking the turn. Opt out with PI_ACP_ENFORCE_IDE_INSPECT=0.
+   */
+  private async enforceIdeInspection(session: PiAcpSession): Promise<IdeInspectionOutcome | null> {
+    if (process.env.PI_ACP_ENFORCE_IDE_INSPECT === '0') return null
+    try {
+      const outcome = await runEnforcedInspection({
+        bridge: session.mcpBridge ?? undefined,
+        cwd: session.cwd,
+        sessionId: session.sessionId
+      })
+      const summary = inspectionSummary(outcome)
+      if (summary) {
+        await this.conn.sessionUpdate({
+          sessionId: session.sessionId,
+          update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: summary } }
+        })
+      }
+      return outcome
+    } catch (error) {
+      process.stderr.write(
+        `[pi-acp-jetbrain] IDE inspection failed: ${String((error as Error)?.message ?? error)}
+`
+      )
+      return null
+    }
   }
 
   async cancel(params: CancelNotification): Promise<void> {
