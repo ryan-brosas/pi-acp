@@ -25,13 +25,13 @@ Before interpreting diagnostics or choosing a fix, confirm the target/module set
 
 ### Quick matrix
 
-| Setting / feature                          | Where to check                                                                                                  | Why it matters                                                                                                           |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Swift language mode (Swift 5.x vs Swift 6) | Xcode build settings (`SWIFT_VERSION`) / SwiftPM `// swift-tools-version:`                                      | Swift 6 turns many warnings into errors and enables stricter defaults.                                                   |
-| Strict concurrency checking                | Xcode: Strict Concurrency Checking (`SWIFT_STRICT_CONCURRENCY`) / SwiftPM: strict concurrency flags             | Controls how aggressively Sendable + isolation rules are enforced.                                                       |
-| Default actor isolation                    | Xcode: Default Actor Isolation (`SWIFT_DEFAULT_ACTOR_ISOLATION`) / SwiftPM: `.defaultIsolation(MainActor.self)` | Changes the default isolation of declarations; can reduce migration noise but changes behavior and requirements.         |
-| `NonisolatedNonsendingByDefault`           | Xcode upcoming feature / SwiftPM `.enableUpcomingFeature("NonisolatedNonsendingByDefault")`                     | Changes how nonisolated async functions execute (can inherit the caller’s actor unless explicitly marked `@concurrent`). |
-| Approachable Concurrency                   | Xcode build setting / SwiftPM enables the underlying upcoming features                                          | Bundles multiple upcoming features; recommended to migrate feature-by-feature first.                                     |
+| Setting / feature | Where to check | Why it matters |
+|---|---|---|
+| Swift language mode (Swift 5.x vs Swift 6) | Xcode build settings (`SWIFT_VERSION`) / SwiftPM `// swift-tools-version:` | Swift 6 turns many warnings into errors and enables stricter defaults. |
+| Strict concurrency checking | Xcode: Strict Concurrency Checking (`SWIFT_STRICT_CONCURRENCY`) / SwiftPM: strict concurrency flags | Controls how aggressively Sendable + isolation rules are enforced. |
+| Default actor isolation | Xcode: Default Actor Isolation (`SWIFT_DEFAULT_ACTOR_ISOLATION`) / SwiftPM: `.defaultIsolation(MainActor.self)` | Changes the default isolation of declarations; can reduce migration noise but changes behavior and requirements. |
+| `NonisolatedNonsendingByDefault` | Xcode upcoming feature / SwiftPM `.enableUpcomingFeature("NonisolatedNonsendingByDefault")` | Changes how nonisolated async functions execute (can inherit the caller’s actor unless explicitly marked `@concurrent`). |
+| Approachable Concurrency | Xcode build setting / SwiftPM enables the underlying upcoming features | Bundles multiple upcoming features; recommended to migrate feature-by-feature first. |
 
 ## The Concurrency Rabbit Hole
 
@@ -89,7 +89,6 @@ It's easier to design for concurrency upfront than to retrofit it later.
 ### 3. Use Swift 6 for New Projects and Packages
 
 For new projects, packages, or files:
-
 - Enable Swift 6 language mode from the start
 - Use Swift Concurrency features (async/await, actors)
 - Reduce technical debt before it accumulates
@@ -99,7 +98,6 @@ You can enable Swift 6 for individual files in a Swift 5 project to prevent scop
 ### 4. Resist the Urge to Refactor
 
 **Focus solely on concurrency changes**. Don't combine migration with:
-
 - Architecture refactors
 - API modernization
 - Code style improvements
@@ -116,7 +114,6 @@ Create separate tickets for non-concurrency refactors and address them later.
 ### 6. Don't Just @MainActor All the Things
 
 Don't blindly add `@MainActor` to fix warnings. Consider:
-
 - Should this actually run on the main actor?
 - Would a custom actor be more appropriate?
 - Is `nonisolated` the right choice?
@@ -132,7 +129,6 @@ Don't blindly add `@MainActor` to fix warnings. Consider:
 ### 1. Find an Isolated Piece of Code
 
 Start with:
-
 - Standalone packages with minimal dependencies
 - Individual Swift files within a package
 - Code that's not heavily used throughout the project
@@ -156,9 +152,9 @@ Provide async/await wrappers for existing closure-based APIs:
 
 ```swift
 // Original closure-based API
-@available(*, deprecated, renamed: "fetchImage(urlRequest:)",
+@available(*, deprecated, renamed: "fetchImage(urlRequest:)", 
            message: "Consider using the async/await alternative.")
-func fetchImage(urlRequest: URLRequest,
+func fetchImage(urlRequest: URLRequest, 
                 completion: @escaping @Sendable (Result<UIImage, Error>) -> Void) {
     // ... existing implementation
 }
@@ -174,7 +170,6 @@ func fetchImage(urlRequest: URLRequest) async throws -> UIImage {
 ```
 
 **Benefits**:
-
 - Colleagues can start using async/await immediately
 - You can migrate callers before rewriting implementation
 - Tests can be updated to async/await first
@@ -186,13 +181,11 @@ func fetchImage(urlRequest: URLRequest) async throws -> UIImage {
 For app projects, set default isolation to `@MainActor`:
 
 **Xcode Build Settings**:
-
 ```
 Swift Concurrency → Default Actor Isolation = MainActor
 ```
 
 **Swift Package Manager**:
-
 ```swift
 .target(
     name: "MyTarget",
@@ -215,7 +208,6 @@ Three levels available:
 - **Complete**: Checks entire codebase (matches Swift 6 behavior)
 
 **Swift Package Manager**:
-
 ```swift
 .target(
     name: "MyTarget",
@@ -246,7 +238,6 @@ This prevents warnings when the type is used in concurrent contexts later.
 **Xcode Build Settings**: Search for "Approachable Concurrency"
 
 Enables multiple upcoming features at once:
-
 - `DisableOutwardActorInference`
 - `GlobalActorIsolatedTypesUsability`
 - `InferIsolatedConformances`
@@ -264,7 +255,6 @@ Enables multiple upcoming features at once:
 Enable features individually:
 
 **Swift Package Manager**:
-
 ```swift
 .target(
     name: "MyTarget",
@@ -280,13 +270,11 @@ Find feature keys in Swift Evolution proposals (e.g., SE-335 for `ExistentialAny
 ### 9. Change to Swift 6 Language Mode
 
 **Xcode Build Settings**:
-
 ```
 Swift Language Version = Swift 6
 ```
 
 **Swift Package Manager**:
-
 ```swift
 // swift-tools-version: 6.0
 ```
@@ -310,7 +298,6 @@ Swift 6.2+ includes **semi-automatic migration** for upcoming features.
 5. Click Apply for each warning
 
 **Example warning**:
-
 ```swift
 // [!]️ Use of protocol 'Error' as a type must be written 'any Error'
 func fetchData() throws -> Data  // Before
@@ -330,19 +317,16 @@ swift package migrate --target MyTarget --to-feature ExistentialAny
 ```
 
 **Output**:
-
 ```
 > Applied 24 fix-its in 11 files (0.016s)
 > Updating manifest
 ```
 
 The tool automatically:
-
 - Applies all fix-its
 - Updates `Package.swift` to enable the feature
 
 **Available migrations** (as of Swift 6.2):
-
 - `ExistentialAny` (SE-335)
 - `InferIsolatedConformances` (SE-470)
 - More features will add migration support over time
@@ -364,7 +348,6 @@ Three refactoring options available:
 3. **Convert Function to Async**: Replaces method entirely
 
 **[!]️ Known Issue**: Refactoring can be unstable in Xcode. If you get "Connection interrupted" errors:
-
 - Clean build folder
 - Clear derived data
 - Restart Xcode
@@ -373,9 +356,8 @@ Three refactoring options available:
 ### Manual Rewriting Example
 
 **Before** (closure-based):
-
 ```swift
-func fetchImage(urlRequest: URLRequest,
+func fetchImage(urlRequest: URLRequest, 
                 completion: @escaping @Sendable (Result<UIImage, Error>) -> Void) {
     URLSession.shared.dataTask(with: urlRequest) { data, _, error in
         do {
@@ -392,7 +374,6 @@ func fetchImage(urlRequest: URLRequest,
 ```
 
 **After** (async/await):
-
 ```swift
 func fetchImage(urlRequest: URLRequest) async throws -> UIImage {
     let (data, _) = try await URLSession.shared.data(for: urlRequest)
@@ -404,7 +385,6 @@ func fetchImage(urlRequest: URLRequest) async throws -> UIImage {
 ```
 
 **Benefits**:
-
 - Less code to maintain
 - Easier to reason about
 - No nested closures
@@ -451,7 +431,6 @@ actor DataProcessor {
 ```
 
 The compiler will warn if `@preconcurrency` is unused:
-
 ```
 '@preconcurrency' attribute on module 'SomeModule' is unused
 ```
@@ -478,7 +457,6 @@ Task.detached {
 ```
 
 **Current alternatives**:
-
 - Use `@Observable` macro for SwiftUI
 - Use `AsyncStream` for custom observation
 - Consider [AsyncExtensions](https://github.com/sideeffect-io/AsyncExtensions) package
@@ -486,7 +464,6 @@ Task.detached {
 ### Debouncing Example
 
 **Combine**:
-
 ```swift
 $searchQuery
     .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
@@ -497,11 +474,10 @@ $searchQuery
 ```
 
 **Swift Concurrency**:
-
 ```swift
 func search(_ query: String) {
     currentSearchTask?.cancel()
-
+    
     currentSearchTask = Task {
         do {
             try await Task.sleep(for: .milliseconds(500))
@@ -514,12 +490,11 @@ func search(_ query: String) {
 ```
 
 **SwiftUI Integration**:
-
 ```swift
 struct SearchView: View {
     @State private var searchQuery = ""
     @State private var searcher = ArticleSearcher()
-
+    
     var body: some View {
         List(searcher.results) { result in
             Text(result.title)
@@ -566,7 +541,7 @@ Task {
 @MainActor
 final class NotificationObserver {
     private var cancellables: [AnyCancellable] = []
-
+    
     init() {
         NotificationCenter.default.publisher(for: .someNotification)
             .sink { [weak self] _ in
@@ -574,7 +549,7 @@ final class NotificationObserver {
             }
             .store(in: &cancellables)
     }
-
+    
     private func handleNotification() {
         // Expects to run on main actor
     }
@@ -586,7 +561,6 @@ final class NotificationObserver {
 **Solutions**:
 
 1. **Migrate to Swift Concurrency** (recommended):
-
 ```swift
 Task { [weak self] in
     for await _ in NotificationCenter.default.notifications(named: .someNotification) {
@@ -596,7 +570,6 @@ Task { [weak self] in
 ```
 
 2. **Use Task wrapper** (temporary):
-
 ```swift
 .sink { [weak self] _ in
     Task { @MainActor in
@@ -734,7 +707,6 @@ struct SearchView: View {
 ```
 
 **Benefits of using AsyncAlgorithms**:
-
 - Automatic cancellation when new values arrive
 - Backpressure handling (producer respects consumer pace)
 - Cleaner code than manual Task.sleep management
@@ -782,7 +754,6 @@ final class NotificationObserver {
 ```
 
 **When to use each approach**:
-
 - Use `notifications(named:)` for standard system notifications
 - Use `AsyncChannel` for custom multi-consumer notification scenarios
 - Use `@Observable` + SwiftUI for UI state updates
@@ -867,7 +838,6 @@ final class MultiSourceLoader {
 ```
 
 **Key differences**:
-
 - Combine `merge()` combines publishers; AsyncAlgorithms `merge()` combines sequences
 - For parallel execution, use `TaskGroup` instead of `flatMap`
 - State updates can use `@MainActor` instead of `.receive(on:)`
@@ -928,7 +898,6 @@ actor FormValidator {
 ```
 
 **Problems**:
-
 - More state management
 - Boilerplate code for each field
 - Harder to add new fields
@@ -1008,7 +977,7 @@ struct RecentBuildsChangedMessage: NotificationCenter.AsyncMessage {
 }
 
 // Enable static member lookup
-extension NotificationCenter.MessageIdentifier
+extension NotificationCenter.MessageIdentifier 
 where Self == NotificationCenter.BaseMessageIdentifier<RecentBuildsChangedMessage> {
     static var recentBuildsChanged: NotificationCenter.BaseMessageIdentifier<RecentBuildsChangedMessage> {
         .init()
@@ -1017,7 +986,6 @@ where Self == NotificationCenter.BaseMessageIdentifier<RecentBuildsChangedMessag
 ```
 
 **Posting**:
-
 ```swift
 let builds = [RecentBuild(appName: "Stock Analyzer")]
 let message = RecentBuildsChangedMessage(recentBuilds: builds)
@@ -1025,7 +993,6 @@ NotificationCenter.default.post(message)
 ```
 
 **Observing**:
-
 ```swift
 // Old way: Unsafe casting
 NotificationCenter.default.addObserver(forName: .recentBuildsChanged, object: nil, queue: nil) { notification in
@@ -1043,7 +1010,6 @@ token = NotificationCenter.default.addObserver(
 ```
 
 **Benefits**:
-
 - Strongly typed (no `Any` casting)
 - Compile-time thread safety
 - Clear isolation guarantees
@@ -1057,7 +1023,6 @@ token = NotificationCenter.default.addObserver(
 ### "It's Too Much Work"
 
 Break it down:
-
 - Migrate one package at a time
 - Use 30-minute daily sessions
 - Create checkpoints with small PRs
@@ -1066,7 +1031,6 @@ Break it down:
 ### "My Team Isn't Ready"
 
 Start small:
-
 - Enable Swift 6 for new files only
 - Make new types `Sendable` by default
 - Share learnings in team meetings
@@ -1075,7 +1039,6 @@ Start small:
 ### "Dependencies Aren't Ready"
 
 Options:
-
 - Update to latest versions first
 - Use `@preconcurrency` temporarily
 - Contribute fixes to open-source dependencies
@@ -1084,7 +1047,6 @@ Options:
 ### "I Keep Going in Circles"
 
 This is the "concurrency rabbit hole":
-
 - Take breaks and revisit later
 - Temporarily disable strict checking to make progress elsewhere
 - Focus on one module at a time
@@ -1108,7 +1070,7 @@ Migration to Swift 6 is a journey, not a sprint:
 The result is **compile-time thread safety**, more maintainable code, and a future-proof codebase.
 
 **Additional resources**:
-
 - [Approachable Concurrency Video](https://youtu.be/y_Qc8cT-O_g?si=y4C1XQDGtyIOLW81)
 - [Migration Tooling Video](https://youtu.be/FK9XFxSWZPg?si=2z_ybn1t1YCJow5k)
 - [Swift Concurrency Course](https://www.swiftconcurrencycourse.com) for in-depth migration strategies
+

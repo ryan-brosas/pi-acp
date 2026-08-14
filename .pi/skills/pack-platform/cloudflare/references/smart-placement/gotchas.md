@@ -5,7 +5,6 @@
 **Problem:** Not enough traffic for Smart Placement to analyze.
 
 **Solutions:**
-
 - Ensure Worker receives consistent global traffic
 - Wait longer (analysis takes up to 15 minutes)
 - Send test traffic from multiple global locations
@@ -16,13 +15,11 @@
 **Problem:** `placement_status: "UNSUPPORTED_APPLICATION"`
 
 **Likely Causes:**
-
 - Worker doesn't make backend calls (runs faster at edge)
 - Backend calls are cached (network latency to user more important)
 - Backend service has poor global distribution
 
 **Solutions:**
-
 - Disable Smart Placement for this Worker
 - Review whether Worker actually benefits from Smart Placement
 - Consider caching strategy to reduce backend calls
@@ -32,7 +29,6 @@
 **Problem:** Request duration chart not showing in dashboard.
 
 **Solutions:**
-
 - Ensure Smart Placement enabled in config
 - Wait 15+ minutes after deployment
 - Verify Worker has sufficient traffic
@@ -43,7 +39,6 @@
 **Problem:** Header not present in responses.
 
 **Possible Causes:**
-
 - Smart Placement not enabled
 - Beta feature removed (check latest docs)
 - Worker hasn't been analyzed yet
@@ -55,7 +50,6 @@
 **Impact:** Smart Placement optimizes for backend latency but hurts frontend response time to users.
 
 **Solution:** Split into two Workers:
-
 - Frontend Worker (no Smart Placement) - runs at edge
 - Backend Worker (Smart Placement) - runs near database
 

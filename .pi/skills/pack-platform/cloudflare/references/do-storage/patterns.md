@@ -5,18 +5,12 @@
 ```typescript
 export class MyDurableObject extends DurableObject {
   constructor(ctx: DurableObjectState, env: Env) {
-    super(ctx, env)
-    this.sql = ctx.storage.sql
-    this.sql.exec(`CREATE TABLE IF NOT EXISTS _meta(key TEXT PRIMARY KEY, value TEXT)`)
-    const ver = this.sql.exec("SELECT value FROM _meta WHERE key = 'schema_version'").toArray()[0]?.value || '0'
-    if (ver === '0')
-      this.sql.exec(
-        `CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT); INSERT OR REPLACE INTO _meta VALUES ('schema_version', '1')`
-      )
-    if (ver === '1')
-      this.sql.exec(
-        `ALTER TABLE users ADD COLUMN email TEXT; UPDATE _meta SET value = '2' WHERE key = 'schema_version'`
-      )
+    super(ctx, env);
+    this.sql = ctx.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS _meta(key TEXT PRIMARY KEY, value TEXT)`);
+    const ver = this.sql.exec("SELECT value FROM _meta WHERE key = 'schema_version'").toArray()[0]?.value || "0";
+    if (ver === "0") this.sql.exec(`CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT); INSERT OR REPLACE INTO _meta VALUES ('schema_version', '1')`);
+    if (ver === "1") this.sql.exec(`ALTER TABLE users ADD COLUMN email TEXT; UPDATE _meta SET value = '2' WHERE key = 'schema_version'`);
   }
 }
 ```
@@ -25,18 +19,18 @@ export class MyDurableObject extends DurableObject {
 
 ```typescript
 export class UserCache extends DurableObject {
-  cache = new Map<string, User>()
+  cache = new Map<string, User>();
   async getUser(id: string): Promise<User> {
-    if (this.cache.has(id)) return this.cache.get(id)!
-    const user = await this.ctx.storage.get<User>(`user:${id}`)
-    if (user) this.cache.set(id, user)
-    return user
+    if (this.cache.has(id)) return this.cache.get(id)!;
+    const user = await this.ctx.storage.get<User>(`user:${id}`);
+    if (user) this.cache.set(id, user);
+    return user;
   }
   async updateUser(id: string, data: Partial<User>) {
-    const updated = { ...(await this.getUser(id)), ...data }
-    this.cache.set(id, updated)
-    await this.ctx.storage.put(`user:${id}`, updated)
-    return updated
+    const updated = { ...await this.getUser(id), ...data };
+    this.cache.set(id, updated);
+    await this.ctx.storage.put(`user:${id}`, updated);
+    return updated;
   }
 }
 ```
@@ -46,12 +40,12 @@ export class UserCache extends DurableObject {
 ```typescript
 export class RateLimiter extends DurableObject {
   async checkLimit(key: string, limit: number, window: number): Promise<boolean> {
-    const now = Date.now()
-    this.sql.exec('DELETE FROM requests WHERE key = ? AND timestamp < ?', key, now - window)
-    const count = this.sql.exec('SELECT COUNT(*) as count FROM requests WHERE key = ?', key).one().count
-    if (count >= limit) return false
-    this.sql.exec('INSERT INTO requests (key, timestamp) VALUES (?, ?)', key, now)
-    return true
+    const now = Date.now();
+    this.sql.exec('DELETE FROM requests WHERE key = ? AND timestamp < ?', key, now - window);
+    const count = this.sql.exec('SELECT COUNT(*) as count FROM requests WHERE key = ?', key).one().count;
+    if (count >= limit) return false;
+    this.sql.exec('INSERT INTO requests (key, timestamp) VALUES (?, ?)', key, now);
+    return true;
   }
 }
 ```
@@ -60,18 +54,15 @@ export class RateLimiter extends DurableObject {
 
 ```typescript
 export class BatchProcessor extends DurableObject {
-  pending: string[] = []
+  pending: string[] = [];
   async addItem(item: string) {
-    this.pending.push(item)
-    if (!(await this.ctx.storage.getAlarm())) await this.ctx.storage.setAlarm(Date.now() + 5000)
+    this.pending.push(item);
+    if (!await this.ctx.storage.getAlarm()) await this.ctx.storage.setAlarm(Date.now() + 5000);
   }
   async alarm() {
-    const items = [...this.pending]
-    this.pending = []
-    this.sql.exec(
-      `INSERT INTO processed_items (item, timestamp) VALUES ${items.map(() => '(?, ?)').join(', ')}`,
-      ...items.flatMap(item => [item, Date.now()])
-    )
+    const items = [...this.pending];
+    this.pending = [];
+    this.sql.exec(`INSERT INTO processed_items (item, timestamp) VALUES ${items.map(() => "(?, ?)").join(", ")}`, ...items.flatMap(item => [item, Date.now()]));
   }
 }
 ```
@@ -80,17 +71,15 @@ export class BatchProcessor extends DurableObject {
 
 ```typescript
 export class Counter extends DurableObject {
-  value: number
+  value: number;
   constructor(ctx: DurableObjectState, env: Env) {
-    super(ctx, env)
-    ctx.blockConcurrencyWhile(async () => {
-      this.value = (await ctx.storage.get('value')) || 0
-    })
+    super(ctx, env);
+    ctx.blockConcurrencyWhile(async () => { this.value = (await ctx.storage.get("value")) || 0; });
   }
   async increment() {
-    this.value++
-    this.ctx.storage.put('value', this.value) // Don't await (output gate protects)
-    return this.value
+    this.value++;
+    this.ctx.storage.put("value", this.value); // Don't await (output gate protects)
+    return this.value;
   }
 }
 ```

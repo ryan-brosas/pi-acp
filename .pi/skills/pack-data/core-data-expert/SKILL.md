@@ -1,8 +1,9 @@
 ---
 name: core-data-expert
-description: 'Use when writing, debugging, or optimizing Core Data code on iOS/macOS — fetch requests, migrations, merge conflicts, threading, CloudKit sync. MUST load before any Core Data schema changes or performance work.'
+description: "Use when writing, debugging, or optimizing Core Data code on iOS/macOS — fetch requests, migrations, merge conflicts, threading, CloudKit sync. MUST load before any Core Data schema changes or performance work."
 disable-model-invocation: true
 ---
+
 
 # Core Data Expert
 
@@ -34,11 +35,11 @@ Always use `predicate` (no post-fetch filtering). Use `fetchLimit` and `fetchBat
 
 ## Migration Types
 
-| Type          | Use                                    | When                  |
-| ------------- | -------------------------------------- | --------------------- |
-| Lightweight   | Add attribute, optional → non-optional | Most schema changes   |
-| Mapping model | Rename, transform, split               | Complex changes       |
-| Staged        | Multiple lightweight in sequence       | Versioned deployments |
+| Type | Use | When |
+|---|---|---|
+| Lightweight | Add attribute, optional → non-optional | Most schema changes |
+| Mapping model | Rename, transform, split | Complex changes |
+| Staged | Multiple lightweight in sequence | Versioned deployments |
 
 Lightweight is best. Keep schemas simple to avoid complex migrations.
 

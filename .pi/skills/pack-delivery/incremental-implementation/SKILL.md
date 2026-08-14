@@ -4,11 +4,12 @@ description: Use when implementing any feature, refactor, or change touching mor
 disable-model-invocation: true
 ---
 
+
 # Incremental Implementation
 
 ## Core Principle
 
-**Smallest working change, scoped to known territory.** For novel / design-heavy / unclear work the smallest change is wrong — prototype, show variants, interview, or blindspot-pass _before_ editing. No speculative abstractions, no error handling for impossible scenarios.
+**Smallest working change, scoped to known territory.** For novel / design-heavy / unclear work the smallest change is wrong — prototype, show variants, interview, or blindspot-pass *before* editing. No speculative abstractions, no error handling for impossible scenarios.
 
 **Rule of smallest:** if you cannot describe the next test in one sentence, you are about to write a large patch. Stop and break it down.
 
@@ -24,7 +25,7 @@ Name the **success check before implementing**, then verify after. A "step" is t
 
 1. **Pre-flight** — for novel work: blindspot pass → 2–4 cheap variants → interview (one question) → point at a reference. First edit should be obvious.
 2. **Slice** — pick the smallest next behavior. Skeleton first, one path through the layers.
-3. **RED** — write the failing test _first_ (per `test-driven-development`). If you can't write a failing test, you don't know what you're building.
+3. **RED** — write the failing test *first* (per `test-driven-development`). If you can't write a failing test, you don't know what you're building.
 4. **GREEN** — minimum code to pass. Duplication > one line? Stop, finish the slice, then extract.
 5. **REFACTOR** — close loopholes: name things better, remove seams, keep tests green. No new behavior.
 6. **Verify** — run the named check (typecheck, lint, test, build, probe). Record the result.
@@ -43,7 +44,7 @@ Large patch (>~100 lines) without intermediate test runs; "I'll add tests later"
 
 ## Anti-Patterns
 
-Big-bang patch (write everything, test at the end); premature abstraction (DRYing two call sites when one is speculative); hero commit (15 files, 3 features, 1 PR); "verify by inspection" (read carefully, _believe_ it works — run the check).
+Big-bang patch (write everything, test at the end); premature abstraction (DRYing two call sites when one is speculative); hero commit (15 files, 3 features, 1 PR); "verify by inspection" (read carefully, *believe* it works — run the check).
 
 ## Pi Fabric Boundaries
 

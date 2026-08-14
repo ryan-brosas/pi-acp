@@ -9,49 +9,47 @@
   "pages_build_output_dir": "./dist",
   "compatibility_date": "2024-01-15",
   "compatibility_flags": ["nodejs_compat"],
-
+  
   "vars": { "API_URL": "https://api.example.com" },
-
-  "kv_namespaces": [{ "binding": "KV", "id": "abc123" }],
-
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "production-db",
-      "database_id": "xyz789"
-    }
+  
+  "kv_namespaces": [
+    { "binding": "KV", "id": "abc123" }
   ],
-
-  "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "my-bucket" }],
-
+  
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "production-db",
+    "database_id": "xyz789"
+  }],
+  
+  "r2_buckets": [
+    { "binding": "BUCKET", "bucket_name": "my-bucket" }
+  ],
+  
   "durable_objects": {
-    "bindings": [
-      {
-        "name": "COUNTER",
-        "class_name": "Counter",
-        "script_name": "counter-worker"
-      }
-    ]
+    "bindings": [{
+      "name": "COUNTER",
+      "class_name": "Counter",
+      "script_name": "counter-worker"
+    }]
   },
-
-  "services": [{ "binding": "AUTH", "service": "auth-worker" }],
-
+  
+  "services": [
+    { "binding": "AUTH", "service": "auth-worker" }
+  ],
+  
   "ai": { "binding": "AI" },
-
-  "vectorize": [
-    {
-      "binding": "VECTORIZE",
-      "index_name": "my-index"
-    }
-  ],
-
-  "hyperdrive": [
-    {
-      "binding": "HYPERDRIVE",
-      "id": "hyperdrive-id"
-    }
-  ],
-
+  
+  "vectorize": [{
+    "binding": "VECTORIZE",
+    "index_name": "my-index"
+  }],
+  
+  "hyperdrive": [{
+    "binding": "HYPERDRIVE",
+    "id": "hyperdrive-id"
+  }],
+  
   "analytics_engine_datasets": [{ "binding": "ANALYTICS" }]
 }
 ```
@@ -62,7 +60,7 @@
 {
   "name": "my-app",
   "vars": { "API_URL": "http://localhost:8787" },
-
+  
   "env": {
     "preview": {
       "vars": { "API_URL": "https://preview.example.com" }
@@ -75,7 +73,6 @@
 ```
 
 **Rules:**
-
 - Top-level → local dev
 - `env.preview` → preview deployments
 - `env.production` → production
@@ -93,7 +90,7 @@ API_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
 - Use `vars` for non-sensitive config
 - Environment-specific: `.dev.vars.preview`, `.dev.vars.production`
 
-## \_routes.json (Advanced)
+## _routes.json (Advanced)
 
 Custom routing rules in build output:
 
@@ -105,7 +102,7 @@ Custom routing rules in build output:
 }
 ```
 
-## \_headers (Static)
+## _headers (Static)
 
 ```
 /static/*
@@ -116,7 +113,7 @@ Custom routing rules in build output:
   Access-Control-Allow-Origin: *
 ```
 
-## \_redirects (Static)
+## _redirects (Static)
 
 ```
 /old-page  /new-page  301

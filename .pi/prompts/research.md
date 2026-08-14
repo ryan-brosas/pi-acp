@@ -1,12 +1,11 @@
 ---
 description: Deep research with multi-source verification for a question
-argument-hint: '<question>'
+argument-hint: "<question>"
 ---
 
 # Research: $ARGUMENTS
 
 Run bounded, evidence-driven research on a question and produce a cited report with confidence levels.
-
 > Use for unfamiliar domains, current events, library/docs lookups, or anything needing multi-source verification.
 
 ## Read-only
@@ -16,8 +15,8 @@ approves work; it feeds a later Schema hypothesis evidence set.
 
 ## Parse Arguments
 
-| Argument | Default  | Description                |
-| -------- | -------- | -------------------------- |
+| Argument | Default | Description |
+| --- | --- | --- |
 | Question | required | Research question or topic |
 
 ## Phase 0: Classify and Budget
@@ -38,7 +37,6 @@ Set the Budget: 3-6 angles, one primary route each, a per-source cap (3-5 web re
 ## Phase 1: Plan Angles
 
 Break the question into 3-6 distinct angles. Each angle is a separate search target:
-
 - authoritative docs (official docs, spec, reference)
 - opposing viewpoints (for contested topics)
 - recent developments (what changed in the last 6 months)
@@ -51,7 +49,6 @@ Ask the user to narrow the scope if the question is too broad to answer usefully
 For each angle, use the classified route and the exact discovered action names above. Escalate one step only on a named evidence gap ("the CGC context has no symbols for X", "Context7 lacks this version", "search shortlist lacks a primary source").
 
 For every finding record:
-
 - **Finding:** one-paragraph summary
 - **Source:** exact URL or file:line
 - **Date:** publication/access date
@@ -62,7 +59,6 @@ Never guess URLs. Never fabricate quotes or data. Never retrieve the same eviden
 ## Phase 3: Cross-Check and Stop
 
 Compare findings across angles:
-
 - **Contradictions:** sources that disagree. Try to resolve with a primary source; if unresolvable, report both with confidence levels.
 - **Outliers:** one source claiming something others do not. Flag it rather than silently dropping it.
 - **Freshness:** for current-topic claims, prefer the newest dated source; note when a claim is time-sensitive.
@@ -107,8 +103,8 @@ Schema mode; otherwise → main-session mode.
 
 ## Related Commands
 
-| Need                           | Command   |
-| ------------------------------ | --------- |
+| Need | Command |
+| --- | --- |
 | Create a feature from findings | `/create` |
-| Audit a pattern                | `/audit`  |
-| Verify gates                   | `/verify` |
+| Audit a pattern | `/audit` |
+| Verify gates | `/verify` |

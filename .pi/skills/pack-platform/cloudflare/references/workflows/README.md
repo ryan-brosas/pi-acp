@@ -22,22 +22,23 @@ Durable multi-step applications with automatic retries, state persistence, and l
 ## Quick Start
 
 ```typescript
-import { WorkflowEntrypoint, WorkflowStep, WorkflowEvent } from 'cloudflare:workers'
+import { WorkflowEntrypoint, WorkflowStep, WorkflowEvent } from 'cloudflare:workers';
 
-type Env = { MY_WORKFLOW: Workflow; DB: D1Database }
-type Params = { userId: string }
+type Env = { MY_WORKFLOW: Workflow; DB: D1Database };
+type Params = { userId: string };
 
 export class MyWorkflow extends WorkflowEntrypoint<Env, Params> {
   async run(event: WorkflowEvent<Params>, step: WorkflowStep) {
     const user = await step.do('fetch user', async () => {
-      return await this.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(event.payload.userId).first()
-    })
-
-    await step.sleep('wait 7 days', '7 days')
-
+      return await this.env.DB.prepare('SELECT * FROM users WHERE id = ?')
+        .bind(event.payload.userId).first();
+    });
+    
+    await step.sleep('wait 7 days', '7 days');
+    
     await step.do('send reminder', async () => {
-      await sendEmail(user.email, 'Reminder!')
-    })
+      await sendEmail(user.email, 'Reminder!');
+    });
   }
 }
 ```

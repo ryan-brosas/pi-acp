@@ -67,12 +67,8 @@ function useKeyboardShortcut(key: string, callback: () => void) {
 
 function Profile() {
   // Multiple shortcuts will share the same listener
-  useKeyboardShortcut('p', () => {
-    /* ... */
-  })
-  useKeyboardShortcut('k', () => {
-    /* ... */
-  })
+  useKeyboardShortcut('p', () => { /* ... */ }) 
+  useKeyboardShortcut('k', () => { /* ... */ })
   // ...
 }
 ```

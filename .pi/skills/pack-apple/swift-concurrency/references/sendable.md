@@ -35,7 +35,7 @@ Dedicated isolation domain with serialized access:
 ```swift
 actor Library {
     var books: [String] = []
-
+    
     func addBook(_ title: String) {
         books.append(title)
     }
@@ -76,7 +76,7 @@ DispatchQueue.global().async { counter += 1 }
 ```swift
 actor Counter {
     private var value = 0
-
+    
     func increment() {
         value += 1
     }
@@ -171,7 +171,6 @@ Each mutation creates a copy, preventing concurrent access to same instance.
 ### Requirements for Sendable classes
 
 Must be:
-
 1. `final` (no inheritance)
 2. Immutable stored properties only
 3. All properties Sendable
@@ -181,7 +180,7 @@ Must be:
 final class User: Sendable {
     let name: String
     let id: Int
-
+    
     init(name: String, id: Int) {
         self.name = name
         self.id = id
@@ -285,13 +284,13 @@ Manual locking mechanisms the compiler can't verify:
 final class Cache: @unchecked Sendable {
     private let lock = NSLock()
     private var items: [String: Data] = [:]
-
+    
     func get(_ key: String) -> Data? {
         lock.lock()
         defer { lock.unlock() }
         return items[key]
     }
-
+    
     func set(_ key: String, value: Data) {
         lock.lock()
         defer { lock.unlock() }
@@ -310,7 +309,7 @@ final class Cache: @unchecked Sendable {
 final class Cache: @unchecked Sendable {
     private let lock = NSLock()
     private var items: [String: Data] = [:]
-
+    
     // [!]️ Forgot lock - data race!
     var count: Int {
         items.count
@@ -323,13 +322,13 @@ final class Cache: @unchecked Sendable {
 ```swift
 actor Cache {
     private var items: [String: Data] = [:]
-
+    
     var count: Int { items.count }
-
+    
     func get(_ key: String) -> Data? {
         items[key]
     }
-
+    
     func set(_ key: String, value: Data) {
         items[key] = value
     }
@@ -350,7 +349,7 @@ class Article {
 
 func check() {
     let article = Article(title: "Swift")
-
+    
     Task {
         print(article.title) // [x] OK - same region
     }
@@ -364,11 +363,11 @@ func check() {
 ```swift
 func check() {
     let article = Article(title: "Swift")
-
+    
     Task {
         print(article.title)
     }
-
+    
     print(article.title) // [ ] Error - accessed after transfer
 }
 ```
@@ -446,7 +445,7 @@ final class ImageCache: Sendable {
 ```swift
 struct APIProvider: Sendable {
     nonisolated(unsafe) static private(set) var shared: APIProvider!
-
+    
     static func configure(apiURL: URL) {
         shared = APIProvider(apiURL: apiURL)
     }
@@ -465,13 +464,13 @@ Use `private(set)` to limit mutation points.
 final class BankAccount: @unchecked Sendable {
     private var balance: Int = 0
     private let lock = NSLock()
-
+    
     func deposit(amount: Int) {
         lock.lock()
         balance += amount
         lock.unlock()
     }
-
+    
     func getBalance() -> Int {
         lock.lock()
         defer { lock.unlock() }
@@ -484,8 +483,7 @@ final class BankAccount: @unchecked Sendable {
 
 **New code**: Use actors
 
-**Existing code**:
-
+**Existing code**: 
 1. If isolated and small scope → migrate to actor
 2. If widely used → use `@unchecked Sendable`, file migration ticket
 
@@ -493,11 +491,11 @@ final class BankAccount: @unchecked Sendable {
 // Better: Migrate to actor
 actor BankAccount {
     private var balance: Int = 0
-
+    
     func deposit(amount: Int) {
         balance += amount
     }
-
+    
     func getBalance() -> Int {
         balance
     }
@@ -533,7 +531,7 @@ Need to share type across isolation domains?
 // Instead of storing non-Sendable type
 public struct Person: Sendable {
     var hometown: String // Just the name
-
+    
     init(hometown: Location) {
         self.hometown = hometown.name
     }
@@ -546,7 +544,7 @@ public struct Person: Sendable {
 // Instead of @unchecked Sendable with locks
 actor Cache {
     private var items: [String: Data] = [:]
-
+    
     func get(_ key: String) -> Data? {
         items[key]
     }
@@ -577,3 +575,4 @@ class ViewModel: ObservableObject {
 ## Further Learning
 
 For migration strategies, real-world examples, and actor patterns, see [Swift Concurrency Course](https://www.swiftconcurrencycourse.com).
+

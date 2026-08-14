@@ -1,7 +1,6 @@
 # Workerd Configuration
 
 ## Basic Structure
-
 ```capnp
 using Workerd = import "/workerd/workerd.capnp";
 
@@ -18,9 +17,7 @@ const mainWorker :Workerd.Worker = (
 ```
 
 ## Services
-
 **Worker**: Run JS/Wasm code
-
 ```capnp
 (name = "api", worker = (
   modules = [(name = "index.js", esModule = embed "index.js")],
@@ -30,25 +27,21 @@ const mainWorker :Workerd.Worker = (
 ```
 
 **Network**: Internet access
-
 ```capnp
 (name = "internet", network = (allow = ["public"], tlsOptions = (trustBrowserCas = true)))
 ```
 
 **External**: Reverse proxy
-
 ```capnp
 (name = "backend", external = (address = "api.com:443", http = (style = tls)))
 ```
 
 **Disk**: Static files
-
 ```capnp
 (name = "assets", disk = (path = "/var/www", writable = false))
 ```
 
 ## Sockets
-
 ```capnp
 # HTTP
 (name = "http", address = "*:8080", http = (), service = "main")
@@ -66,9 +59,7 @@ const mainWorker :Workerd.Worker = (
 ```
 
 ## Worker Formats
-
 **ES Modules** (recommended):
-
 ```capnp
 modules = [
   (name = "index.js", esModule = embed "src/index.js"),
@@ -78,23 +69,19 @@ modules = [
 ```
 
 **Service Worker**:
-
 ```capnp
 serviceWorkerScript = embed "worker.js"
 ```
 
 **CommonJS**:
-
 ```capnp
 (name = "legacy.js", commonJsModule = embed "legacy.js", namedExports = ["foo"])
 ```
 
 ## Bindings
-
 Bindings expose resources to workers. ES modules: `env.BINDING`, Service workers: globals.
 
 ### Primitive Types
-
 ```capnp
 (name = "API_KEY", text = "secret")                    # String
 (name = "CONFIG", json = '{"key":"val"}')              # Parsed JSON
@@ -103,7 +90,6 @@ Bindings expose resources to workers. ES modules: `env.BINDING`, Service workers
 ```
 
 ### Service Binding
-
 ```capnp
 (name = "AUTH", service = "auth-worker")               # Basic
 (name = "API", service = (
@@ -114,7 +100,6 @@ Bindings expose resources to workers. ES modules: `env.BINDING`, Service workers
 ```
 
 ### Storage
-
 ```capnp
 (name = "CACHE", kvNamespace = "kv-service")           # KV
 (name = "STORAGE", r2Bucket = "r2-service")            # R2
@@ -129,7 +114,6 @@ Bindings expose resources to workers. ES modules: `env.BINDING`, Service workers
 ```
 
 ### Other
-
 ```capnp
 (name = "TASKS", queue = "queue-service")              # Queue
 (name = "ANALYTICS", analyticsEngine = "analytics")    # Analytics
@@ -149,7 +133,6 @@ Bindings expose resources to workers. ES modules: `env.BINDING`, Service workers
 ```
 
 ## Compatibility
-
 ```capnp
 compatibilityDate = "2024-01-15"                       # Always set!
 compatibilityFlags = ["nodejs_compat", "streams_enable_constructors"]
@@ -158,7 +141,6 @@ compatibilityFlags = ["nodejs_compat", "streams_enable_constructors"]
 Version = max compat date. Update carefully after testing.
 
 ## Parameter Bindings (Inheritance)
-
 ```capnp
 const base :Workerd.Worker = (
   modules = [...],
@@ -179,7 +161,6 @@ const derived :Workerd.Worker = (
 ```
 
 ## Durable Objects Config
-
 ```capnp
 const worker :Workerd.Worker = (
   modules = [...],
@@ -191,7 +172,6 @@ const worker :Workerd.Worker = (
 ```
 
 ## Logging & Debugging
-
 ```capnp
 logging = (
   structuredLogging = true,

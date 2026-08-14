@@ -25,14 +25,15 @@
 **Problem:** `Cannot find module`
 
 **Fix:**
-
 ```js
 // Use absolute paths or modulesRules
 new Miniflare({
-  scriptPath: './src/index.js',
+  scriptPath: "./src/index.js",
   modules: true,
-  modulesRules: [{ type: 'ESModule', include: ['**/*.js'], fallthrough: true }]
-})
+  modulesRules: [
+    { type: "ESModule", include: ["**/*.js"], fallthrough: true },
+  ],
+});
 ```
 
 ### Persistence Not Working
@@ -40,14 +41,13 @@ new Miniflare({
 **Problem:** Data not persisting between runs
 
 **Fix:**
-
 ```js
 // Ensure persist paths are directories, not files
 new Miniflare({
-  kvPersist: './data/kv', // Directory
-  r2Persist: './data/r2',
-  durableObjectsPersist: './data/do'
-})
+  kvPersist: "./data/kv",           // Directory
+  r2Persist: "./data/r2",
+  durableObjectsPersist: "./data/do",
+});
 ```
 
 ### TypeScript Workers
@@ -55,17 +55,16 @@ new Miniflare({
 **Problem:** Cannot directly run TypeScript
 
 **Fix:**
-
 ```js
 // Build before running
-import { spawnSync } from 'node:child_process'
+import { spawnSync } from "node:child_process";
 
 before(() => {
-  const result = spawnSync('npm run build', { shell: true })
-  if (result.error) throw result.error
-})
+  const result = spawnSync("npm run build", { shell: true });
+  if (result.error) throw result.error;
+});
 
-new Miniflare({ scriptPath: 'dist/worker.js' })
+new Miniflare({ scriptPath: "dist/worker.js" });
 ```
 
 ### Request.cf Undefined
@@ -73,13 +72,12 @@ new Miniflare({ scriptPath: 'dist/worker.js' })
 **Problem:** `request.cf` is undefined in worker
 
 **Fix:**
-
 ```js
 new Miniflare({
   cf: true, // Fetch from Cloudflare
   // Or provide custom
-  cf: './cf.json'
-})
+  cf: "./cf.json",
+});
 ```
 
 ### Port Already in Use
@@ -87,15 +85,14 @@ new Miniflare({
 **Problem:** `EADDRINUSE` error
 
 **Fix:**
-
 ```js
 // Don't specify port for testing - use dispatchFetch
 new Miniflare({
-  scriptPath: 'worker.js'
+  scriptPath: "worker.js",
   // No port/host
-})
+});
 
-const res = await mf.dispatchFetch('http://localhost/')
+const res = await mf.dispatchFetch("http://localhost/");
 ```
 
 ### Durable Object Not Found
@@ -103,7 +100,6 @@ const res = await mf.dispatchFetch('http://localhost/')
 **Problem:** `ReferenceError: Counter is not defined`
 
 **Fix:**
-
 ```js
 // Ensure DO class is exported
 new Miniflare({
@@ -113,40 +109,36 @@ new Miniflare({
     export default { /* ... */ }
   `,
   durableObjects: {
-    COUNTER: 'Counter' // Must match export name
-  }
-})
+    COUNTER: "Counter", // Must match export name
+  },
+});
 ```
 
 ## Debugging Tips
 
 **Enable debug logging:**
-
 ```js
-import { Log, LogLevel } from 'miniflare'
-new Miniflare({ log: new Log(LogLevel.DEBUG) })
+import { Log, LogLevel } from "miniflare";
+new Miniflare({ log: new Log(LogLevel.DEBUG) });
 ```
 
 **Check binding names match:**
-
 ```js
-const bindings = await mf.getBindings()
-console.log(Object.keys(bindings))
+const bindings = await mf.getBindings();
+console.log(Object.keys(bindings));
 ```
 
 **Verify storage directly:**
-
 ```js
-const ns = await mf.getKVNamespace('TEST')
-const keys = await ns.list()
-console.log(keys)
+const ns = await mf.getKVNamespace("TEST");
+const keys = await ns.list();
+console.log(keys);
 ```
 
 **Test HTTP server separately:**
-
 ```js
 // Use dispatchFetch for tests, not HTTP server
-const res = await mf.dispatchFetch('http://localhost/')
+const res = await mf.dispatchFetch("http://localhost/");
 ```
 
 ## Migration Notes
@@ -154,20 +146,18 @@ const res = await mf.dispatchFetch('http://localhost/')
 ### From Wrangler Dev to Miniflare
 
 **Wrangler:**
-
 ```bash
 wrangler dev
 ```
 
 **Miniflare:**
-
 ```js
 new Miniflare({
-  scriptPath: 'dist/worker.js',
+  scriptPath: "dist/worker.js",
   // Manually configure bindings (doesn't read wrangler.toml)
-  kvNamespaces: ['KV'],
-  bindings: { API_KEY: '...' }
-})
+  kvNamespaces: ["KV"],
+  bindings: { API_KEY: "..." },
+});
 ```
 
 **Note:** Miniflare doesn't read `wrangler.toml` - configure everything via API.
@@ -175,7 +165,6 @@ new Miniflare({
 ### From Miniflare 2 to 3
 
 Major changes:
-
 - Different API surface
 - Better workerd integration
 - Changed persistence options
@@ -184,7 +173,6 @@ Major changes:
 ## When to Use
 
 **Use Miniflare when:**
-
 - Writing integration tests for Workers
 - Testing Worker bindings/storage locally
 - Testing multiple Workers with service bindings
@@ -192,7 +180,6 @@ Major changes:
 - Dispatch events without HTTP
 
 **Use Wrangler instead for:**
-
 - Standard development workflow
 - Quick local dev server
 - Production deployments

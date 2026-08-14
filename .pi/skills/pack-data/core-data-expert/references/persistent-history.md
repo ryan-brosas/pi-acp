@@ -5,13 +5,11 @@ Persistent history tracking enables Core Data to track changes across contexts, 
 ## Why Persistent History Tracking?
 
 **Without persistent history tracking:**
-
 - Batch operations don't update UI
 - App extensions can't notify main app of changes
 - Multiple contexts don't stay synchronized
 
 **With persistent history tracking:**
-
 - All changes are recorded in a transaction log
 - Changes can be merged into any context
 - Works across app targets (main app, extensions, etc.)
@@ -24,19 +22,19 @@ Persistent history tracking enables Core Data to track changes across contexts, 
 class PersistentContainer: NSPersistentContainer {
     override init(name: String, managedObjectModel model: NSManagedObjectModel) {
         super.init(name: name, managedObjectModel: model)
-
+        
         guard let description = persistentStoreDescriptions.first else {
             fatalError("No store description")
         }
-
+        
         // Enable persistent history tracking
         description.setOption(true as NSNumber,
                             forKey: NSPersistentHistoryTrackingKey)
-
+        
         // Enable remote change notifications
         description.setOption(true as NSNumber,
                             forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-
+        
         loadPersistentStores { description, error in
             if let error = error {
                 fatalError("Failed to load store: \(error)")
@@ -108,32 +106,32 @@ final class PersistentHistoryObserver {
 class PersistentHistoryFetcher {
     private let context: NSManagedObjectContext
     private let lastToken: NSPersistentHistoryToken?
-
+    
     init(context: NSManagedObjectContext, lastToken: NSPersistentHistoryToken?) {
         self.context = context
         self.lastToken = lastToken
     }
-
+    
     func fetch() throws -> [NSPersistentHistoryTransaction] {
         let fetchRequest = createFetchRequest()
-
+        
         guard let historyResult = try context.execute(fetchRequest) as? NSPersistentHistoryResult,
               let transactions = historyResult.result as? [NSPersistentHistoryTransaction] else {
             return []
         }
-
+        
         return transactions
     }
-
+    
     private func createFetchRequest() -> NSPersistentHistoryChangeRequest {
         let request: NSPersistentHistoryChangeRequest
-
+        
         if let token = lastToken {
             request = NSPersistentHistoryChangeRequest.fetchHistory(after: token)
         } else {
             request = NSPersistentHistoryChangeRequest.fetchHistory(after: Date.distantPast)
         }
-
+        
         // Filter out transactions from this app target
         if let fetchRequest = request.fetchRequest {
             fetchRequest.predicate = NSPredicate(
@@ -141,7 +139,7 @@ class PersistentHistoryFetcher {
                 "MainApp" // Your app's transaction author
             )
         }
-
+        
         return request
     }
 }
@@ -192,7 +190,7 @@ final class PersistentHistoryMerger {
             NSManagedObjectContext.mergeChanges(fromRemoteContextSave: userInfo, into: [viewContext])
         }
     }
-
+    
     private func loadLastToken() -> NSPersistentHistoryToken? {
         guard let data = UserDefaults.standard.data(forKey: "lastHistoryToken") else {
             return nil
@@ -202,7 +200,7 @@ final class PersistentHistoryMerger {
             from: data
         )
     }
-
+    
     private func saveLastToken(_ token: NSPersistentHistoryToken) {
         if let data = try? NSKeyedArchiver.archivedData(
             withRootObject: token,
@@ -220,12 +218,12 @@ final class PersistentHistoryMerger {
 class PersistentHistoryCleaner {
     private let context: NSManagedObjectContext
     private let targets: [AppTarget]
-
+    
     enum AppTarget {
         case mainApp
         case shareExtension
         case widgetExtension
-
+        
         var lastTokenKey: String {
             switch self {
             case .mainApp: return "mainApp.lastHistoryToken"
@@ -234,20 +232,20 @@ class PersistentHistoryCleaner {
             }
         }
     }
-
+    
     init(context: NSManagedObjectContext, targets: [AppTarget]) {
         self.context = context
         self.targets = targets
     }
-
+    
     func clean() {
         context.perform {
             // Find the oldest token across all targets
             guard let oldestToken = self.findOldestToken() else { return }
-
+            
             // Delete history before that token
             let deleteRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: oldestToken)
-
+            
             do {
                 try self.context.execute(deleteRequest)
             } catch {
@@ -255,34 +253,34 @@ class PersistentHistoryCleaner {
             }
         }
     }
-
+    
     private func findOldestToken() -> NSPersistentHistoryToken? {
         var oldestDate: Date?
         var oldestToken: NSPersistentHistoryToken?
-
+        
         for target in targets {
             guard let token = loadToken(for: target) else { continue }
-
+            
             // Get timestamp from token (requires fetching transaction)
             let historyRequest = NSPersistentHistoryChangeRequest.fetchHistory(after: token)
             historyRequest.fetchRequest?.fetchLimit = 1
-
+            
             guard let result = try? context.execute(historyRequest) as? NSPersistentHistoryResult,
                   let transactions = result.result as? [NSPersistentHistoryTransaction],
                   let transaction = transactions.first else {
                 continue
             }
-
+            
             let date = transaction.timestamp
             if oldestDate == nil || date < oldestDate! {
                 oldestDate = date
                 oldestToken = token
             }
         }
-
+        
         return oldestToken
     }
-
+    
     private func loadToken(for target: AppTarget) -> NSPersistentHistoryToken? {
         guard let data = UserDefaults.standard.data(forKey: target.lastTokenKey) else {
             return nil
@@ -300,19 +298,19 @@ class PersistentHistoryCleaner {
 ```swift
 class CoreDataStack {
     static let shared = CoreDataStack()
-
+    
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Model")
-
+        
         // Configure store
         guard let description = container.persistentStoreDescriptions.first else {
             fatalError("No store description")
         }
-
+        
         // Enable persistent history tracking
         description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-
+        
         container.loadPersistentStores { description, error in
             if let error = error {
                 fatalError("Failed to load store: \(error)")
@@ -320,24 +318,24 @@ class CoreDataStack {
 
             self.setupHistoryTracking(container: container)
         }
-
+        
         // Configure view context
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.name = "ViewContext"
         container.viewContext.transactionAuthor = "MainApp"
-
+        
         return container
     }()
-
+    
     private var historyObserver: PersistentHistoryObserver?
-
+    
     private init() {}
-
+    
     private func setupHistoryTracking(container: NSPersistentContainer) {
         historyObserver = PersistentHistoryObserver(container: container, viewContext: container.viewContext)
         cleanHistoryPeriodically(container: container)
     }
-
+    
     private func cleanHistoryPeriodically(container: NSPersistentContainer) {
         Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { _ in
             let context = container.newBackgroundContext()
@@ -367,7 +365,6 @@ viewContext.transactionAuthor = "WidgetExtension"
 ```
 
 **Why this matters:**
-
 - Filter out your own transactions (avoid redundant merges)
 - Identify which target made changes
 - Debug multi-target issues
@@ -428,27 +425,27 @@ func testPersistentHistory() throws {
     // Enable persistent history
     let description = container.persistentStoreDescriptions.first!
     description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-
+    
     // Create object in background
     let backgroundContext = container.newBackgroundContext()
     backgroundContext.transactionAuthor = "Test"
-
+    
     let expectation = XCTestExpectation(description: "Save")
-
+    
     backgroundContext.perform {
         let article = Article(context: backgroundContext)
         article.name = "Test"
         try? backgroundContext.save()
         expectation.fulfill()
     }
-
+    
     wait(for: [expectation], timeout: 5.0)
-
+    
     // Fetch history
     let fetchRequest = NSPersistentHistoryChangeRequest.fetchHistory(after: Date.distantPast)
     let result = try container.viewContext.execute(fetchRequest) as? NSPersistentHistoryResult
     let transactions = result?.result as? [NSPersistentHistoryTransaction]
-
+    
     XCTAssertNotNil(transactions)
     XCTAssertFalse(transactions!.isEmpty)
 }

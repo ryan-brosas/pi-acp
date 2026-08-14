@@ -4,6 +4,7 @@ description: Use when preparing to merge, deploy, release, or declare a developm
 disable-model-invocation: true
 ---
 
+
 # Shipping & Launch
 
 ## Overview
@@ -49,12 +50,12 @@ Core principle: do not ship work that cannot be verified, explained, or rolled b
 
 ## Common Rationalizations
 
-| Rationalization               | Rebuttal                                                               |
-| ----------------------------- | ---------------------------------------------------------------------- |
-| "Tests passed earlier"        | Fresh changes require fresh evidence or a valid unchanged-state stamp. |
-| "Rollback is just git revert" | Migrations, flags, queues, and external state may need more.           |
-| "Docs can wait"               | Shipped behavior without docs becomes support debt.                    |
-| "Small release, no checklist" | Small releases still leak secrets and break config.                    |
+| Rationalization | Rebuttal |
+| --- | --- |
+| "Tests passed earlier" | Fresh changes require fresh evidence or a valid unchanged-state stamp. |
+| "Rollback is just git revert" | Migrations, flags, queues, and external state may need more. |
+| "Docs can wait" | Shipped behavior without docs becomes support debt. |
+| "Small release, no checklist" | Small releases still leak secrets and break config. |
 
 ## Red Flags
 
@@ -84,6 +85,7 @@ Core principle: do not ship work that cannot be verified, explained, or rolled b
   <risks>Open findings, skipped checks, deployment risk, or none</risks>
 </skill_result>
 ```
+
 
 ## Consolidated Branch Completion
 

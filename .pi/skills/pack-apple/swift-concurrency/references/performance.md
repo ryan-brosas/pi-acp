@@ -43,7 +43,6 @@ Tasks waiting on busy actor, causing unnecessary suspensions.
 Profile with CMD + I → Select "Swift Concurrency" template.
 
 **Instruments included**:
-
 - **Swift Tasks**: Track running, alive, total tasks
 - **Swift Actors**: Show actor execution and queue size
 
@@ -164,7 +163,6 @@ let data = await fetchData() // May suspend
 ### Suspension surface area
 
 Code between suspension points. Larger = harder to reason about:
-
 - Actor invariants
 - Performance
 - Thread hops
@@ -331,7 +329,6 @@ Task { @concurrent in
 ### Decision checklist
 
 **Use async/parallel if**:
-
 - [ ] Blocks main actor visibly (>16ms)
 - [ ] Scales with data (N items → N cost)
 - [ ] Involves I/O (network, disk)
@@ -350,7 +347,6 @@ func processData(_ data: Data) -> Result {
 ```
 
 **Only move to async if**:
-
 - Instruments show main thread hang
 - User reports sluggishness
 - Work scales with input size
@@ -390,13 +386,11 @@ await withTaskGroup(of: Result.self) { group in
 ### Tradeoffs
 
 **Benefits**:
-
 - Faster completion (if CPU-bound)
 - Better resource utilization
 - Improved responsiveness
 
 **Costs**:
-
 - Increased memory pressure
 - CPU scheduling overhead
 - System resource saturation
@@ -441,13 +435,13 @@ func process() async {
 @MainActor
 func loadItems() async {
     isLoading = true
-
+    
     for i in 0..<100 {
         let item = await fetchItem(i)
         items.append(item)
         progress = Double(i) / 100 // Incremental updates
     }
-
+    
     isLoading = false
 }
 ```
@@ -577,3 +571,4 @@ actor Store {
 ## Further Learning
 
 For real-world optimization examples, profiling techniques, and advanced performance patterns, see [Swift Concurrency Course](https://www.swiftconcurrencycourse.com).
+

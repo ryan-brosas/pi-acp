@@ -1,7 +1,6 @@
 ## Configuration Methods
 
 ### 1. Dashboard (GUI)
-
 ```
 1. Go to zone → Rules → Snippets
 2. Create Snippet or select template
@@ -14,7 +13,6 @@
 ```
 
 ### 2. API
-
 ```bash
 # Create/update snippet
 curl "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/snippets/$SNIPPET_NAME" \
@@ -32,5 +30,4 @@ curl "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/snippets/snippet_rules
       {
         "description": "Trigger snippet on specific cookie",
         "enabled": true,
-        "expression": "http.cookie eq
-```
+        "expression": "http.cookie eq 

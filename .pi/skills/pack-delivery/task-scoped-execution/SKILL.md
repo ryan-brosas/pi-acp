@@ -68,11 +68,11 @@ Simulated delegation; per-station commit churn; acceptance by inspection; unboun
 
 ## Common Rationalizations
 
-| Rationalization                     | Rebuttal                                                 |
-| ----------------------------------- | -------------------------------------------------------- |
-| "It works, skip the acceptance run" | Unrun checks are claims, not evidence.                   |
-| "One more round will converge"      | Past the cap, rounds stop converging. Adjudicate.        |
-| "I can fake a subagent call"        | Delegation is unsupported; the executor is this session. |
+| Rationalization | Rebuttal |
+| --- | --- |
+| "It works, skip the acceptance run" | Unrun checks are claims, not evidence. |
+| "One more round will converge" | Past the cap, rounds stop converging. Adjudicate. |
+| "I can fake a subagent call" | Delegation is unsupported; the executor is this session. |
 
 ## Skill Result Contract
 

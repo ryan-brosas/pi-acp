@@ -51,9 +51,9 @@ Use `<dialog>` with the `inert` attribute — eliminates complex focus-trapping 
 <main id="content">…</main>
 
 <script>
-  const modal = document.getElementById('modal')
-  modal.showModal()
-  document.getElementById('content').inert = true
+  const modal = document.getElementById("modal");
+  modal.showModal();
+  document.getElementById("content").inert = true;
 </script>
 ```
 
@@ -63,10 +63,7 @@ For tooltips, dropdowns, and popovers — light-dismiss, proper stacking, access
 
 ```html
 <button popovertarget="menu">Options</button>
-<div
-  id="menu"
-  popover
->
+<div id="menu" popover>
   <button>Edit</button>
   <button>Delete</button>
 </div>
@@ -115,7 +112,7 @@ Visual size can be small; tap target must be 44x44px minimum:
 }
 
 .icon-button::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -10px; /* Expands tap area to 44x44 */
 }

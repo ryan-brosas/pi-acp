@@ -1,6 +1,6 @@
 ---
 name: php-development
-description: 'Use when writing or reviewing PHP - modern PHP 8 features, Composer, Laravel or Symfony conventions, and PHPUnit testing.'
+description: "Use when writing or reviewing PHP - modern PHP 8 features, Composer, Laravel or Symfony conventions, and PHPUnit testing."
 disable-model-invocation: true
 ---
 

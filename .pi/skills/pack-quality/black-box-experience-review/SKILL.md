@@ -1,6 +1,6 @@
 ---
 name: black-box-experience-review
-description: 'Use when reviewing an app as a black box for observable experience failures across journeys, seams, states, and recovery before shipping or after changes.'
+description: "Use when reviewing an app as a black box for observable experience failures across journeys, seams, states, and recovery before shipping or after changes."
 disable-model-invocation: true
 license: MIT
 metadata: '{"source":"close adaptation: browserbase/skills ui-test (MIT, verified via DeepWiki; skills/ui-test/SKILL.md, references/ux-heuristics.md, references/adversarial-patterns.md); synthesis: antigravity-awesome-skills (MIT) api-onboarding, sdk-dx, ux-copy, e2e-testing-patterns; concepts only: plugin87/ux-ui-agent-skills severity taxonomy (license unverified, discovery evidence)"}'

@@ -26,4 +26,3 @@ export const cfClient = new Cloudflare({
 
 // Wrap common operations
 export async function
-```

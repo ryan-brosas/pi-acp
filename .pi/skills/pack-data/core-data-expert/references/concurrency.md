@@ -7,7 +7,6 @@ Thread-safe patterns for using Core Data with Swift Concurrency.
 ### Thread safety still matters
 
 Core Data's thread safety rules don't change with Swift Concurrency:
-
 - Can't pass `NSManagedObject` between threads
 - Must access objects on their context's thread
 - `NSManagedObjectID` is thread-safe (can pass around)
@@ -36,7 +35,6 @@ extension NSManagedObjectContext {
 ### What's missing
 
 No async alternative for:
-
 ```swift
 func loadPersistentStores(
     completionHandler: @escaping (NSPersistentStoreDescription, Error?) -> Void
@@ -64,7 +62,7 @@ struct ArticleDAO: Sendable, Identifiable {
     let id: NSManagedObjectID
     let title: String
     let timestamp: Date
-
+    
     init?(managedObject: Article) {
         guard let title = managedObject.title,
               let timestamp = managedObject.timestamp else {
@@ -221,20 +219,20 @@ func deleteAll() async throws {
 ```swift
 final class NSManagedObjectContextExecutor: @unchecked Sendable, SerialExecutor {
     private let context: NSManagedObjectContext
-
+    
     init(context: NSManagedObjectContext) {
         self.context = context
     }
-
+    
     func enqueue(_ job: consuming ExecutorJob) {
         let unownedJob = UnownedJob(job)
         let executor = asUnownedSerialExecutor()
-
+        
         context.perform {
             unownedJob.runSynchronously(on: executor)
         }
     }
-
+    
     func asUnownedSerialExecutor() -> UnownedSerialExecutor {
         UnownedSerialExecutor(ordinary: self)
     }
@@ -248,17 +246,17 @@ actor CoreDataStore {
     let persistentContainer: NSPersistentContainer
     private let context: NSManagedObjectContext
     nonisolated let modelExecutor: NSManagedObjectContextExecutor
-
+    
     nonisolated var unownedExecutor: UnownedSerialExecutor {
         modelExecutor.asUnownedSerialExecutor()
     }
-
+    
     private init() {
         persistentContainer = NSPersistentContainer(name: "MyApp")
         context = persistentContainer.newBackgroundContext()
         modelExecutor = NSManagedObjectContextExecutor(context: context)
     }
-
+    
     func deleteAll<T: NSManagedObject>(
         using request: NSFetchRequest<T>
     ) throws {
@@ -375,7 +373,7 @@ func deleteAllArticles() async throws {
 @main
 struct MyApp: App {
     let persistentContainer = NSPersistentContainer(name: "MyApp")
-
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -393,7 +391,7 @@ struct ContentView: View {
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Article.timestamp, ascending: true)]
     ) private var articles: FetchedResults<Article>
-
+    
     var body: some View {
         List(articles) { article in
             Text(article.title ?? "")
@@ -520,6 +518,5 @@ func save() async {
 ## Further Learning
 
 For Core Data best practices, migration strategies, and advanced patterns:
-
 - [Core Data Best Practices Repository](https://github.com/avanderlee/CoreDataBestPractices)
 - [Swift Concurrency Course](https://www.swiftconcurrencycourse.com)

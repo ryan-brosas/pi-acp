@@ -1,8 +1,9 @@
 ---
 name: code-cleanup
-description: 'Use when behavior works but the diff is noisy, repetitive, over-complicated, or AI-shaped - lock behavior first, simplify the changed code, and re-verify without expanding scope.'
+description: "Use when behavior works but the diff is noisy, repetitive, over-complicated, or AI-shaped - lock behavior first, simplify the changed code, and re-verify without expanding scope."
 disable-model-invocation: true
 ---
+
 
 # Code Cleanup
 
@@ -50,7 +51,7 @@ Cleanup before tests pass; "I just want to refactor this"; expanding into unrela
 ## Self-Quiz
 
 - Is behavior locked (tests + typecheck + lint passing before)?
-- Is each change _deletion or simplification_, not addition?
+- Is each change *deletion or simplification*, not addition?
 - Did I re-run the same checks after, and compare to baseline?
 - Are all changes scoped to what was actually noisy?
 - Did I avoid renaming public APIs or restructuring unrelated code?

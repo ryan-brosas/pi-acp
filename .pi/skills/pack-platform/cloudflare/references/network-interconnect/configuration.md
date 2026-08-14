@@ -19,7 +19,6 @@ See [README.md](./README.md) for overview.
 ## BGP Configuration
 
 **v1 Requirements:**
-
 - BGP ASN (provide during setup)
 - /31 subnet for peering
 - Optional: BGP password
@@ -27,7 +26,6 @@ See [README.md](./README.md) for overview.
 **v2:** Simplified, less BGP config needed.
 
 **Example v1 BGP:**
-
 ```
 Router ID: 192.0.2.1
 Peer IP: 192.0.2.0
@@ -44,7 +42,6 @@ VLAN: 100
 **Requirements:** Magic WAN, AWS Dedicated Direct Connect 1/10 Gbps.
 
 **Process:**
-
 1. Contact CF account team
 2. Choose location
 3. Order in AWS portal
@@ -57,7 +54,6 @@ VLAN: 100
 ### GCP Cloud Interconnect (Beta)
 
 **Setup via Dashboard:**
-
 1. Interconnects → Create → Cloud Interconnect → Google
 2. Provide name, MTU (match GCP VLAN attachment), speed
 3. Enter VLAN attachment pairing key
@@ -70,7 +66,6 @@ VLAN: 100
 ## Monitoring
 
 **Dashboard Status:**
-
 - **Active**: Link up, sufficient light, Ethernet negotiated
 - **Unhealthy**: Link down, no/low light (<-20 dBm), can't negotiate
 - **Pending**: Cross-connect incomplete, device unresponsive, RX/TX swapped
@@ -78,17 +73,14 @@ VLAN: 100
 **Alerts:**
 
 **CNI Connection Maintenance** (Magic Networking only):
-
 ```
 Dashboard → Notifications → Add
 Product: Cloudflare Network Interconnect
 Type: Connection Maintenance Alert
 ```
-
 Warnings up to 2 weeks advance. 6hr delay for new additions.
 
 **Cloudflare Status Maintenance** (entire PoP):
-
 ```
 Dashboard → Notifications → Add
 Product: Cloudflare Status
@@ -96,7 +88,6 @@ Filter PoPs: gru,fra,lhr
 ```
 
 **Find PoP code:**
-
 ```
 Dashboard → Magic Transit/WAN → Configuration → Interconnects
 Select CNI → Note Data Center (e.g., "gru-b")
@@ -106,34 +97,29 @@ Use first 3 letters: "gru"
 ## Best Practices
 
 **Design:**
-
 - Choose locations with device diversity
 - Plan redundancy from start
 - Select appropriate dataplane for use case
 - Document capacity + growth
 
 **Ordering:**
-
 - Verify facility codes match LOA
 - Confirm single-mode fiber
 - Check optic types (10GBASE-LR/100GBASE-LR4)
 
 **Config:**
-
 - /31 subnets
 - BGP passwords
 - BFD for v1
 - Test ping before BGP
 
 **Production:**
-
 - Enable maintenance notifications immediately
 - Monitor status programmatically
 - Test backup connectivity regularly
 - Document escalation paths
 
 **Security:**
-
 - Minimum API token permissions
 - Rotate BGP passwords
 - BGP route filtering

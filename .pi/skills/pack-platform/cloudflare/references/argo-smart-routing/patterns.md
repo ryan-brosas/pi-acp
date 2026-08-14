@@ -5,33 +5,33 @@ Combine Argo Smart Routing with Tiered Cache for maximum performance:
 **Endpoint:** `PATCH /zones/{zone_id}/argo/tiered_caching`
 
 **Benefits:**
-
 - Argo optimizes routing between edge and origin
 - Tiered Cache reduces origin requests via cache hierarchy
 - Combined: optimal network path + reduced origin load
 
 **Enable Both Services:**
-
 ```typescript
-async function enableArgoWithTieredCache(client: Cloudflare, zoneId: string) {
+async function enableArgoWithTieredCache(
+  client: Cloudflare,
+  zoneId: string
+) {
   // Enable Argo Smart Routing
   await client.argo.smartRouting.edit({
     zone_id: zoneId,
-    value: 'on'
-  })
+    value: 'on',
+  });
 
   // Enable Tiered Caching
   await client.argo.tieredCaching.edit({
     zone_id: zoneId,
-    value: 'on'
-  })
+    value: 'on',
+  });
 
-  console.log('Argo Smart Routing and Tiered Cache enabled')
+  console.log('Argo Smart Routing and Tiered Cache enabled');
 }
 ```
 
 **Architecture Flow:**
-
 ```
 Visitor → Edge Data Center (Lower-Tier)
          ↓ [Cache Miss]

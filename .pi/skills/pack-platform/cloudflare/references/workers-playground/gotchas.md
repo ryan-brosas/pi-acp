@@ -1,7 +1,6 @@
 ## Best Practices
 
 ### 1. Use Async/Await
-
 Always use `async/await` for cleaner asynchronous code:
 
 ```javascript
@@ -25,14 +24,12 @@ export default {
 ```
 
 ### 2. Clone Responses Before Reading
-
 Response bodies can only be read once:
 
 ```javascript
 export default {
   async fetch(request, env, ctx) {
     const response = await fetch('https://api.example.com');
-
+    
     // Clone before caching
     ctx.waitUntil(cach
-```

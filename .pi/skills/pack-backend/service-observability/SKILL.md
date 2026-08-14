@@ -1,6 +1,6 @@
 ---
 name: service-observability
-description: 'Use when adding observability to services - structured logs, metrics, distributed tracing, health checks, and correlation IDs.'
+description: "Use when adding observability to services - structured logs, metrics, distributed tracing, health checks, and correlation IDs."
 disable-model-invocation: true
 ---
 

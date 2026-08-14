@@ -47,14 +47,14 @@ uses it. Every value carries version or command evidence.
 Verify each command before recording it. A command that does not exist is
 recorded as "none" with the probe result.
 
-| Command            | Status         | Purpose   | Verified          |
-| ------------------ | -------------- | --------- | ----------------- |
-| [install]          | [works / none] | [purpose] | [date, exit code] |
-| [test]             | [works / none] | [purpose] | [date, exit code] |
-| [lint]             | [works / none] | [purpose] | [date, exit code] |
-| [typecheck]        | [works / none] | [purpose] | [date, exit code] |
-| [build]            | [works / none] | [purpose] | [date, exit code] |
-| [format]           | [works / none] | [purpose] | [date, exit code] |
+| Command | Status | Purpose | Verified |
+| --- | --- | --- | --- |
+| [install] | [works / none] | [purpose] | [date, exit code] |
+| [test] | [works / none] | [purpose] | [date, exit code] |
+| [lint] | [works / none] | [purpose] | [date, exit code] |
+| [typecheck] | [works / none] | [purpose] | [date, exit code] |
+| [build] | [works / none] | [purpose] | [date, exit code] |
+| [format] | [works / none] | [purpose] | [date, exit code] |
 | [validation gates] | [works / none] | [purpose] | [date, exit code] |
 
 ## CI

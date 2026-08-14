@@ -1,8 +1,9 @@
 ---
 name: chrome-devtools
-description: 'Use when inspecting, screenshotting, or verifying UI behavior via Chrome DevTools Protocol for agent-legible UI verification - bug reproduction, visual validation, DOM inspection.'
+description: "Use when inspecting, screenshotting, or verifying UI behavior via Chrome DevTools Protocol for agent-legible UI verification - bug reproduction, visual validation, DOM inspection."
 disable-model-invocation: true
 ---
+
 
 # Chrome DevTools — Agent-Legible UI Verification
 
@@ -109,7 +110,6 @@ After any UI change, the agent should verify:
 ## Remediation
 
 If UI verification fails:
-
 1. Check the browser console for errors (see `console.error` calls)
 2. Check if the app needs specific environment variables
 3. Verify the correct port is being used

@@ -60,8 +60,8 @@ or the user.
 
 ## Runtime Entrypoints
 
-| Entrypoint        | Kind                                                     | Path   | Purpose   | Config source |
-| ----------------- | -------------------------------------------------------- | ------ | --------- | ------------- |
+| Entrypoint | Kind | Path | Purpose | Config source |
+| --- | --- | --- | --- | --- |
 | [e.g. web server] | [server / CLI / worker / scheduled job / event consumer] | [path] | [purpose] | [config path] |
 
 If no application runtime exists, say so and list operator or tool entrypoints instead.
@@ -90,9 +90,9 @@ If no application runtime exists, say so and list operator or tool entrypoints i
 
 ## External Integrations
 
-| Service   | Auth                  | Docs  | Rate limits    | Error handling |
-| --------- | --------------------- | ----- | -------------- | -------------- |
-| [service] | [env var / mechanism] | [URL] | [known limits] | [pattern]      |
+| Service | Auth | Docs | Rate limits | Error handling |
+| --- | --- | --- | --- | --- |
+| [service] | [env var / mechanism] | [URL] | [known limits] | [pattern] |
 
 ## Deployment Topology
 
@@ -120,8 +120,8 @@ If no application runtime exists, say so and list operator or tool entrypoints i
 
 For each realistic failure, record symptom, root cause, detection, and recovery:
 
-| Failure   | Symptom   | Detection        | Recovery               |
-| --------- | --------- | ---------------- | ---------------------- |
+| Failure | Symptom | Detection | Recovery |
+| --- | --- | --- | --- |
 | [failure] | [symptom] | [check or alarm] | [procedure or command] |
 
 ## Architectural Invariants
@@ -137,9 +137,9 @@ Rules that must never be violated:
 Significant architectural decisions, each linking to its record (ADR or decision
 entry). Format: decision, date, rationale, alternatives considered.
 
-| Date   | Decision   | Rationale | Alternatives        | Record                |
-| ------ | ---------- | --------- | ------------------- | --------------------- |
-| [date] | [decision] | [why]     | [what was rejected] | [ADR link or section] |
+| Date | Decision | Rationale | Alternatives | Record |
+| --- | --- | --- | --- | --- |
+| [date] | [decision] | [why] | [what was rejected] | [ADR link or section] |
 
 ## Known Risks and Hotspots
 
@@ -149,8 +149,8 @@ entry). Format: decision, date, rationale, alternatives considered.
 
 ## Open Questions
 
-| Question   | Context            | Blocking | Priority       |
-| ---------- | ------------------ | -------- | -------------- |
+| Question | Context | Blocking | Priority |
+| --- | --- | --- | --- |
 | [question] | [where it came up] | [yes/no] | [high/med/low] |
 
 ## Evidence

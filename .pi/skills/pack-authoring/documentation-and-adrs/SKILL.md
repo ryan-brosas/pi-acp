@@ -4,6 +4,7 @@ description: Use when writing technical documentation, Architecture Decision Rec
 disable-model-invocation: true
 ---
 
+
 # Documentation & ADRs
 
 ## When to Use
@@ -69,31 +70,24 @@ Don't mix levels. A guide is not an ADR. A runbook is not a guide.
 
 ```markdown
 # Project Name
-
 [One sentence: what is this?]
 
 ## Why
-
 [One paragraph: why does this exist? What problem does it solve?]
 
 ## Install
-
 [Exact commands. Tested on a fresh machine.]
 
 ## Usage
-
 [Smallest working example.]
 
 ## Architecture
-
 [One diagram or paragraph. Link to ARCHITECTURE.md for details.]
 
 ## Contributing
-
 [Link to CONTRIBUTING.md. Or inline if small.]
 
 ## License
-
 [SPDX identifier.]
 ```
 

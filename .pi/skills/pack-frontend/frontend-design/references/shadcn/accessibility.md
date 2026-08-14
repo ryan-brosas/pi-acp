@@ -9,7 +9,6 @@ Built-in: keyboard navigation, screen reader announcements, focus management, AR
 ## Keyboard Navigation
 
 ### Focus Management
-
 ```tsx
 <Button className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
 
@@ -20,11 +19,9 @@ Built-in: keyboard navigation, screen reader announcements, focus management, AR
 ```
 
 ### Dialog
-
 Focus trapped automatically. Esc closes, Tab cycles.
 
 ### Dropdown/Menu
-
 - Space/Enter: Open
 - Arrow Up/Down: Navigate
 - Esc: Close
@@ -33,7 +30,6 @@ Focus trapped automatically. Esc closes, Tab cycles.
 ## Screen Reader
 
 ### ARIA Labels
-
 ```tsx
 <Button aria-label="Close dialog"><X /></Button>
 <Input aria-label="Email address" type="email" />
@@ -43,7 +39,6 @@ Focus trapped automatically. Esc closes, Tab cycles.
 ```
 
 ### Screen Reader Only
-
 ```tsx
 <Button>
   <Trash className="h-4 w-4" />
@@ -52,7 +47,6 @@ Focus trapped automatically. Esc closes, Tab cycles.
 ```
 
 ### Live Regions
-
 ```tsx
 <div aria-live="polite">{message}</div>
 <div aria-live="assertive">{error}</div>
@@ -61,21 +55,18 @@ Focus trapped automatically. Esc closes, Tab cycles.
 ## Forms
 
 ### Labels
-
 ```tsx
 <Label htmlFor="email">Email</Label>
 <Input id="email" type="email" />
 ```
 
 ### Validation
-
 ```tsx
 <Input aria-invalid={!!error} aria-describedby={error ? "email-error" : undefined} />
 <FormMessage id="email-error" />
 ```
 
 ### Required Fields
-
 ```tsx
 <Label htmlFor="name">
   Name <span className="text-destructive">*</span>
@@ -84,7 +75,6 @@ Focus trapped automatically. Esc closes, Tab cycles.
 ```
 
 ### Fieldset
-
 ```tsx
 <fieldset>
   <legend className="text-lg font-semibold mb-4">Contact Info</legend>
@@ -108,7 +98,6 @@ WCAG AA: 4.5:1 normal text, 3:1 large text.
 ## Focus Indicators
 
 Always visible:
-
 ```tsx
 <Button className="focus-visible:ring-2 focus-visible:ring-ring">
 
@@ -120,10 +109,7 @@ Always visible:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 ```
 

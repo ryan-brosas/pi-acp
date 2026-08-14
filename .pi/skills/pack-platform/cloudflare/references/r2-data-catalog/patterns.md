@@ -44,4 +44,3 @@ log_data = pa.table({
 })
 
 logs_table.appen
-```

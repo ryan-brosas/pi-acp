@@ -8,13 +8,13 @@
   "name": "my-worker",
   "main": "src/index.ts",
   "compatibility_date": "2025-01-01", // Use current date for new projects
-
+  
   // Bindings (non-inheritable)
   "vars": { "ENVIRONMENT": "production" },
   "kv_namespaces": [{ "binding": "MY_KV", "id": "abc123" }],
   "r2_buckets": [{ "binding": "MY_BUCKET", "bucket_name": "my-bucket" }],
   "d1_databases": [{ "binding": "DB", "database_name": "my-db", "database_id": "xyz789" }],
-
+  
   // Environments
   "env": {
     "staging": {
@@ -39,30 +39,30 @@
 {
   // Environment variables - access via env.VAR_NAME
   "vars": { "ENVIRONMENT": "production" },
-
+  
   // KV (key-value storage)
   "kv_namespaces": [{ "binding": "MY_KV", "id": "abc123" }],
-
+  
   // R2 (object storage)
   "r2_buckets": [{ "binding": "MY_BUCKET", "bucket_name": "my-bucket" }],
-
+  
   // D1 (SQL database)
   "d1_databases": [{ "binding": "DB", "database_name": "my-db", "database_id": "xyz789" }],
-
+  
   // Durable Objects (stateful coordination)
   "durable_objects": {
     "bindings": [{ "name": "COUNTER", "class_name": "Counter" }]
   },
-
+  
   // Queues (message queues)
   "queues": {
     "producers": [{ "binding": "MY_QUEUE", "queue": "my-queue" }],
     "consumers": [{ "queue": "my-queue", "max_batch_size": 10 }]
   },
-
+  
   // Service bindings (worker-to-worker RPC)
   "services": [{ "binding": "SERVICE_B", "service": "service-b" }],
-
+  
   // Analytics Engine
   "analytics_engine_datasets": [{ "binding": "ANALYTICS" }]
 }
@@ -83,16 +83,18 @@ Access: `env.API_KEY`
 Bindings without IDs are auto-created:
 
 ```jsonc
-{ "kv_namespaces": [{ "binding": "MY_KV" }] } // ID added on deploy
+{ "kv_namespaces": [{ "binding": "MY_KV" }] }  // ID added on deploy
 ```
 
 ## Routes & Triggers
 
 ```jsonc
 {
-  "routes": [{ "pattern": "example.com/*", "zone_name": "example.com" }],
+  "routes": [
+    { "pattern": "example.com/*", "zone_name": "example.com" }
+  ],
   "triggers": {
-    "crons": ["0 */6 * * *"] // Every 6 hours
+    "crons": ["0 */6 * * *"]  // Every 6 hours
   }
 }
 ```
@@ -109,9 +111,9 @@ Define environment interface:
 
 ```typescript
 interface Env {
-  MY_KV: KVNamespace
-  DB: D1Database
-  API_KEY: string
+  MY_KV: KVNamespace;
+  DB: D1Database;
+  API_KEY: string;
 }
 ```
 
@@ -121,10 +123,10 @@ interface Env {
 {
   // Auto-locate compute near data sources
   "placement": { "mode": "smart" },
-
+  
   // Enable Node.js built-ins
   "compatibility_flags": ["nodejs_compat_v2"],
-
+  
   // Observability (10% sampling)
   "observability": { "enabled": true, "head_sampling_rate": 0.1 }
 }

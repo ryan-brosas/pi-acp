@@ -1,6 +1,6 @@
 ---
 name: pack-data
-description: 'Data and persistence router: Supabase, Postgres best practices, Core Data, Polar, Resend.'
+description: "Data and persistence router: Supabase, Postgres best practices, Core Data, Polar, Resend."
 ---
 
 # Pack: Data

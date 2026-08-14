@@ -4,6 +4,7 @@ description: Use when profiling, optimizing, or adding performance budgets to ap
 disable-model-invocation: true
 ---
 
+
 # Performance Optimization
 
 ## Iron Laws
@@ -36,13 +37,13 @@ Premature optimization; "I think this is slow"; "make it faster" without target;
 
 ## Core Web Vitals
 
-| Metric | Target  | What                 |
-| ------ | ------- | -------------------- |
-| LCP    | < 2.5s  | Main content renders |
-| INP    | < 200ms | Interaction response |
-| CLS    | < 0.1   | Visual stability     |
-| TTFB   | < 800ms | Server response      |
-| FCP    | < 1.8s  | First render         |
+| Metric | Target | What |
+|---|---|---|
+| LCP | < 2.5s | Main content renders |
+| INP | < 200ms | Interaction response |
+| CLS | < 0.1 | Visual stability |
+| TTFB | < 800ms | Server response |
+| FCP | < 1.8s | First render |
 
 LCP + INP + CLS are the "Core" (Google ranks on these).
 
@@ -56,13 +57,13 @@ N+1 queries (use joins or batch); sync I/O in async path; no caching; pool too s
 
 ## Profiling Tools
 
-| Domain  | Tool                                          |
-| ------- | --------------------------------------------- |
-| Web     | DevTools Performance, Lighthouse, WebPageTest |
-| React   | React DevTools Profiler, why-did-you-render   |
-| Node    | `node --prof`, clinic.js, 0x                  |
-| DB      | `EXPLAIN ANALYZE`, pg_stat_statements         |
-| General | flame graphs, OpenTelemetry                   |
+| Domain | Tool |
+|---|---|
+| Web | DevTools Performance, Lighthouse, WebPageTest |
+| React | React DevTools Profiler, why-did-you-render |
+| Node | `node --prof`, clinic.js, 0x |
+| DB | `EXPLAIN ANALYZE`, pg_stat_statements |
+| General | flame graphs, OpenTelemetry |
 
 ## Anti-Patterns
 

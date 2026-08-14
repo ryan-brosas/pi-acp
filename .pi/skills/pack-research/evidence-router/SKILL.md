@@ -1,6 +1,6 @@
 ---
 name: evidence-router
-description: 'Use when choosing a bounded retrieval route for local code, inspiration repositories, GitHub overviews, library docs, or current web facts.'
+description: "Use when choosing a bounded retrieval route for local code, inspiration repositories, GitHub overviews, library docs, or current web facts."
 disable-model-invocation: true
 ---
 
@@ -12,15 +12,15 @@ than guessing a provider action.
 
 ## Routes
 
-| Need                        | Tool                                                                 | Budget               |
-| --------------------------- | -------------------------------------------------------------------- | -------------------- |
-| Active-project code         | `extensions.fovea_sketch` → `extensions.fovea_focus`                 | bounded by query     |
-| Inspiration discovery       | `cgc find content "<domain>" --context "<inspo-root>"`               | one meta query       |
-| Inspiration repository      | `cgc find name/content ... --context "<inspo-root>/<repo>"`          | one repo per query   |
-| GitHub repository overview  | `mcp.deepwiki.get-deepwiki-index` → `mcp.deepwiki.get-deepwiki-page` | one index + one page |
-| Library or API docs         | `mcp.context7.resolve-library-id` → `mcp.context7.query-docs`        | max three topics     |
-| Current facts and discovery | `extensions.openai_websearch`                                        | 3–5 cited results    |
-| Selected page content       | a discovered read-only fetch/crawl capability                        | selected URLs only   |
+| Need | Tool | Budget |
+| --- | --- | --- |
+| Active-project code | `extensions.fovea_sketch` → `extensions.fovea_focus` | bounded by query |
+| Inspiration discovery | `cgc find content "<domain>" --context "<inspo-root>"` | one meta query |
+| Inspiration repository | `cgc find name/content ... --context "<inspo-root>/<repo>"` | one repo per query |
+| GitHub repository overview | `mcp.deepwiki.get-deepwiki-index` → `mcp.deepwiki.get-deepwiki-page` | one index + one page |
+| Library or API docs | `mcp.context7.resolve-library-id` → `mcp.context7.query-docs` | max three topics |
+| Current facts and discovery | `extensions.openai_websearch` | 3–5 cited results |
+| Selected page content | a discovered read-only fetch/crawl capability | selected URLs only |
 
 ## Escalation Order
 
@@ -71,9 +71,9 @@ and confidence. Unknowns stay `[NEEDS CLARIFICATION: reason]`; no source, no
 claim.
 
 <skill_result>
-<skill>evidence-router</skill>
-<status>success|partial|blocked|failure</status>
-<evidence>One primary route, named gaps, bounded calls, compact evidence records</evidence>
-<artifacts>Routed evidence ledger</artifacts>
-<risks>Duplicate retrieval, unbounded expansion, unavailable capability, or none</risks>
+  <skill>evidence-router</skill>
+  <status>success|partial|blocked|failure</status>
+  <evidence>One primary route, named gaps, bounded calls, compact evidence records</evidence>
+  <artifacts>Routed evidence ledger</artifacts>
+  <risks>Duplicate retrieval, unbounded expansion, unavailable capability, or none</risks>
 </skill_result>

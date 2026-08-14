@@ -383,7 +383,6 @@ select count(*) from pg_stat_activity;  -- 10 connections
 ```
 
 Pool modes:
-
 - **Transaction mode**: connection returned after each transaction (best for most apps)
 - **Session mode**: connection held for entire session (needed for prepared statements, temp tables)
 
@@ -718,7 +717,6 @@ drop table events_2023_01;  -- Instant vs DELETE taking hours
 ```
 
 When to partition:
-
 - Tables > 100M rows
 - Time-series data with date-based queries
 - Need to efficiently drop old data
@@ -772,7 +770,6 @@ create table events (
 ```
 
 Guidelines:
-
 - Single database: `bigint identity` (sequential, 8 bytes, SQL-standard)
 - Distributed/exposed IDs: UUIDv7 (requires pg_uuidv7) or ULID (time-ordered, no
   fragmentation)
@@ -780,7 +777,7 @@ Guidelines:
   applications
 - Avoid random UUIDs (v4) as primary keys on large tables (causes index
   fragmentation)
-  [Identity Columns](https://www.postgresql.org/docs/current/sql-createtable.html#SQL-CREATETABLE-PARMS-GENERATED-IDENTITY)
+[Identity Columns](https://www.postgresql.org/docs/current/sql-createtable.html#SQL-CREATETABLE-PARMS-GENERATED-IDENTITY)
 
 ---
 

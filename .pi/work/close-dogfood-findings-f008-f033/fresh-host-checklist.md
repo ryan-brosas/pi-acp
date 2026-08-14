@@ -4,7 +4,7 @@
 - **[warn]** PID 8218 started 1124s ago, before the dist rebuild 2026-08-14T01:49:53.728Z — stale bundle (F-008)
 - **[warn]** PID 11298 started 854s ago, before the dist rebuild 2026-08-14T01:49:53.728Z — stale bundle (F-008)
 - **[warn]** PID 30770 started 185s ago, before the dist rebuild 2026-08-14T01:49:53.728Z — stale bundle (F-008)
-- **[todo]** start a fresh chat, then confirm: new PID; initialize.agentInfo.\_meta.piAcp.build.revision matches the on-disk bundle; SSE discovery; tool counts; an IDE tool call; inspection ids; cancel; restore; shutdown (F-033 runbook)
+- **[todo]** start a fresh chat, then confirm: new PID; initialize.agentInfo._meta.piAcp.build.revision matches the on-disk bundle; SSE discovery; tool counts; an IDE tool call; inspection ids; cancel; restore; shutdown (F-033 runbook)
 - **[unavailable]** IDE inspection/SSE tools are not exposed to this headless executor; inspection evidence must be captured from the fresh chat (F-030)
 
 ## Fresh-chat checklist (F-033)

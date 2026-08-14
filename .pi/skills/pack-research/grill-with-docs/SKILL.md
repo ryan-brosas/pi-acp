@@ -4,6 +4,7 @@ description: Use when user wants to stress-test a plan against their project's l
 disable-model-invocation: true
 ---
 
+
 ## Read-only default and mutation boundary
 
 This skill is a research/interview workflow. Writing `CONTEXT.md`, `docs/adr/`, or any other file is a mutation: in this repository it requires the Schema loop (`schema.hypothesize → verify → commit`) or explicit user approval of the exact files before writing. ADR format follows pack-authoring's `documentation-and-adrs` (structured ADR); the minimal form in `ADR-FORMAT.md` is only for small, low-stakes entries.

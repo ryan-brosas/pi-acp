@@ -55,7 +55,7 @@ final class AppConfig {
 
 struct SettingsView: View {
     @State private var config = AppConfig()
-
+    
     var body: some View {
         VStack {
             ThemeSelector(theme: config.theme)
@@ -67,7 +67,7 @@ struct SettingsView: View {
 // Avoid - passing entire config
 struct SettingsView: View {
     @State private var config = AppConfig()
-
+    
     var body: some View {
         VStack {
             ThemeSelector(config: config)  // Gets notified of ALL config changes
@@ -112,7 +112,7 @@ ExpensiveView(data: data)
 struct FastView: View {
     let title: String
     let count: Int
-
+    
     var body: some View {
         Text("\(title): \(count)")
     }
@@ -122,7 +122,7 @@ struct FastView: View {
 struct SlowerView: View {
     let title: String
     @State private var isExpanded = false  // Property wrapper makes it non-POD
-
+    
     var body: some View {
         Text(title)
     }
@@ -135,7 +135,7 @@ struct SlowerView: View {
 // POD wrapper for fast diffing
 struct ExpensiveView: View {
     let value: Int
-
+    
     var body: some View {
         ExpensiveViewInternal(value: value)
     }
@@ -145,7 +145,7 @@ struct ExpensiveView: View {
 private struct ExpensiveViewInternal: View {
     let value: Int
     @State private var item: Item?
-
+    
     var body: some View {
         // Expensive rendering
     }
@@ -206,10 +206,10 @@ struct DataView: View {
 struct DebugView: View {
     @State private var count = 0
     @State private var name = ""
-
+    
     var body: some View {
         let _ = Self._printChanges()  // Prints what caused body to be called
-
+        
         VStack {
             Text("Count: \(count)")
             Text("Name: \(name)")
@@ -237,7 +237,7 @@ final class AppModel {
 struct ItemRow: View {
     @Environment(AppModel.self) private var model
     let item: Item
-
+    
     var body: some View {
         // Updates when ANY property of model changes
         Text(item.name)
@@ -249,7 +249,7 @@ struct ItemRow: View {
 struct ItemRow: View {
     let item: Item
     let themeColor: Color  // Only depends on what it needs
-
+    
     var body: some View {
         Text(item.name)
             .foregroundStyle(themeColor)
@@ -323,11 +323,11 @@ var body: some View {
 @MainActor
 final class ItemsViewModel {
     var items: [Item] = []
-
+    
     var sortedItems: [Item] {
         items.sorted { $0.name < $1.name }
     }
-
+    
     func loadItems() async {
         items = await fetchItems()
     }
@@ -335,7 +335,7 @@ final class ItemsViewModel {
 
 struct ItemsView: View {
     @State private var viewModel = ItemsViewModel()
-
+    
     var body: some View {
         List(viewModel.sortedItems) { item in
             Text(item.name)

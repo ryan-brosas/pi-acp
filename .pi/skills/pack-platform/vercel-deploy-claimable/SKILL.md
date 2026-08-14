@@ -1,8 +1,9 @@
 ---
 name: vercel-deploy-claimable
-description: 'Use when the user requests a Vercel deployment action like deploy my app, deploy to production, create a preview deployment, or push this live. Returns a preview URL and a claimable deployment link.'
+description: "Use when the user requests a Vercel deployment action like deploy my app, deploy to production, create a preview deployment, or push this live. Returns a preview URL and a claimable deployment link."
 disable-model-invocation: true
 ---
+
 
 # Vercel Deploy
 
@@ -14,10 +15,10 @@ disable-model-invocation: true
 
 - When deployment is not requested or targets a non-Vercel platform.
 
+
 ## Prerequisite
 
 This skill needs a local deploy helper script. Resolve its path from `$VERCEL_DEPLOY_SCRIPT` or ask the user — never assume a machine-specific path (for example `/mnt/skills/...`). The helper must:
-
 - Exclude secret files (`.env*`, credentials, key files) from the upload in addition to `node_modules` and `.git`.
 - Never mutate the input tree in place (stage a temporary copy if it needs to rename or transform files).
 - Show the exact command it runs before executing.

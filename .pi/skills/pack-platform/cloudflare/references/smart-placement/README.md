@@ -9,14 +9,12 @@ Smart Placement automatically analyzes Worker request duration across Cloudflare
 ### When to Use
 
 **Enable Smart Placement when:**
-
 - Worker makes multiple round trips to backend services/databases
 - Backend infrastructure is geographically concentrated
 - Request duration dominated by backend latency rather than network latency from user
 - Running backend logic in Workers (APIs, data aggregation, SSR with DB calls)
 
 **Do NOT enable for:**
-
 - Workers serving only static content or cached responses
 - Workers without significant backend communication
 - Pure edge logic (auth checks, redirects, simple transformations)
@@ -25,7 +23,6 @@ Smart Placement automatically analyzes Worker request duration across Cloudflare
 ### Key Architecture Pattern
 
 **Recommended:** Split full-stack applications into separate Workers:
-
 ```
 User → Frontend Worker (at edge, close to user)
          ↓ Service Binding
@@ -57,11 +54,11 @@ Deploy and wait 15 minutes for analysis. Check status via API or dashboard metri
 ## Placement Status Values
 
 ```typescript
-type PlacementStatus =
-  | undefined // Not yet analyzed
-  | 'SUCCESS' // Successfully optimized
-  | 'INSUFFICIENT_INVOCATIONS' // Not enough traffic
-  | 'UNSUPPORTED_APPLICATION' // Made Worker slower (reverted)
+type PlacementStatus = 
+  | undefined  // Not yet analyzed
+  | 'SUCCESS'  // Successfully optimized
+  | 'INSUFFICIENT_INVOCATIONS'  // Not enough traffic
+  | 'UNSUPPORTED_APPLICATION';  // Made Worker slower (reverted)
 ```
 
 ## CLI Commands

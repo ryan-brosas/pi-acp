@@ -8,6 +8,7 @@
 
 - When MCP-based browser control is required instead of a CLI workflow.
 
+
 ## Installation
 
 ```bash

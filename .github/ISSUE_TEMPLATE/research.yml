@@ -1,7 +1,7 @@
 name: Research
 description: Evidence-driven investigation before implementation
-title: '[research]: '
-labels: ['question']
+title: "[research]: "
+labels: ["question"]
 body:
   - type: textarea
     id: question
@@ -28,6 +28,6 @@ body:
     id: artifact
     attributes:
       label: Artifact path
-      description: '.pi/work/<issue>-<slug>/research.md once /research persists findings.'
+      description: ".pi/work/<issue>-<slug>/research.md once /research persists findings."
     validations:
       required: false

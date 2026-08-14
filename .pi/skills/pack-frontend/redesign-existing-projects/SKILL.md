@@ -1,8 +1,9 @@
 ---
 name: redesign-existing-projects
-description: 'Use when upgrading an existing website or app to premium visual quality - audits the current design, identifies generic AI patterns, and applies high-end standards without breaking functionality.'
+description: "Use when upgrading an existing website or app to premium visual quality - audits the current design, identifies generic AI patterns, and applies high-end standards without breaking functionality."
 disable-model-invocation: true
 ---
+
 
 # Redesign Existing Projects
 
@@ -18,18 +19,18 @@ disable-model-invocation: true
 
 ## Audit: What to Look For
 
-| Tells                 | Example                                 |
-| --------------------- | --------------------------------------- |
-| AI-default colors     | Pastel rainbow, "AI purple", neon       |
-| AI-default typography | Multiple families, random weights       |
-| Generic layouts       | Centered hero with abstract gradient    |
-| Stock-feel copy       | "Welcome to our amazing platform"       |
-| Inconsistent spacing  | Magic numbers, no scale                 |
-| Lorem Ipsum           | Sample data in production pages         |
-| Missing focus states  | Buttons without `:focus-visible`        |
-| Card overload         | Shadow + border + bg on everything      |
-| Animation defaults    | Bounces, transitions on everything      |
-| "Premium" gestures    | Gold gradients, glass blurs, no purpose |
+| Tells | Example |
+|---|---|
+| AI-default colors | Pastel rainbow, "AI purple", neon |
+| AI-default typography | Multiple families, random weights |
+| Generic layouts | Centered hero with abstract gradient |
+| Stock-feel copy | "Welcome to our amazing platform" |
+| Inconsistent spacing | Magic numbers, no scale |
+| Lorem Ipsum | Sample data in production pages |
+| Missing focus states | Buttons without `:focus-visible` |
+| Card overload | Shadow + border + bg on everything |
+| Animation defaults | Bounces, transitions on everything |
+| "Premium" gestures | Gold gradients, glass blurs, no purpose |
 
 ## Audit Process
 
@@ -54,7 +55,6 @@ disable-model-invocation: true
 ## Component-by-Component Migration
 
 For each component:
-
 1. Define the new version (token-driven)
 2. Implement in isolation (Storybook or similar)
 3. Ship behind a feature flag if possible

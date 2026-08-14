@@ -59,12 +59,12 @@ import {
   Text,
   Button,
   Tailwind,
-  pixelBasedPreset
-} from '@react-email/components'
+  pixelBasedPreset,
+} from "@react-email/components";
 
 interface WelcomeEmailProps {
-  name: string
-  verificationUrl: string
+  name: string;
+  verificationUrl: string;
 }
 
 export default function WelcomeEmail({ name, verificationUrl }: WelcomeEmailProps) {
@@ -76,10 +76,10 @@ export default function WelcomeEmail({ name, verificationUrl }: WelcomeEmailProp
           theme: {
             extend: {
               colors: {
-                brand: '#007bff'
-              }
-            }
-          }
+                brand: "#007bff",
+              },
+            },
+          },
         }}
       >
         <Head />
@@ -98,15 +98,15 @@ export default function WelcomeEmail({ name, verificationUrl }: WelcomeEmailProp
         </Body>
       </Tailwind>
     </Html>
-  )
+  );
 }
 
 WelcomeEmail.PreviewProps = {
-  name: 'John Doe',
-  verificationUrl: 'https://example.com/verify/abc123'
-} satisfies WelcomeEmailProps
+  name: "John Doe",
+  verificationUrl: "https://example.com/verify/abc123",
+} satisfies WelcomeEmailProps;
 
-export { WelcomeEmail }
+export { WelcomeEmail };
 ```
 
 ## Essential Components
@@ -166,51 +166,40 @@ export { WelcomeEmail }
 ### Convert to HTML
 
 ```tsx
-import { render } from '@react-email/components'
-import { WelcomeEmail } from './emails/welcome'
+import { render } from "@react-email/components";
+import { WelcomeEmail } from "./emails/welcome";
 
 const html = await render(
-  <WelcomeEmail
-    name="John"
-    verificationUrl="https://example.com/verify"
-  />
-)
+  <WelcomeEmail name="John" verificationUrl="https://example.com/verify" />,
+);
 ```
 
 ### Convert to Plain Text
 
 ```tsx
 const text = await render(
-  <WelcomeEmail
-    name="John"
-    verificationUrl="https://example.com/verify"
-  />,
-  { plainText: true }
-)
+  <WelcomeEmail name="John" verificationUrl="https://example.com/verify" />,
+  { plainText: true },
+);
 ```
 
 ## Sending with Resend
 
 ```tsx
-import { Resend } from 'resend'
-import { WelcomeEmail } from './emails/welcome'
+import { Resend } from "resend";
+import { WelcomeEmail } from "./emails/welcome";
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const { data, error } = await resend.emails.send({
-  from: 'Acme <onboarding@resend.dev>',
-  to: ['user@example.com'],
-  subject: 'Welcome to Acme',
-  react: (
-    <WelcomeEmail
-      name="John"
-      verificationUrl="https://example.com/verify"
-    />
-  )
-})
+  from: "Acme <onboarding@resend.dev>",
+  to: ["user@example.com"],
+  subject: "Welcome to Acme",
+  react: <WelcomeEmail name="John" verificationUrl="https://example.com/verify" />,
+});
 
 if (error) {
-  console.error('Failed to send:', error)
+  console.error("Failed to send:", error);
 }
 ```
 
@@ -221,7 +210,9 @@ Resend accepts React components directly. It automatically generates a plain-tex
 ### Responsive Container
 
 ```tsx
-<Container className="max-w-xl mx-auto p-5">{/* Content stays centered and readable on all devices */}</Container>
+<Container className="max-w-xl mx-auto p-5">
+  {/* Content stays centered and readable on all devices */}
+</Container>
 ```
 
 ### Two-Column Layout
@@ -255,17 +246,11 @@ Resend accepts React components directly. It automatically generates a plain-tex
 ```tsx
 <Section className="text-center text-gray-500 text-sm">
   <Text>
-    <Link
-      href="https://example.com/unsubscribe"
-      className="text-gray-500 underline"
-    >
+    <Link href="https://example.com/unsubscribe" className="text-gray-500 underline">
       Unsubscribe
     </Link>
-    {' | '}
-    <Link
-      href="https://example.com/preferences"
-      className="text-gray-500 underline"
-    >
+    {" | "}
+    <Link href="https://example.com/preferences" className="text-gray-500 underline">
       Preferences
     </Link>
   </Text>

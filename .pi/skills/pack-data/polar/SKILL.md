@@ -4,6 +4,7 @@ description: Use when implementing payment flows, subscriptions, license keys, o
 disable-model-invocation: true
 ---
 
+
 # Polar Integration
 
 ## When to Use
@@ -13,6 +14,7 @@ disable-model-invocation: true
 ## When NOT to Use
 
 - When payments are handled by a different platform.
+
 
 ## What I Do
 
@@ -36,12 +38,12 @@ npm install @polar-sh/sdk
 ```
 
 ```typescript
-import { Polar } from '@polar-sh/sdk'
+import { Polar } from "@polar-sh/sdk";
 
 const polar = new Polar({
   accessToken: process.env.POLAR_ACCESS_TOKEN!,
-  server: 'production' // or "sandbox"
-})
+  server: "production", // or "sandbox"
+});
 ```
 
 ## Key APIs
@@ -68,9 +70,9 @@ const polar = new Polar({
 
 ```typescript
 const checkout = await polar.checkouts.create({
-  productId: 'prod_xxx',
-  successUrl: 'https://myapp.com/success'
-})
+  productId: "prod_xxx",
+  successUrl: "https://myapp.com/success",
+});
 // Redirect to checkout.url
 ```
 
@@ -78,17 +80,17 @@ const checkout = await polar.checkouts.create({
 
 ```typescript
 const result = await polar.licenseKeys.validate({
-  key: 'XXXX-XXXX-XXXX-XXXX',
-  organizationId: 'org_xxx'
-})
+  key: "XXXX-XXXX-XXXX-XXXX",
+  organizationId: "org_xxx",
+});
 ```
 
 ### Handle Webhook
 
 ```typescript
-import { validateEvent } from '@polar-sh/sdk/webhooks'
+import { validateEvent } from "@polar-sh/sdk/webhooks";
 
-const event = validateEvent(body, signature, process.env.POLAR_WEBHOOK_SECRET!)
+const event = validateEvent(body, signature, process.env.POLAR_WEBHOOK_SECRET!);
 // event.type: "subscription.created", "order.created", etc.
 ```
 

@@ -1,6 +1,6 @@
 ---
 description: Run garbage collection — structural scan and non-destructive cleanup plan
-argument-hint: '[area]'
+argument-hint: "[area]"
 ---
 
 # Garbage Collection
@@ -14,7 +14,6 @@ Load the skill at `.pi/skills/verification-before-completion/SKILL.md`.
 ## Phase 1: Structural Scan (read-only)
 
 Scan the project for dead weight:
-
 - **Dead references**: skills/templates/prompts mentioned nowhere (grep each `.pi/skills/*/SKILL.md` name against prompts, README, AGENTS.md).
 - **Stale instructions**: AGENTS.md or docs claiming behaviors that no longer exist (removed commands, removed tools).
 - **Unused assets**: template files never referenced by any prompt.
@@ -27,12 +26,12 @@ Use bounded `rg -n` and `find` for each scan. Report counts, not raw dumps.
 
 Grade the retained domains as findings (this template has no committed quality ledger):
 
-| Domain    | Source                   | Grade |
-| --------- | ------------------------ | ----- |
-| Prompts   | `.pi/prompts/*.md`       | A-D   |
-| Skills    | `.pi/skills/`            | A-D   |
-| Templates | `.pi/templates/`         | A-D   |
-| Root docs | `AGENTS.md`, `README.md` | A-D   |
+| Domain | Source | Grade |
+| --- | --- | --- |
+| Prompts | `.pi/prompts/*.md` | A-D |
+| Skills | `.pi/skills/` | A-D |
+| Templates | `.pi/templates/` | A-D |
+| Root docs | `AGENTS.md`, `README.md` | A-D |
 
 Report grades in the completion output.
 
@@ -65,7 +64,7 @@ main-session mode.
 
 ## Related Commands
 
-| Need               | Command              |
-| ------------------ | -------------------- |
-| Full verification  | `/verify all --full` |
-| Architecture audit | `/audit`             |
+| Need | Command |
+| --- | --- |
+| Full verification | `/verify all --full` |
+| Architecture audit | `/audit` |

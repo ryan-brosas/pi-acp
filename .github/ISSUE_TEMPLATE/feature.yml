@@ -1,7 +1,7 @@
 name: Feature
 description: New capability or enhancement for this repository
-title: '[feature]: '
-labels: ['enhancement']
+title: "[feature]: "
+labels: ["enhancement"]
 body:
   - type: textarea
     id: summary
@@ -35,7 +35,7 @@ body:
     id: artifact
     attributes:
       label: Artifact path
-      description: '.pi/work/<issue>-<slug>/ once /create runs; derived from this issue number.'
+      description: ".pi/work/<issue>-<slug>/ once /create runs; derived from this issue number."
     validations:
       required: false
   - type: textarea

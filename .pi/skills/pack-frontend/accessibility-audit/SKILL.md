@@ -4,6 +4,7 @@ description: Use when auditing UI components or pages for accessibility complian
 disable-model-invocation: true
 ---
 
+
 # Accessibility Audit
 
 ## Iron Laws
@@ -22,26 +23,26 @@ Pre-launch audit; checking WCAG conformance; keyboard nav issues; color contrast
 
 ## WCAG Basics
 
-| Level | What                                                    |
-| ----- | ------------------------------------------------------- |
-| A     | Minimum. Keyboard access, alt text, captions.           |
-| AA    | Standard. Color contrast ≥ 4.5:1, error identification. |
-| AAA   | Advanced. Enhanced contrast, sign language.             |
+| Level | What |
+|---|---|
+| A | Minimum. Keyboard access, alt text, captions. |
+| AA | Standard. Color contrast ≥ 4.5:1, error identification. |
+| AAA | Advanced. Enhanced contrast, sign language. |
 
 Target AA for most projects. A is for emergencies.
 
 ## Common Issues and Fixes
 
-| Issue               | WCAG  | Fix                                          |
-| ------------------- | ----- | -------------------------------------------- |
-| No alt text         | 1.1.1 | `alt="description"` or `role="presentation"` |
-| Low contrast        | 1.4.3 | Adjust colors, ≥ 4.5:1 body, ≥ 3:1 large     |
-| Keyboard trap       | 2.1.2 | Allow focus to exit (Tab, Escape)            |
-| Missing labels      | 3.3.2 | `<label for="input">`                        |
-| Focus state missing | 2.4.7 | `:focus-visible` on all interactive          |
-| Live region missing | 4.1.3 | `aria-live="polite"` for dynamic content     |
-| Error not announced | 4.1.3 | `role="alert"` or `aria-errormessage`        |
-| Skip nav missing    | 2.4.1 | Skip link to main content                    |
+| Issue | WCAG | Fix |
+|---|---|---|
+| No alt text | 1.1.1 | `alt="description"` or `role="presentation"` |
+| Low contrast | 1.4.3 | Adjust colors, ≥ 4.5:1 body, ≥ 3:1 large |
+| Keyboard trap | 2.1.2 | Allow focus to exit (Tab, Escape) |
+| Missing labels | 3.3.2 | `<label for="input">` |
+| Focus state missing | 2.4.7 | `:focus-visible` on all interactive |
+| Live region missing | 4.1.3 | `aria-live="polite"` for dynamic content |
+| Error not announced | 4.1.3 | `role="alert"` or `aria-errormessage` |
+| Skip nav missing | 2.4.1 | Skip link to main content |
 
 ## Audit Workflow
 

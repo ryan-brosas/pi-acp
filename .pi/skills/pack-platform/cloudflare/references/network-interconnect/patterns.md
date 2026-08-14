@@ -7,14 +7,12 @@ See [README.md](./README.md) for overview.
 **Critical:** Design for resilience from day one.
 
 **Requirements:**
-
 - Device-level diversity (separate hardware)
 - Backup Internet connectivity (no SLA on CNI)
 - Network-resilient locations preferred
 - Regular failover testing
 
 **Architecture:**
-
 ```
 Your Network A ──10G CNI v2──> CF CCR Device 1
                                      │
@@ -24,7 +22,6 @@ Your Network B ──10G CNI v2──> CF CCR Device 2
 ```
 
 **Capacity Planning:**
-
 - Plan across all links
 - Account for failover scenarios
 - Your responsibility
@@ -40,11 +37,11 @@ const ic = await client.networkInterconnects.interconnects.create({
   type: 'direct',
   facility: 'EWR1',
   speed: '10G',
-  name: 'magic-transit-primary'
-})
+  name: 'magic-transit-primary',
+});
 
 // 2. Poll until active
-const status = await pollUntilActive(id, ic.id)
+const status = await pollUntilActive(id, ic.id);
 
 // 3. Configure Magic Transit tunnel via Dashboard/API
 ```
@@ -56,7 +53,6 @@ const status = await pollUntilActive(id, ic.id)
 **Use Case:** AWS/GCP workloads with Cloudflare.
 
 **AWS Direct Connect:**
-
 ```typescript
 // 1. Order Direct Connect in AWS Console
 // 2. Get LOA + VLAN from AWS
@@ -65,12 +61,11 @@ const status = await pollUntilActive(id, ic.id)
 
 await configureStaticRoutes(id, {
   prefix: '10.0.0.0/8',
-  nexthop: 'aws-direct-connect'
-})
+  nexthop: 'aws-direct-connect',
+});
 ```
 
 **GCP Cloud Interconnect:**
-
 ```typescript
 // 1. Get VLAN pairing key from GCP
 // 2. Create via Dashboard (no SDK yet)
@@ -82,8 +77,8 @@ const ic = await client.networkInterconnects.interconnects.create({
   type: 'cloud',
   cloud_provider: 'gcp',
   pairing_key: 'gcp_key',
-  name: 'gcp-interconnect'
-})
+  name: 'gcp-interconnect',
+});
 ```
 
 ## Pattern: Multi-Location HA
@@ -97,8 +92,8 @@ const primary = await client.networkInterconnects.interconnects.create({
   type: 'direct',
   facility: 'EWR1',
   speed: '10G',
-  name: 'primary-ewr1'
-})
+  name: 'primary-ewr1',
+});
 
 // Secondary (NY, different hardware)
 const secondary = await client.networkInterconnects.interconnects.create({
@@ -106,8 +101,8 @@ const secondary = await client.networkInterconnects.interconnects.create({
   type: 'direct',
   facility: 'EWR2',
   speed: '10G',
-  name: 'secondary-ewr2'
-})
+  name: 'secondary-ewr2',
+});
 
 // Tertiary (LA, different geography)
 const tertiary = await client.networkInterconnects.interconnects.create({
@@ -115,8 +110,8 @@ const tertiary = await client.networkInterconnects.interconnects.create({
   type: 'partner',
   facility: 'LAX1',
   speed: '10G',
-  name: 'tertiary-lax1'
-})
+  name: 'tertiary-lax1',
+});
 
 // BGP local preferences:
 // Primary: 200
@@ -130,7 +125,6 @@ const tertiary = await client.networkInterconnects.interconnects.create({
 **Use Case:** Quick deployment, no colocation.
 
 **Setup:**
-
 1. Order virtual circuit in Equinix Fabric Portal
 2. Select Cloudflare as destination
 3. Choose facility
@@ -143,14 +137,12 @@ const tertiary = await client.networkInterconnects.interconnects.create({
 ## Failover & Security
 
 **Failover Best Practices:**
-
 - Use BGP local preferences for priority
 - Configure BFD for fast detection (v1)
 - Test regularly with traffic shift
 - Document runbooks
 
 **Security:**
-
 - BGP password authentication
 - BGP route filtering
 - Monitor unexpected routes
@@ -160,17 +152,17 @@ const tertiary = await client.networkInterconnects.interconnects.create({
 
 ## Decision Matrix
 
-| Requirement        | Recommended |
-| ------------------ | ----------- |
-| Collocated with CF | Direct      |
-| Not collocated     | Partner     |
-| AWS/GCP workloads  | Cloud       |
-| 1500 MTU both ways | v2          |
-| VLAN tagging       | v1          |
-| Public peering     | v1          |
-| Simplest config    | v2          |
-| BFD fast failover  | v1          |
-| LACP bundling      | v1          |
+| Requirement | Recommended |
+|-------------|-------------|
+| Collocated with CF | Direct |
+| Not collocated | Partner |
+| AWS/GCP workloads | Cloud |
+| 1500 MTU both ways | v2 |
+| VLAN tagging | v1 |
+| Public peering | v1 |
+| Simplest config | v2 |
+| BFD fast failover | v1 |
+| LACP bundling | v1 |
 
 ## Resources
 

@@ -4,6 +4,7 @@ description: Use when designing modules, refactoring shallow structures, or revi
 disable-model-invocation: true
 ---
 
+
 # Deep Module Design
 
 ## Iron Laws
@@ -37,24 +38,24 @@ Depth = (impl size) / (interface size)
 
 ## Interface Tells
 
-| Sign                            | Meaning                     |
-| ------------------------------- | --------------------------- |
-| Many public methods             | Module is doing too much    |
-| Methods with complex args       | Caller knows too much       |
-| Methods returning complex types | Caller handles too much     |
-| Public state                    | Caller can break invariants |
-| Config that requires docs       | Hide defaults               |
-| `addX`/`addY`/`addZ`            | One method, options         |
+| Sign | Meaning |
+|---|---|
+| Many public methods | Module is doing too much |
+| Methods with complex args | Caller knows too much |
+| Methods returning complex types | Caller handles too much |
+| Public state | Caller can break invariants |
+| Config that requires docs | Hide defaults |
+| `addX`/`addY`/`addZ` | One method, options |
 
 ## Design Tells
 
-| Sign                      | Meaning                     |
-| ------------------------- | --------------------------- |
-| Impl bigger than expected | Caller reads the impl       |
-| Two ways to do the same   | Pick one, hide the other    |
-| Caller calls 3+ methods   | One method, the right thing |
-| "Don't call from outside" | Should be private           |
-| Tests mock internals      | Internals leaking           |
+| Sign | Meaning |
+|---|---|
+| Impl bigger than expected | Caller reads the impl |
+| Two ways to do the same | Pick one, hide the other |
+| Caller calls 3+ methods | One method, the right thing |
+| "Don't call from outside" | Should be private |
+| Tests mock internals | Internals leaking |
 
 ## Refactoring Toward Depth
 

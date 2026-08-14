@@ -1,8 +1,9 @@
 ---
 name: code-review-and-quality
-description: 'Use when reviewing code or PRs before merge, after subagent work, or when a review is requested. Bloat Review mode hunts over-engineering only, with a delete-list and tagged findings.'
+description: "Use when reviewing code or PRs before merge, after subagent work, or when a review is requested. Bloat Review mode hunts over-engineering only, with a delete-list and tagged findings."
 disable-model-invocation: true
 ---
+
 
 # Code Review & Quality
 
@@ -31,22 +32,22 @@ For AI-generated code, after a refactor, or when scope may have crept. Output a 
 
 ## Delete-List Categories
 
-| Tag                  | Meaning                      | Action                         |
-| -------------------- | ---------------------------- | ------------------------------ |
-| `[delete]`           | Unused / dead / speculative  | Remove                         |
-| `[simplify]`         | Works but over-engineered    | Reduce                         |
+| Tag | Meaning | Action |
+| --- | --- | --- |
+| `[delete]` | Unused / dead / speculative | Remove |
+| `[simplify]` | Works but over-engineered | Reduce |
 | `[keep-with-reason]` | Looks bloat, is load-bearing | Justify, or move to `[delete]` |
 
 ## Iron Laws by Domain
 
-| Domain               | Iron law                                                      |
-| -------------------- | ------------------------------------------------------------- |
-| Any feature / bugfix | Failing test first (`test-driven-development`)                |
-| TS / JS with Effect  | Typed errors, no `any` (`typescript-coding-standards`)        |
-| React / Next.js      | Server components, bundle discipline (`react-best-practices`) |
-| UI                   | Match form to failure (`writing-skills`); design-taste layer  |
-| Performance          | Measure before optimizing (`performance-optimization`)        |
-| Security             | Validate at every layer (`defense-in-depth`)                  |
+| Domain | Iron law |
+| --- | --- |
+| Any feature / bugfix | Failing test first (`test-driven-development`) |
+| TS / JS with Effect | Typed errors, no `any` (`typescript-coding-standards`) |
+| React / Next.js | Server components, bundle discipline (`react-best-practices`) |
+| UI | Match form to failure (`writing-skills`); design-taste layer |
+| Performance | Measure before optimizing (`performance-optimization`) |
+| Security | Validate at every layer (`defense-in-depth`) |
 
 ## Red Flags (Bloat)
 

@@ -11,12 +11,12 @@
 
 ## Timing System
 
-| Use Case                      | Duration  |
-| ----------------------------- | --------- |
-| Instant feedback (hover/tap)  | 100-150ms |
-| State changes (menus/toggles) | 200-300ms |
-| Layout transitions            | 300-500ms |
-| Large entrances               | 500-800ms |
+| Use Case                      | Duration   |
+| ----------------------------- | ---------- |
+| Instant feedback (hover/tap)  | 100-150ms  |
+| State changes (menus/toggles) | 200-300ms  |
+| Layout transitions            | 300-500ms  |
+| Large entrances               | 500-800ms  |
 
 **Rule**: exit duration = ~75% of enter duration.
 
@@ -25,8 +25,8 @@
 Use exponential easing by default:
 
 ```tsx
-const EASING_ENTER = [0.16, 1, 0.3, 1]
-const EASING_EXIT = [0.4, 0, 1, 1]
+const EASING_ENTER = [0.16, 1, 0.3, 1];
+const EASING_EXIT = [0.4, 0, 1, 1];
 ```
 
 Avoid bounce/elastic easings for product UI.
@@ -62,15 +62,11 @@ const card = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] }
-  }
-}
+    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
-;<motion.div
-  variants={card}
-  initial="hidden"
-  animate="visible"
-/>
+<motion.div variants={card} initial="hidden" animate="visible" />
 ```
 
 Use variants for shared timing and maintainability.
@@ -102,15 +98,15 @@ const container = {
     opacity: 1,
     transition: {
       staggerChildren: 0.05,
-      delayChildren: 0.05
-    }
-  }
-}
+      delayChildren: 0.05,
+    },
+  },
+};
 
 const item = {
   hidden: { opacity: 0, y: 8 },
-  visible: { opacity: 1, y: 0 }
-}
+  visible: { opacity: 1, y: 0 },
+};
 ```
 
 Cap total stagger windows to ~500ms.
@@ -124,10 +120,7 @@ Cap total stagger windows to ~500ms.
 Use `layout` for reordering and size changes. Add spring only when needed:
 
 ```tsx
-<motion.div
-  layout
-  transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-/>
+<motion.div layout transition={{ type: 'spring', stiffness: 320, damping: 28 }} />
 ```
 
 ## Gestures

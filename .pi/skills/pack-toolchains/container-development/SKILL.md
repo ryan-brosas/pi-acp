@@ -1,6 +1,6 @@
 ---
 name: container-development
-description: 'Use when containerizing applications - Dockerfiles, multi-stage builds, Compose, non-root execution, and health checks.'
+description: "Use when containerizing applications - Dockerfiles, multi-stage builds, Compose, non-root execution, and health checks."
 disable-model-invocation: true
 ---
 

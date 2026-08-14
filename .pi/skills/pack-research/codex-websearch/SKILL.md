@@ -1,6 +1,6 @@
 ---
 name: codex-websearch
-description: 'Use when you need current web facts, documentation discovery, or cited search results through the installed Codex web-search extension.'
+description: "Use when you need current web facts, documentation discovery, or cited search results through the installed Codex web-search extension."
 disable-model-invocation: true
 ---
 
@@ -27,9 +27,9 @@ Example inside `fabric_exec`:
 ```ts
 const result = await extensions.openai_websearch({
   query: "<the user's information need>",
-  responseLength: 'short'
-})
-return result
+  responseLength: "short",
+});
+return result;
 ```
 
 ## Boundaries
@@ -40,9 +40,9 @@ research read-only when the guard is active. Do not fall back to Brave API keys,
 local npm dependencies, or obsolete provider names.
 
 <skill_result>
-<skill>codex-websearch</skill>
-<status>success|partial|blocked|failure</status>
-<evidence>Exact query, cited results, access date, and confidence</evidence>
-<artifacts>Compact evidence ledger</artifacts>
-<risks>Unavailable host extension, stale source, or none</risks>
+  <skill>codex-websearch</skill>
+  <status>success|partial|blocked|failure</status>
+  <evidence>Exact query, cited results, access date, and confidence</evidence>
+  <artifacts>Compact evidence ledger</artifacts>
+  <risks>Unavailable host extension, stale source, or none</risks>
 </skill_result>

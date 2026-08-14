@@ -1,13 +1,11 @@
 ## API Reference
 
 ### Base Endpoint
-
 ```
 https://api.cloudflare.com/client/v4
 ```
 
 ### Authentication
-
 Use API tokens with Zone:Argo Smart Routing:Edit permissions:
 
 ```bash
@@ -23,7 +21,6 @@ Authorization: Bearer YOUR_API_TOKEN
 **Description:** Retrieves current Argo Smart Routing enablement status.
 
 **cURL Example:**
-
 ```bash
 curl -X GET "https://api.cloudflare.com/client/v4/zones/{zone_id}/argo/smart_routing" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
@@ -31,7 +28,6 @@ curl -X GET "https://api.cloudflare.com/client/v4/zones/{zone_id}/argo/smart_rou
 ```
 
 **Response:**
-
 ```json
 {
   "result": {
@@ -47,10 +43,8 @@ curl -X GET "https://api.cloudflare.com/client/v4/zones/{zone_id}/argo/smart_rou
 ```
 
 **TypeScript SDK Example:**
-
 ```typescript
 import Cloudflare from 'cloudflare';
 
 const client = new Cloudflare({
   apiToken: process.env.CLOUDFLARE_API_TOKE
-```

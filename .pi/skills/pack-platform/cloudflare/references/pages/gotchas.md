@@ -95,18 +95,15 @@
 ## Framework-Specific
 
 ### Next.js
-
 - Use `@cloudflare/next-on-pages` adapter
 - Some features unsupported (ISR, Middleware with waitUntil in body)
 - Check [compatibility](https://github.com/cloudflare/next-on-pages/blob/main/docs/compatibility.md)
 
 ### SvelteKit
-
 - Use `@sveltejs/adapter-cloudflare`
 - Set `platform: 'cloudflare'` in svelte.config.js
 
 ### Remix
-
 - Use `@remix-run/cloudflare-pages`
 - Check server context for bindings
 
@@ -117,15 +114,14 @@
 console.log('Request:', {
   method: request.method,
   url: request.url,
-  headers: Object.fromEntries(request.headers)
-})
-console.log('Env:', Object.keys(env))
-console.log('Params:', params)
-console.log('Data:', data)
+  headers: Object.fromEntries(request.headers),
+});
+console.log('Env:', Object.keys(env));
+console.log('Params:', params);
+console.log('Data:', data);
 ```
 
 **View logs**:
-
 ```bash
 npx wrangler pages deployment tail --project-name=my-project
 ```

@@ -4,6 +4,7 @@ description: Use when invalid data causes failures deep in execution, requiring 
 disable-model-invocation: true
 ---
 
+
 # Defense in Depth
 
 ## When to Use
@@ -38,14 +39,14 @@ Each arrow is a boundary. Each boundary validates.
 
 ## When to Validate
 
-| Boundary                 | Validate? | Why                                 |
-| ------------------------ | --------- | ----------------------------------- |
-| HTTP request             | YES       | Untrusted input from anywhere       |
-| Job queue input          | YES       | Queued by another service / version |
-| Internal function call   | NO        | Types should be enough              |
-| DB read into domain type | YES       | DB schema ≠ domain schema           |
-| Config / env var         | YES       | Operator can set anything           |
-| User-provided file       | YES       | Untrusted bytes                     |
+| Boundary | Validate? | Why |
+|---|---|---|
+| HTTP request | YES | Untrusted input from anywhere |
+| Job queue input | YES | Queued by another service / version |
+| Internal function call | NO | Types should be enough |
+| DB read into domain type | YES | DB schema ≠ domain schema |
+| Config / env var | YES | Operator can set anything |
+| User-provided file | YES | Untrusted bytes |
 
 Anything from outside the type system (network, queue, file, env, DB) gets validated. Within (function calls), trust the type.
 

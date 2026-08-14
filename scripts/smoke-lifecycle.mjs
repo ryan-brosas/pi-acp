@@ -51,7 +51,8 @@ try {
   assert(Array.isArray(loaded?.modes?.availableModes), 'load modes.availableModes not an array')
   // LoadSessionResponse.models is `{availableModels, currentModelId} | null`.
   assert(
-    loaded?.models === null || (typeof loaded?.models === 'object' && Array.isArray(loaded?.models?.availableModels)),
+    loaded?.models === null ||
+      (typeof loaded?.models === 'object' && Array.isArray(loaded?.models?.availableModels)),
     'load models not in contract shape'
   )
   const replay = h2.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk')

@@ -4,6 +4,7 @@ description: Use when the user wants to prototype, sanity-check a data model or 
 disable-model-invocation: true
 ---
 
+
 # Prototype
 
 A prototype is **throwaway code that answers a question**. The question decides the shape.

@@ -1,6 +1,6 @@
 ---
 name: pack-platform
-description: 'Platform and delivery-infrastructure router: CI/CD, Cloudflare, Vercel deployment, Git workflow, worktrees.'
+description: "Platform and delivery-infrastructure router: CI/CD, Cloudflare, Vercel deployment, Git workflow, worktrees."
 ---
 
 # Pack: Platform

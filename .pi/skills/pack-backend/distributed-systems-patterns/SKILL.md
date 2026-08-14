@@ -1,6 +1,6 @@
 ---
 name: distributed-systems-patterns
-description: 'Use when building distributed services - timeouts, retries, circuit breakers, idempotency, outbox, sagas, and consistency trade-offs.'
+description: "Use when building distributed services - timeouts, retries, circuit breakers, idempotency, outbox, sagas, and consistency trade-offs."
 disable-model-invocation: true
 ---
 

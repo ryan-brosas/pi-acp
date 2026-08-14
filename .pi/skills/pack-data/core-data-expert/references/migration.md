@@ -19,21 +19,18 @@ Lightweight migration is automatic and handles most common changes.
 ### Enabling Lightweight Migration
 
 With `NSPersistentContainer` (automatic):
-
 ```swift
 let container = NSPersistentContainer(name: "Model")
 // Lightweight migration enabled by default
 ```
 
 With `NSPersistentStoreDescription` (automatic):
-
 ```swift
 let description = NSPersistentStoreDescription(url: storeURL)
 // Lightweight migration enabled by default
 ```
 
 Manual setup (if needed):
-
 ```swift
 let options = [
     NSMigratePersistentStoresAutomaticallyOption: true,
@@ -50,7 +47,6 @@ try coordinator.addPersistentStore(
 ### Supported Operations
 
 **Attributes:**
-
 - Add attribute
 - Remove attribute
 - Make optional attribute non-optional (with default value)
@@ -58,7 +54,6 @@ try coordinator.addPersistentStore(
 - Rename attribute (using renaming identifier)
 
 **Relationships:**
-
 - Add relationship
 - Remove relationship
 - Rename relationship (using renaming identifier)
@@ -66,7 +61,6 @@ try coordinator.addPersistentStore(
 - Change ordering (ordered ↔ non-ordered)
 
 **Entities:**
-
 - Add entity
 - Remove entity
 - Rename entity (using renaming identifier)
@@ -75,7 +69,6 @@ try coordinator.addPersistentStore(
 - Move entities in/out of hierarchy
 
 **Cannot do:**
-
 - Merge entity hierarchies (entities without common parent can't share parent)
 
 ### Renaming Attributes/Entities
@@ -89,7 +82,6 @@ Set the renaming identifier to the **old name**:
 ```
 
 This allows chaining renames across versions:
-
 - V1: `color`
 - V2: `paintColor` (renaming ID: `color`)
 - V3: `primaryColor` (renaming ID: `paintColor`)
@@ -120,7 +112,6 @@ New in iOS 17: Structured data within a single attribute.
 ### Creating Composite Attributes
 
 In Data Model Editor:
-
 1. Add Composite Attribute
 2. Add elements (String, Int, Date, etc.)
 3. Can nest composite attributes
@@ -177,7 +168,6 @@ For complex migrations that exceed lightweight capabilities.
 **Solution:** Decompose into stages:
 
 **Stage 1 (Lightweight):** Add new entity and relationship
-
 ```swift
 // ModelV1 → ModelV2
 // Add FlightData entity
@@ -185,13 +175,11 @@ For complex migrations that exceed lightweight capabilities.
 ```
 
 **Stage 2 (Custom):** Copy data
-
 - Fetch rows using generic `NSManagedObject` / `NSFetchRequestResult` types.
 - Create new entities and copy data inside the migration stage handler.
 - Ensure the custom logic is restartable if the process is interrupted.
 
 **Stage 3 (Lightweight):** Remove old attribute
-
 ```swift
 // ModelV3 → ModelV4
 // Remove flightData attribute from Aircraft
@@ -200,7 +188,6 @@ For complex migrations that exceed lightweight capabilities.
 ### Getting Version Checksum
 
 From Xcode build log:
-
 ```
 Compile data model Model.xcdatamodeld
 version checksum: ABC123...
@@ -253,7 +240,7 @@ if let hasDeferredWork = metadata[NSPersistentStoreDeferredLightweightMigrationO
 ```swift
 func finishDeferredMigration() {
     let coordinator = container.persistentStoreCoordinator
-
+    
     do {
         try coordinator.finishDeferredLightweightMigration()
         print("Deferred migration completed")
@@ -281,7 +268,7 @@ func scheduleMigration() {
     let request = BGProcessingTaskRequest(identifier: "com.example.app.migration")
     request.requiresNetworkConnectivity = false
     request.requiresExternalPower = false
-
+    
     try? BGTaskScheduler.shared.submit(request)
 }
 
@@ -290,7 +277,7 @@ func handleMigrationTask(_ task: BGProcessingTask) {
     task.expirationHandler = {
         task.setTaskCompleted(success: false)
     }
-
+    
     finishDeferredMigration()
     task.setTaskCompleted(success: true)
 }
@@ -305,7 +292,6 @@ func handleMigrationTask(_ task: BGProcessingTask) {
 ```
 
 **Output:**
-
 ```
 CoreData: annotation: Migration: Migrating from version 1 to version 2
 CoreData: annotation: Migration: Inferred mapping model
@@ -315,17 +301,14 @@ CoreData: annotation: Migration: Completed successfully
 ### Common Errors
 
 **NSPersistentStoreIncompatibleVersionHashError**
-
 - Model changed, migration required
 - Enable lightweight migration or create mapping model
 
 **NSMigrationMissingSourceModelError**
-
 - Can't find source model
 - Ensure all model versions are in bundle
 
 **NSMigrationError**
-
 - Migration failed
 - Check if changes are lightweight-compatible
 - Use staged migration for complex changes
@@ -348,7 +331,7 @@ func testMigration() throws {
     // 1. Create store with old model
     let oldModelURL = Bundle.main.url(forResource: "ModelV1", withExtension: "momd")!
     let oldModel = NSManagedObjectModel(contentsOf: oldModelURL)!
-
+    
     let coordinator = NSPersistentStoreCoordinator(managedObjectModel: oldModel)
     try coordinator.addPersistentStore(
         ofType: NSSQLiteStoreType,
@@ -356,22 +339,22 @@ func testMigration() throws {
         at: storeURL,
         options: nil
     )
-
+    
     // 2. Add test data
     let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     context.persistentStoreCoordinator = coordinator
-
+    
     let entity = NSEntityDescription.insertNewObject(forEntityName: "Article", into: context)
     entity.setValue("Test", forKey: "name")
     try context.save()
-
+    
     // 3. Close store
     try coordinator.remove(coordinator.persistentStores.first!)
-
+    
     // 4. Migrate with new model
     let newModelURL = Bundle.main.url(forResource: "ModelV2", withExtension: "momd")!
     let newModel = NSManagedObjectModel(contentsOf: newModelURL)!
-
+    
     let newCoordinator = NSPersistentStoreCoordinator(managedObjectModel: newModel)
     let options = [
         NSMigratePersistentStoresAutomaticallyOption: true,
@@ -383,14 +366,14 @@ func testMigration() throws {
         at: storeURL,
         options: options
     )
-
+    
     // 5. Verify data
     let newContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     newContext.persistentStoreCoordinator = newCoordinator
-
+    
     let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Article")
     let results = try newContext.fetch(fetchRequest)
-
+    
     XCTAssertEqual(results.count, 1)
     XCTAssertEqual(results.first?.value(forKey: "name") as? String, "Test")
 }

@@ -1,6 +1,6 @@
 ---
 name: pack-authoring
-description: 'Authoring and documentation router: writing or editing skills, documentation, ADRs, API and interface design.'
+description: "Authoring and documentation router: writing or editing skills, documentation, ADRs, API and interface design."
 ---
 
 # Pack: Authoring

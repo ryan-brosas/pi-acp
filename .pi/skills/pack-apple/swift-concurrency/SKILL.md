@@ -1,8 +1,9 @@
 ---
 name: swift-concurrency
-description: 'Use when developers mention Swift Concurrency, async/await, actors, or tasks; need migration to Swift 6; refactor closures to async/await; or hit concurrency lint warnings around Sendable, actor isolation, or MainActor.'
+description: "Use when developers mention Swift Concurrency, async/await, actors, or tasks; need migration to Swift 6; refactor closures to async/await; or hit concurrency lint warnings around Sendable, actor isolation, or MainActor."
 disable-model-invocation: true
 ---
+
 
 # Swift Concurrency
 
@@ -39,12 +40,12 @@ Pick the right one. `Task { }` in a class is rarely right.
 
 ## Actor Rules
 
-| Pattern              | Use                                   |
-| -------------------- | ------------------------------------- |
-| `actor Foo { }`      | Shared state, mutated across contexts |
-| `@MainActor Foo`     | UI class; everything on main          |
-| `nonisolated func`   | Doesn't access actor state            |
-| `isolated parameter` | Already on the actor                  |
+| Pattern | Use |
+|---|---|
+| `actor Foo { }` | Shared state, mutated across contexts |
+| `@MainActor Foo` | UI class; everything on main |
+| `nonisolated func` | Doesn't access actor state |
+| `isolated parameter` | Already on the actor |
 
 Mark `final` and `Sendable` so the compiler can check.
 

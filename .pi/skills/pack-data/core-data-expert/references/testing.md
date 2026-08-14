@@ -10,23 +10,23 @@ Use in-memory stores for fast, isolated tests:
 class CoreDataTestCase: XCTestCase {
     var container: NSPersistentContainer!
     var context: NSManagedObjectContext!
-
+    
     override func setUp() {
         super.setUp()
-
+        
         container = NSPersistentContainer(name: "Model", managedObjectModel: Self.sharedModel)
-
+        
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
         container.persistentStoreDescriptions = [description]
-
+        
         container.loadPersistentStores { description, error in
             XCTAssertNil(error)
         }
-
+        
         context = container.viewContext
     }
-
+    
     override func tearDown() {
         context = nil
         container = nil
@@ -40,7 +40,6 @@ class CoreDataTestCase: XCTestCase {
 **Problem:** Multiple model instances cause entity description conflicts.
 
 **Error:**
-
 ```
 Failed to find a unique match for an NSEntityDescription
 ```
@@ -79,7 +78,7 @@ class TestDataGenerator {
         article.creationDate = Date()
         return article
     }
-
+    
     static func createArticles(
         count: Int,
         in context: NSManagedObjectContext
@@ -94,10 +93,10 @@ class TestDataGenerator {
 func testFetchArticles() throws {
     let articles = TestDataGenerator.createArticles(count: 10, in: context)
     try context.save()
-
+    
     let fetchRequest = Article.fetchRequest()
     let results = try context.fetch(fetchRequest)
-
+    
     XCTAssertEqual(results.count, 10)
 }
 ```
@@ -110,13 +109,13 @@ func testFetchWithPredicate() throws {
     TestDataGenerator.createArticle(name: "Swift", views: 100, in: context)
     TestDataGenerator.createArticle(name: "iOS", views: 50, in: context)
     try context.save()
-
+    
     // Test
     let fetchRequest = Article.fetchRequest()
     fetchRequest.predicate = NSPredicate(format: "views > %d", 75)
-
+    
     let results = try context.fetch(fetchRequest)
-
+    
     // Verify
     XCTAssertEqual(results.count, 1)
     XCTAssertEqual(results.first?.name, "Swift")
@@ -128,17 +127,17 @@ func testFetchWithPredicate() throws {
 ```swift
 func testSaveArticle() throws {
     let article = TestDataGenerator.createArticle(in: context)
-
+    
     XCTAssertTrue(context.hasChanges)
-
+    
     try context.save()
-
+    
     XCTAssertFalse(context.hasChanges)
-
+    
     // Verify persistence
     let fetchRequest = Article.fetchRequest()
     let results = try context.fetch(fetchRequest)
-
+    
     XCTAssertEqual(results.count, 1)
     XCTAssertEqual(results.first?.name, "Test Article")
 }
@@ -150,7 +149,7 @@ func testSaveArticle() throws {
 func testValidation() {
     let article = Article(context: context)
     article.name = "" // Invalid
-
+    
     XCTAssertThrowsError(try context.save()) { error in
         let nsError = error as NSError
         XCTAssertEqual(nsError.domain, NSCocoaErrorDomain)
@@ -164,13 +163,13 @@ func testValidation() {
 func testArticleCategoryRelationship() throws {
     let category = Category(context: context)
     category.name = "Swift"
-
+    
     let article = Article(context: context)
     article.name = "Test"
     article.category = category
-
+    
     try context.save()
-
+    
     XCTAssertEqual(article.category?.name, "Swift")
     XCTAssertTrue(category.articles?.contains(article) ?? false)
 }
@@ -181,12 +180,12 @@ func testArticleCategoryRelationship() throws {
 ```swift
 func testBackgroundContext() {
     let expectation = XCTestExpectation(description: "Background save")
-
+    
     let backgroundContext = container.newBackgroundContext()
     backgroundContext.perform {
         let article = Article(context: backgroundContext)
         article.name = "Background Article"
-
+        
         do {
             try backgroundContext.save()
             expectation.fulfill()
@@ -194,7 +193,7 @@ func testBackgroundContext() {
             XCTFail("Save failed: \(error)")
         }
     }
-
+    
     wait(for: [expectation], timeout: 5.0)
 }
 ```
@@ -204,7 +203,7 @@ func testBackgroundContext() {
 ```swift
 func testCloudKitExport() {
     let expectation = XCTestExpectation(description: "Export")
-
+    
     let observer = NotificationCenter.default.addObserver(
         forName: NSPersistentCloudKitContainer.eventChangedNotification,
         object: container,
@@ -214,16 +213,16 @@ func testCloudKitExport() {
                 as? NSPersistentCloudKitContainer.Event else {
             return
         }
-
+        
         if event.type == .export && event.endDate != nil {
             expectation.fulfill()
         }
     }
-
+    
     let article = Article(context: context)
     article.name = "Test"
     try? context.save()
-
+    
     wait(for: [expectation], timeout: 60)
     NotificationCenter.default.removeObserver(observer)
 }
@@ -259,17 +258,17 @@ extension XCTestCase {
             name: "Model",
             managedObjectModel: .shared
         )
-
+        
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
         container.persistentStoreDescriptions = [description]
-
+        
         let expectation = self.expectation(description: "Load store")
         container.loadPersistentStores { _, error in
             XCTAssertNil(error)
             expectation.fulfill()
         }
-
+        
         waitForExpectations(timeout: 5.0)
         return container
     }

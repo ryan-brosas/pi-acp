@@ -8,7 +8,7 @@
  * Usage: node browser-hn-scraper.js [--limit <number>]
  */
 
-import * as cheerio from 'cheerio'
+import * as cheerio from 'cheerio';
 
 /**
  * Scrapes Hacker News front page
@@ -16,48 +16,48 @@ import * as cheerio from 'cheerio'
  * @returns {Promise<Array>} Array of submission objects
  */
 async function scrapeHackerNews(limit = 30) {
-  const url = 'https://news.ycombinator.com'
+  const url = 'https://news.ycombinator.com';
 
   try {
-    const response = await fetch(url)
+    const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const html = await response.text()
-    const $ = cheerio.load(html)
-    const submissions = []
+    const html = await response.text();
+    const $ = cheerio.load(html);
+    const submissions = [];
 
     // Each submission has class 'athing'
     $('.athing').each((index, element) => {
-      if (submissions.length >= limit) return false // Stop when limit reached
+      if (submissions.length >= limit) return false; // Stop when limit reached
 
-      const $element = $(element)
-      const id = $element.attr('id')
+      const $element = $(element);
+      const id = $element.attr('id');
 
-      const $titleLine = $element.find('.titleline > a').first()
-      const title = $titleLine.text().trim()
-      const url = $titleLine.attr('href')
+      const $titleLine = $element.find('.titleline > a').first();
+      const title = $titleLine.text().trim();
+      const url = $titleLine.attr('href');
 
       // Get the next row which contains metadata (points, author, comments)
-      const $metadataRow = $element.next()
-      const $subtext = $metadataRow.find('.subtext')
+      const $metadataRow = $element.next();
+      const $subtext = $metadataRow.find('.subtext');
 
-      const $score = $subtext.find(`#score_${id}`)
-      const pointsText = $score.text()
-      const points = pointsText ? parseInt(pointsText.match(/\d+/)?.[0] || '0') : 0
+      const $score = $subtext.find(`#score_${id}`);
+      const pointsText = $score.text();
+      const points = pointsText ? parseInt(pointsText.match(/\d+/)?.[0] || '0') : 0;
 
-      const author = $subtext.find('.hnuser').text().trim()
+      const author = $subtext.find('.hnuser').text().trim();
 
-      const time = $subtext.find('.age').attr('title') || $subtext.find('.age').text().trim()
+      const time = $subtext.find('.age').attr('title') || $subtext.find('.age').text().trim();
 
-      const $commentsLink = $subtext.find('a').last()
-      const commentsText = $commentsLink.text()
-      let commentsCount = 0
+      const $commentsLink = $subtext.find('a').last();
+      const commentsText = $commentsLink.text();
+      let commentsCount = 0;
 
       if (commentsText.includes('comment')) {
-        const match = commentsText.match(/(\d+)/)
-        commentsCount = match ? parseInt(match[0]) : 0
+        const match = commentsText.match(/(\d+)/);
+        commentsCount = match ? parseInt(match[0]) : 0;
       }
 
       submissions.push({
@@ -69,35 +69,35 @@ async function scrapeHackerNews(limit = 30) {
         time,
         comments: commentsCount,
         hnUrl: `https://news.ycombinator.com/item?id=${id}`
-      })
-    })
+      });
+    });
 
-    return submissions
+    return submissions;
   } catch (error) {
-    console.error('Error scraping Hacker News:', error.message)
-    throw error
+    console.error('Error scraping Hacker News:', error.message);
+    throw error;
   }
 }
 
 // CLI interface
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const args = process.argv.slice(2)
-  let limit = 30
+  const args = process.argv.slice(2);
+  let limit = 30;
 
-  const limitIndex = args.indexOf('--limit')
+  const limitIndex = args.indexOf('--limit');
   if (limitIndex !== -1 && args[limitIndex + 1]) {
-    limit = parseInt(args[limitIndex + 1])
+    limit = parseInt(args[limitIndex + 1]);
   }
 
   scrapeHackerNews(limit)
     .then(submissions => {
-      console.log(JSON.stringify(submissions, null, 2))
-      console.error(`\n✓ Scraped ${submissions.length} submissions`)
+      console.log(JSON.stringify(submissions, null, 2));
+      console.error(`\n✓ Scraped ${submissions.length} submissions`);
     })
     .catch(error => {
-      console.error('Failed to scrape:', error.message)
-      process.exit(1)
-    })
+      console.error('Failed to scrape:', error.message);
+      process.exit(1);
+    });
 }
 
-export { scrapeHackerNews }
+export { scrapeHackerNews };

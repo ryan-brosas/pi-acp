@@ -5,7 +5,6 @@ Expert guidance for building, deploying, and optimizing Cloudflare Workers appli
 ## Overview
 
 Cloudflare Workers run on V8 isolates (NOT containers/VMs):
-
 - Extremely fast cold starts (< 1ms)
 - Global deployment across 300+ locations
 - Web standards compliant (fetch, URL, Headers, Request, Response)
@@ -18,13 +17,12 @@ Cloudflare Workers run on V8 isolates (NOT containers/VMs):
 ```typescript
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    return new Response('Hello World!')
-  }
-}
+    return new Response('Hello World!');
+  },
+};
 ```
 
 **Handler parameters**:
-
 - `request`: Incoming HTTP request (standard Request object)
 - `env`: Environment bindings (KV, D1, R2, secrets, vars)
 - `ctx`: Execution context (`waitUntil`, `passThroughOnException`)

@@ -1,7 +1,6 @@
 # opensrc Architecture
 
 ## Contents
-
 - Directory structure
 - Core flow
 - Key modules
@@ -84,7 +83,6 @@ Storage structure: `opensrc/repos/{host}/{owner}/{repo}/`
 ### version.ts
 
 Detects installed npm versions (priority order):
-
 1. `node_modules/{pkg}/package.json`
 2. `package-lock.json`
 3. `pnpm-lock.yaml`
@@ -106,7 +104,7 @@ Supports: GitHub, GitLab, Bitbucket (GitHub/GitLab via API).
 ## Type Definitions
 
 ```typescript
-type Registry = 'npm' | 'pypi' | 'crates'
+type Registry = "npm" | "pypi" | "crates"
 
 interface PackageSpec {
   registry: Registry
@@ -119,15 +117,15 @@ interface ResolvedPackage {
   name: string
   version: string
   repoUrl: string
-  repoDirectory?: string // For monorepos
+  repoDirectory?: string  // For monorepos
   gitTag: string
 }
 
 interface RepoSpec {
-  host: string // github.com, gitlab.com
+  host: string      // github.com, gitlab.com
   owner: string
   repo: string
-  ref?: string // Branch, tag, commit
+  ref?: string      // Branch, tag, commit
 }
 
 interface FetchResult {
@@ -173,7 +171,6 @@ export async function resolve(name: string, version?: string): Promise<ResolvedP
 ### Git Tag Resolution
 
 Clone tries tags in order:
-
 1. `v{version}` (most common)
 2. `{version}` (no prefix)
 3. Default branch (fallback with warning)

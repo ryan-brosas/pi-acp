@@ -1,6 +1,6 @@
 ---
 name: writing-skills
-description: 'Use when creating, editing, or verifying skills - TDD on behavior, pressure tests, progressive disclosure, token budgets.'
+description: "Use when creating, editing, or verifying skills - TDD on behavior, pressure tests, progressive disclosure, token budgets."
 disable-model-invocation: true
 ---
 
@@ -49,12 +49,12 @@ Match form to failure: recipe for skipped tests, delete-list for oversize diffs,
 
 ## Pressure-Testing Scenarios
 
-| Type                  | What it tests                                         |
-| --------------------- | ----------------------------------------------------- |
-| **Skipping iron law** | "I'm in a hurry"                                      |
-| **Rationalization**   | "This is obvious"                                     |
-| **Edge case**         | "My case is special"                                  |
-| **Retrieval miss**    | Description too vague to route; the leaf never loads. |
+| Type | What it tests |
+| --- | --- |
+| **Skipping iron law** | "I'm in a hurry" |
+| **Rationalization** | "This is obvious" |
+| **Edge case** | "My case is special" |
+| **Retrieval miss** | Description too vague to route; the leaf never loads. |
 | **Trigger ambiguity** | Two descriptions match one task; the wrong leaf wins. |
 
 ## Rubric

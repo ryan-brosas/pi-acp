@@ -7,7 +7,6 @@
 ### Authentication
 
 Create API token with permissions:
-
 - `AI Search - Read`
 - `AI Search Edit`
 
@@ -37,4 +36,3 @@ curl https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/autorag/rags/{AU
   },
   "stream": false,
   "fil
-```

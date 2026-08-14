@@ -5,31 +5,29 @@ v4.1.x (current: v4.1.18) - CSS-first config, no tailwind.config.js needed.
 ## Installation
 
 ### Vite (Recommended)
-
 ```bash
 npm i tailwindcss @tailwindcss/vite
 ```
 
 ```ts
 // vite.config.ts
-import tailwindcss from '@tailwindcss/vite'
+import tailwindcss from "@tailwindcss/vite"
 export default { plugins: [tailwindcss()] }
 ```
 
 ```css
 /* src/index.css */
-@import 'tailwindcss';
+@import "tailwindcss";
 ```
 
 ### PostCSS
-
 ```bash
 npm i tailwindcss @tailwindcss/postcss
 ```
 
 ```js
 // postcss.config.js
-export default { plugins: ['@tailwindcss/postcss'] }
+export default { plugins: ["@tailwindcss/postcss"] }
 ```
 
 ## CSS-First Configuration
@@ -37,7 +35,7 @@ export default { plugins: ['@tailwindcss/postcss'] }
 Configure in CSS with `@theme`:
 
 ```css
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   /* OKLCH colors for vivid, wide-gamut */
@@ -46,8 +44,8 @@ Configure in CSS with `@theme`:
   --color-brand-900: oklch(0.25 0.15 264);
 
   /* Fonts */
-  --font-display: 'Satoshi', sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display: "Satoshi", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
 
   /* Spacing, breakpoints, easing */
   --spacing-18: calc(var(--spacing) * 18);
@@ -63,21 +61,20 @@ Usage: `<div class="bg-brand-500 font-display shadow-glow">`
 
 ## Key v4 Changes from v3
 
-| v3                                    | v4                      |
-| ------------------------------------- | ----------------------- |
+| v3 | v4 |
+|----|-----|
 | `@tailwind base/components/utilities` | `@import "tailwindcss"` |
-| `tailwind.config.js`                  | `@theme` directive      |
-| `content: [...]` array                | Automatic detection     |
-| sRGB colors                           | OKLCH/P3 colors         |
-| `bg-opacity-50`                       | `bg-black/50` modifier  |
-| Plugin for container queries          | Built-in `@container`   |
+| `tailwind.config.js` | `@theme` directive |
+| `content: [...]` array | Automatic detection |
+| sRGB colors | OKLCH/P3 colors |
+| `bg-opacity-50` | `bg-black/50` modifier |
+| Plugin for container queries | Built-in `@container` |
 
 ## Automatic Content Detection
 
 No `content` array. Auto-ignores `.gitignore` and binary files.
 
 Add sources manually if needed:
-
 ```css
 @source "../node_modules/@my-company/ui-lib";
 ```
@@ -85,22 +82,15 @@ Add sources manually if needed:
 ## Dynamic Values
 
 Any value works without config:
-
 ```html
 <div class="grid grid-cols-15">
-  <div class="mt-17 px-29">
-    <div
-      data-active
-      class="data-active:bg-blue-500"
-    ></div>
-  </div>
-</div>
+<div class="mt-17 px-29">
+<div data-active class="data-active:bg-blue-500">
 ```
 
 ## OKLCH Colors
 
 Wider gamut, more vivid:
-
 ```css
 @theme {
   --color-primary-50: oklch(0.98 0.02 250);
@@ -126,31 +116,17 @@ Opacity modifier: `<div class="bg-primary-500/50">`
 ## Layer Organization
 
 ```css
-@layer base {
-  h1 {
-    @apply text-4xl font-bold;
-  }
-}
-@layer components {
-  .btn {
-    @apply px-4 py-2 rounded-lg;
-  }
-}
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
+@layer base { h1 { @apply text-4xl font-bold; } }
+@layer components { .btn { @apply px-4 py-2 rounded-lg; } }
+@layer utilities { .text-balance { text-wrap: balance; } }
 ```
 
 ## Dark Mode
 
 Class strategy by default:
-
 ```html
 <html class="dark">
-  <div class="bg-white dark:bg-zinc-900"></div>
-</html>
+  <div class="bg-white dark:bg-zinc-900">
 ```
 
 ## Migration from v3

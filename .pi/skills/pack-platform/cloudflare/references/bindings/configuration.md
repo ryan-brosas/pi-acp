@@ -3,7 +3,6 @@
 ### JSON vs TOML
 
 **JSON (Recommended for new projects):**
-
 ```jsonc
 // wrangler.jsonc
 {
@@ -18,7 +17,6 @@
 ```
 
 **TOML (Legacy):**
-
 ```toml
 # wrangler.toml
 name = "my-worker"
@@ -36,7 +34,7 @@ API_URL = "https://api.example.com"
   "name": "my-worker",
   "main": "src/index.ts",
   "compatibility_date": "2024-01-01",
-
+  
   // Production bindings
   "vars": {
     "ENV": "production"
@@ -47,7 +45,7 @@ API_URL = "https://api.example.com"
       "id": "prod-kv-id"
     }
   ],
-
+  
   // Environment overrides
   "env": {
     "staging": {
@@ -58,4 +56,3 @@ API_URL = "https://api.example.com"
         {
           "binding": "CACHE",
           "id": "staging-kv-id
-```

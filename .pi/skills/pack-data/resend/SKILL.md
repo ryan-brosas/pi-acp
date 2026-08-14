@@ -1,8 +1,9 @@
 ---
 name: resend
-description: 'Use when sending transactional email, creating React Email templates, handling email webhooks, or integrating the Resend platform - send, receive inbound, templates, and webhooks.'
+description: "Use when sending transactional email, creating React Email templates, handling email webhooks, or integrating the Resend platform - send, receive inbound, templates, and webhooks."
 disable-model-invocation: true
 ---
+
 
 # Resend (Email)
 
@@ -32,14 +33,14 @@ API key in env, not in code. Free tier: 100 emails/day.
 ## Sending
 
 ```ts
-import { Resend } from 'resend'
+import { Resend } from "resend"
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 await resend.emails.send({
-  from: 'onboarding@resend.dev',
-  to: 'user@example.com',
-  subject: 'Welcome',
-  react: WelcomeEmail({ name: 'Alice' })
+  from: "onboarding@resend.dev",
+  to: "user@example.com",
+  subject: "Welcome",
+  react: WelcomeEmail({ name: "Alice" }),
 })
 ```
 
@@ -49,7 +50,7 @@ await resend.emails.send({
 
 ```tsx
 // emails/WelcomeEmail.tsx
-import { Html, Head, Body, Container, Text, Button } from '@react-email/components'
+import { Html, Head, Body, Container, Text, Button } from "@react-email/components"
 
 export default function WelcomeEmail({ name }: { name: string }) {
   return (
@@ -83,14 +84,14 @@ Configure in Resend dashboard: `inbound@yourdomain.com` → webhook URL. Subject
 
 ```ts
 // Contacts and audiences manage the list...
-await resend.contacts.create({ email: 'user@example.com', audienceId: '...' })
+await resend.contacts.create({ email: "user@example.com", audienceId: "..." })
 
 // ...but campaigns go through the Broadcasts API, not emails.send:
 const broadcast = await resend.broadcasts.create({
-  from: 'newsletter@example.com',
-  subject: 'Monthly update',
+  from: "newsletter@example.com",
+  subject: "Monthly update",
   react: NewsletterEmail(),
-  audienceId: '...'
+  audienceId: "...",
 })
 await resend.broadcasts.send(broadcast.id)
 ```

@@ -29,53 +29,52 @@ See [README.md](./README.md), [configuration.md](./configuration.md), [api.md](.
 
 ```typescript
 try {
-  const result = await client.query('SELECT * FROM users')
+  const result = await client.query("SELECT * FROM users");
 } catch (error: any) {
-  const msg = error.message || ''
+  const msg = error.message || "";
 
   // Pool exhausted
-  if (msg.includes('Failed to acquire a connection')) {
-    console.error('Pool exhausted - long transactions?')
-    return new Response('Service busy', { status: 503 })
+  if (msg.includes("Failed to acquire a connection")) {
+    console.error("Pool exhausted - long transactions?");
+    return new Response("Service busy", {status: 503});
   }
 
   // Connection refused
-  if (msg.includes('connection_refused')) {
-    console.error('DB refusing - firewall/limits?')
-    return new Response('DB unavailable', { status: 503 })
+  if (msg.includes("connection_refused")) {
+    console.error("DB refusing - firewall/limits?");
+    return new Response("DB unavailable", {status: 503});
   }
 
   // Timeout
-  if (msg.includes('timeout') || msg.includes('deadline exceeded')) {
-    console.error('Query timeout - exceeded 60s')
-    return new Response('Query timeout', { status: 504 })
+  if (msg.includes("timeout") || msg.includes("deadline exceeded")) {
+    console.error("Query timeout - exceeded 60s");
+    return new Response("Query timeout", {status: 504});
   }
 
   // Auth failure
-  if (msg.includes('password authentication failed')) {
-    console.error('Auth failed - check credentials')
-    return new Response('Config error', { status: 500 })
+  if (msg.includes("password authentication failed")) {
+    console.error("Auth failed - check credentials");
+    return new Response("Config error", {status: 500});
   }
 
   // SSL/TLS
-  if (msg.includes('SSL') || msg.includes('TLS')) {
-    console.error('TLS issue - check sslmode')
-    return new Response('Connection security error', { status: 500 })
+  if (msg.includes("SSL") || msg.includes("TLS")) {
+    console.error("TLS issue - check sslmode");
+    return new Response("Connection security error", {status: 500});
   }
 
-  console.error('Unknown DB error:', error)
-  return new Response('Internal error', { status: 500 })
+  console.error("Unknown DB error:", error);
+  return new Response("Internal error", {status: 500});
 }
 ```
 
 ## Monitor Connections
 
 **PostgreSQL:**
-
 ```sql
 -- Show Hyperdrive connections
 SELECT usename, application_name, client_addr, state
-FROM pg_stat_activity
+FROM pg_stat_activity 
 WHERE application_name = 'Cloudflare Hyperdrive';
 
 -- Count active
@@ -85,28 +84,24 @@ SELECT COUNT(*) FROM pg_stat_activity WHERE application_name = 'Cloudflare Hyper
 ## Troubleshooting
 
 **Connection refused:**
-
 1. Check firewall allows Cloudflare IPs
 2. Verify DB listening on port
 3. Confirm service running
 4. Check credentials
 
 **Pool exhausted:**
-
 1. Reduce transaction duration
 2. Avoid long queries (>60s)
 3. Don't hold connections during external calls
 4. Upgrade to paid plan
 
 **SSL/TLS failed:**
-
 1. Add `sslmode=require` (Postgres) or `sslMode=REQUIRED` (MySQL)
 2. Upload CA cert if self-signed
 3. Verify DB has SSL enabled
 4. Check cert expiry
 
 **Queries not cached:**
-
 1. Verify non-mutating (SELECT)
 2. Check for volatile functions (NOW(), RANDOM())
 3. Confirm caching not disabled
@@ -114,21 +109,18 @@ SELECT COUNT(*) FROM pg_stat_activity WHERE application_name = 'Cloudflare Hyper
 5. Check `prepare=true` for postgres.js
 
 **Query timeout (>60s):**
-
 1. Optimize with indexes
 2. Reduce dataset (LIMIT)
 3. Break into smaller queries
 4. Use async processing
 
 **Local DB connection:**
-
 1. Verify `localConnectionString` correct
 2. Check DB running
 3. Confirm env var name matches binding
 4. Test with psql/mysql client
 
 **Env var not working:**
-
 1. Format: `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_<BINDING>`
 2. Binding matches wrangler.jsonc
 3. Variable exported in shell
@@ -152,7 +144,6 @@ SELECT COUNT(*) FROM pg_stat_activity WHERE application_name = 'Cloudflare Hyper
 ## Supported Databases
 
 **PostgreSQL:**
-
 - PostgreSQL 11+
 - CockroachDB, Timescale, Materialize
 - Neon, Supabase
@@ -160,14 +151,12 @@ SELECT COUNT(*) FROM pg_stat_activity WHERE application_name = 'Cloudflare Hyper
 Recommended: `pg` >= 8.16.3
 
 **MySQL:**
-
 - MySQL 5.7+
 - PlanetScale
 
 Recommended: `mysql2` >= 3.13.0
 
 **SSL/TLS:**
-
 - PostgreSQL `sslmode`: `require`, `verify-ca`, `verify-full`
 - MySQL `sslMode`: `REQUIRED`, `VERIFY_CA`, `VERIFY_IDENTITY`
 
@@ -180,7 +169,6 @@ Recommended: `mysql2` >= 3.13.0
 [ ] DB with strict connection limits already exceeded
 
 **Alternatives:**
-
 - D1 - Cloudflare native distributed SQL
 - Durable Objects - Stateful Workers
 - KV - Global key-value

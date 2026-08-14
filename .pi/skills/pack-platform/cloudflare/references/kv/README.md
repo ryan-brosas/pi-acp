@@ -5,7 +5,6 @@ Globally-distributed, eventually-consistent key-value store optimized for high r
 ## Overview
 
 KV provides:
-
 - Eventual consistency (60s global propagation)
 - Read-optimized performance
 - 25 MiB value limit per key
@@ -23,23 +22,23 @@ wrangler kv namespace create MY_NAMESPACE
 
 ```typescript
 // Write
-await env.MY_KV.put('key', 'value', { expirationTtl: 300 })
+await env.MY_KV.put("key", "value", { expirationTtl: 300 });
 
 // Read
-const value = await env.MY_KV.get('key')
-const json = await env.MY_KV.get<Config>('config', 'json')
+const value = await env.MY_KV.get("key");
+const json = await env.MY_KV.get<Config>("config", "json");
 ```
 
 ## Core Operations
 
-| Method                      | Purpose          | Returns                            |
-| --------------------------- | ---------------- | ---------------------------------- |
-| `get(key, type?)`           | Single read      | `string \| null`                   |
-| `get(keys, type?)`          | Bulk read (≤100) | `Map<string, T \| null>`           |
-| `put(key, value, options?)` | Write            | `Promise<void>`                    |
-| `delete(key)`               | Delete           | `Promise<void>`                    |
-| `list(options?)`            | List keys        | `{ keys, list_complete, cursor? }` |
-| `getWithMetadata(key)`      | Get + metadata   | `{ value, metadata }`              |
+| Method | Purpose | Returns |
+|--------|---------|---------|
+| `get(key, type?)` | Single read | `string \| null` |
+| `get(keys, type?)` | Bulk read (≤100) | `Map<string, T \| null>` |
+| `put(key, value, options?)` | Write | `Promise<void>` |
+| `delete(key)` | Delete | `Promise<void>` |
+| `list(options?)` | List keys | `{ keys, list_complete, cursor? }` |
+| `getWithMetadata(key)` | Get + metadata | `{ value, metadata }` |
 
 ## Consistency Model
 

@@ -4,6 +4,7 @@ description: Use when implementing any feature or bugfix, before writing impleme
 disable-model-invocation: true
 ---
 
+
 # Test-Driven Development
 
 ## The Iron Law
@@ -42,15 +43,15 @@ The test must fail for the **right reason** — the behavior is missing, not the
 
 ## Common Rationalizations
 
-| Rationalization           | Counter                                    |
-| ------------------------- | ------------------------------------------ |
-| "It's obvious"            | If trivial, RED is trivial. Write it.      |
-| "Tests after"             | There is no after.                         |
-| "One-line change"         | One-liners break builds. Test takes 30s.   |
-| "API stabilizes first"    | Test IS the API design.                    |
-| "Tested manually"         | Not reproducible, not automatable.         |
-| "Mocking is faster"       | Mocks test your assumptions, not behavior. |
-| "Existing tests cover it" | Run them. Cite the output.                 |
+| Rationalization | Counter |
+| --- | --- |
+| "It's obvious" | If trivial, RED is trivial. Write it. |
+| "Tests after" | There is no after. |
+| "One-line change" | One-liners break builds. Test takes 30s. |
+| "API stabilizes first" | Test IS the API design. |
+| "Tested manually" | Not reproducible, not automatable. |
+| "Mocking is faster" | Mocks test your assumptions, not behavior. |
+| "Existing tests cover it" | Run them. Cite the output. |
 
 ## Workflow
 

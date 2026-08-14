@@ -114,7 +114,6 @@ npx wrangler pipelines create my-pipeline \
 **Supported types**: `string`, `int32`, `int64`, `float32`, `float64`, `bool`, `timestamp`, `json`, `binary`, `list`, `struct`
 
 **Unstructured streams** (no validation, single `value` column):
-
 ```bash
 npx wrangler pipelines streams create my-stream
 ```
@@ -124,7 +123,6 @@ npx wrangler pipelines streams create my-stream
 ### Via Workers (Recommended)
 
 **Configuration** (`wrangler.toml`):
-
 ```toml
 [[pipelines]]
 pipeline = "<STREAM_ID>"
@@ -132,7 +130,6 @@ binding = "STREAM"
 ```
 
 **Or JSON** (`wrangler.jsonc`):
-
 ```jsonc
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
@@ -146,33 +143,31 @@ binding = "STREAM"
 ```
 
 **Worker code**:
-
 ```typescript
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const event = {
-      user_id: '12345',
-      event_type: 'purchase',
-      product_id: 'widget-001',
+      user_id: "12345",
+      event_type: "purchase",
+      product_id: "widget-001",
       amount: 29.99
-    }
-
+    };
+    
     // Send single or multiple events
-    await env.STREAM.send([event])
-
-    return new Response('Event sent')
-  }
-} satisfies ExportedHandler<Env>
+    await env.STREAM.send([event]);
+    
+    return new Response('Event sent');
+  },
+} satisfies ExportedHandler<Env>;
 ```
 
 **Batch sending**:
-
 ```typescript
 const events = [
-  { user_id: 'user1', event_type: 'view' },
-  { user_id: 'user2', event_type: 'purchase', amount: 50 }
-]
-await env.STREAM.send(events)
+  { user_id: "user1", event_type: "view" },
+  { user_id: "user2", event_type: "purchase", amount: 50 }
+];
+await env.STREAM.send(events);
 ```
 
 ### Via HTTP
@@ -180,7 +175,6 @@ await env.STREAM.send(events)
 **Endpoint format**: `https://{stream-id}.ingest.cloudflare.com`
 
 **Without auth** (for testing):
-
 ```bash
 curl -X POST https://{stream-id}.ingest.cloudflare.com \
   -H "Content-Type: application/json" \
@@ -195,7 +189,6 @@ curl -X POST https://{stream-id}.ingest.cloudflare.com \
 ```
 
 **With authentication**:
-
 ```bash
 curl -X POST https://{stream-id}.ingest.cloudflare.com \
   -H "Content-Type: application/json" \
@@ -210,13 +203,11 @@ curl -X POST https://{stream-id}.ingest.cloudflare.com \
 ### Basic Patterns
 
 **Pass-through**:
-
 ```sql
 INSERT INTO my_sink SELECT * FROM my_stream
 ```
 
 **Filtering**:
-
 ```sql
 INSERT INTO my_sink
 SELECT * FROM my_stream
@@ -224,7 +215,6 @@ WHERE event_type = 'purchase' AND amount > 100
 ```
 
 **Field selection**:
-
 ```sql
 INSERT INTO my_sink
 SELECT user_id, event_type, timestamp, amount
@@ -232,7 +222,6 @@ FROM my_stream
 ```
 
 **Field transformation**:
-
 ```sql
 INSERT INTO my_sink
 SELECT
@@ -245,7 +234,6 @@ FROM my_stream
 ```
 
 **Conditional logic**:
-
 ```sql
 INSERT INTO my_sink
 SELECT
@@ -265,7 +253,6 @@ WHERE event_type IN ('purchase', 'refund')
 ### R2 Data Catalog (Iceberg Tables)
 
 **Create sink**:
-
 ```bash
 npx wrangler pipelines sinks create my-sink \
   --type r2-data-catalog \
@@ -279,14 +266,12 @@ npx wrangler pipelines sinks create my-sink \
 ```
 
 **Options**:
-
 - `--compression`: `zstd` (default), `snappy`, `gzip`, `lz4`, `uncompressed`
 - `--roll-interval`: Seconds between writes (default: 300)
 - `--roll-size`: Max file size in MB before rolling
 - `--target-row-group-size`: Parquet row group size in MB (default: 256)
 
 **Querying with R2 SQL**:
-
 ```bash
 export WRANGLER_R2_SQL_AUTH_TOKEN=YOUR_API_TOKEN
 
@@ -301,7 +286,6 @@ LIMIT 100"
 ### R2 Storage (Raw Files)
 
 **JSON format**:
-
 ```bash
 npx wrangler pipelines sinks create my-sink \
   --type r2 \
@@ -316,7 +300,6 @@ npx wrangler pipelines sinks create my-sink \
 ```
 
 **Parquet format** (better compression/performance):
-
 ```bash
 npx wrangler pipelines sinks create my-sink \
   --type r2 \
@@ -333,7 +316,6 @@ npx wrangler pipelines sinks create my-sink \
 ```
 
 **File organization**:
-
 ```
 bucket/analytics/events/
   year=2025/
@@ -436,7 +418,6 @@ npx wrangler pipelines delete <PIPELINE_ID>
 Required permissions: **R2 Admin Read & Write**
 
 Create in dashboard:
-
 1. Go to R2 > Manage API tokens
 2. Create Account API Token
 3. Select "Admin Read & Write" permission
@@ -457,7 +438,6 @@ For authenticated HTTP ingestion endpoints.
 ## Best Practices
 
 ### Schema Design
-
 - [x] Use structured streams for validation
 - [x] Mark critical fields as `required: true`
 - [x] Use appropriate types (`int64` for timestamps, `float64` for decimals)
@@ -465,14 +445,12 @@ For authenticated HTTP ingestion endpoints.
 - [ ] Don't change schemas after creation (recreate stream)
 
 ### Performance
-
 - **Low latency**: Set `--roll-interval 10` (smaller files, more frequent)
 - **Query performance**: Set `--roll-interval 300` and `--roll-size 100` (larger files, less frequent)
 - Use `zstd` compression for best ratio, `snappy` for speed
 - Increase `--target-row-group-size` for analytical workloads
 
 ### SQL Transformations
-
 - [x] Filter early (`WHERE` clauses reduce data volume)
 - [x] Select only needed fields (reduces storage costs)
 - [x] Use functions for enrichment (CONCAT, UPPER, CASE)
@@ -480,7 +458,6 @@ For authenticated HTTP ingestion endpoints.
 - [ ] No JOINs across streams (single stream per pipeline)
 
 ### Workers Integration
-
 - [x] Use Worker bindings (no token management)
 - [x] Batch events when possible (`send([event1, event2, ...])`)
 - [x] Handle send errors gracefully
@@ -490,27 +467,23 @@ For authenticated HTTP ingestion endpoints.
 // Fire-and-forget pattern
 export default {
   async fetch(request, env, ctx) {
-    const event = {
-      /* ... */
-    }
-
+    const event = { /* ... */ };
+    
     // Don't block response on send
-    ctx.waitUntil(env.STREAM.send([event]))
-
-    return new Response('OK')
+    ctx.waitUntil(env.STREAM.send([event]));
+    
+    return new Response('OK');
   }
-}
+};
 ```
 
 ### HTTP Ingestion
-
 - [x] Enable auth for production endpoints
 - [x] Configure CORS if sending from browsers
 - [x] Send arrays (not single objects) for batch efficiency
 - [x] Handle 4xx/5xx responses with retries
 
 ### Monitoring
-
 - Check stream buffer status (dashboard or API)
 - Monitor pipeline processing rate
 - Review R2 storage growth
@@ -518,40 +491,36 @@ export default {
 
 ## Limits (Open Beta)
 
-| Resource                 | Limit  |
-| ------------------------ | ------ |
-| Streams per account      | 20     |
-| Sinks per account        | 20     |
-| Pipelines per account    | 20     |
-| Payload size per request | 1 MB   |
-| Ingest rate per stream   | 5 MB/s |
+| Resource | Limit |
+|----------|-------|
+| Streams per account | 20 |
+| Sinks per account | 20 |
+| Pipelines per account | 20 |
+| Payload size per request | 1 MB |
+| Ingest rate per stream | 5 MB/s |
 
 Request increases: [Limit Increase Form](https://forms.gle/ukpeZVLWLnKeixDu7)
 
 ## Troubleshooting
 
 ### Events not appearing in R2
-
 - Wait 10-300 seconds (depends on `--roll-interval`)
 - Check pipeline status: `npx wrangler pipelines get <ID>`
 - Verify stream has data (check dashboard metrics)
 - Confirm sink credentials are valid
 
 ### Schema validation failures
-
 - Events accepted but dropped if invalid
 - Check event structure matches schema exactly
 - Verify required fields are present
 - Check data types (e.g., strings not numbers)
 
 ### Worker binding not found
-
 - Verify `wrangler.toml`/`wrangler.jsonc` has correct `pipeline` ID
 - Redeploy Worker after adding binding
 - Check binding name matches code (`env.STREAM`)
 
 ### SQL errors
-
 - SQL cannot be modified after creation
 - Recreate pipeline with corrected SQL
 - Verify stream and sink names in SQL match actual resources
@@ -560,7 +529,6 @@ Request increases: [Limit Increase Form](https://forms.gle/ukpeZVLWLnKeixDu7)
 ## Complete Example: Ecommerce Analytics
 
 **1. Create schema** (`ecommerce-schema.json`):
-
 ```json
 {
   "fields": [
@@ -594,7 +562,6 @@ Request increases: [Limit Increase Form](https://forms.gle/ukpeZVLWLnKeixDu7)
 ```
 
 **2. Setup infrastructure**:
-
 ```bash
 # Create bucket and enable catalog
 npx wrangler r2 bucket create ecommerce-data
@@ -615,14 +582,14 @@ npx wrangler pipelines sinks create ecommerce-sink \
 
 # Create pipeline with transformation
 npx wrangler pipelines create ecommerce-pipeline \
-  --sql "INSERT INTO ecommerce_sink
-         SELECT
+  --sql "INSERT INTO ecommerce_sink 
+         SELECT 
            user_id,
            UPPER(event_type) as event_type,
            product_id,
            amount,
            timestamp,
-           CASE
+           CASE 
              WHEN amount > 100 THEN 'high_value'
              ELSE 'standard'
            END as transaction_tier
@@ -631,7 +598,6 @@ npx wrangler pipelines create ecommerce-pipeline \
 ```
 
 **3. Configure Worker** (`wrangler.toml`):
-
 ```toml
 name = "ecommerce-api"
 main = "src/index.ts"
@@ -642,45 +608,43 @@ binding = "EVENTS"
 ```
 
 **4. Send events** (`src/index.ts`):
-
 ```typescript
 interface Env {
-  EVENTS: Pipeline
+  EVENTS: Pipeline;
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     if (request.method === 'POST') {
-      const data = await request.json()
-
+      const data = await request.json();
+      
       const event = {
         user_id: data.userId,
         event_type: data.eventType,
         product_id: data.productId,
         amount: data.amount,
         timestamp: new Date().toISOString()
-      }
-
+      };
+      
       try {
-        await env.EVENTS.send([event])
-        return new Response('Event tracked', { status: 200 })
+        await env.EVENTS.send([event]);
+        return new Response('Event tracked', { status: 200 });
       } catch (error) {
-        return new Response('Failed to track event', { status: 500 })
+        return new Response('Failed to track event', { status: 500 });
       }
     }
-
-    return new Response('Method not allowed', { status: 405 })
+    
+    return new Response('Method not allowed', { status: 405 });
   }
-} satisfies ExportedHandler<Env>
+} satisfies ExportedHandler<Env>;
 ```
 
 **5. Query results**:
-
 ```bash
 export WRANGLER_R2_SQL_AUTH_TOKEN=$CATALOG_TOKEN
 
 npx wrangler r2 sql query "ecommerce-warehouse" "
-SELECT
+SELECT 
   event_type,
   transaction_tier,
   COUNT(*) as event_count,

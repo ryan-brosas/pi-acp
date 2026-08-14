@@ -1,6 +1,6 @@
 ---
 name: pack-quality
-description: 'Code quality and reliability router: refactoring, code review, cleanup, deep module design, defense in depth, deprecation, fallow analysis, performance, root-cause, type standards.'
+description: "Code quality and reliability router: refactoring, code review, cleanup, deep module design, defense in depth, deprecation, fallow analysis, performance, root-cause, type standards."
 ---
 
 # Pack: Quality

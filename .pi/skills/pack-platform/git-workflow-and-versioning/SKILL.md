@@ -1,8 +1,9 @@
 ---
 name: git-workflow-and-versioning
-description: 'Use when making code changes that need safe git hygiene, atomic commits, branch strategy, versioning, changelog entries, or release preparation - trunk-based development, commit-as-save-point discipline.'
+description: "Use when making code changes that need safe git hygiene, atomic commits, branch strategy, versioning, changelog entries, or release preparation - trunk-based development, commit-as-save-point discipline."
 disable-model-invocation: true
 ---
+
 
 # Git Workflow and Versioning
 
@@ -36,12 +37,12 @@ Git workflow keeps changes reviewable, reversible, and shippable. Treat commits 
 
 ## Common Rationalizations
 
-| Rationalization                          | Rebuttal                                                                 |
-| ---------------------------------------- | ------------------------------------------------------------------------ |
-| "I'll clean up the commit later."        | Later cleanup often loses intent. Keep the diff clean while it is fresh. |
-| "This unrelated formatting is harmless." | It increases review noise and can hide real regressions.                 |
-| "One big commit is faster."              | Small verified commits are easier to review, revert, bisect, and ship.   |
-| "The worktree was already dirty."        | Dirty worktrees require more discipline, not less.                       |
+| Rationalization | Rebuttal |
+| --- | --- |
+| "I'll clean up the commit later." | Later cleanup often loses intent. Keep the diff clean while it is fresh. |
+| "This unrelated formatting is harmless." | It increases review noise and can hide real regressions. |
+| "One big commit is faster." | Small verified commits are easier to review, revert, bisect, and ship. |
+| "The worktree was already dirty." | Dirty worktrees require more discipline, not less. |
 
 ## Red Flags
 

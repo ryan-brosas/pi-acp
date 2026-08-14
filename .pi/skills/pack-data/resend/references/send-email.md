@@ -57,25 +57,25 @@ Resend provides two endpoints for sending emails:
 ### Example (Node.js)
 
 ```typescript
-import { Resend } from 'resend'
+import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const { data, error } = await resend.emails.send(
   {
-    from: 'Acme <onboarding@resend.dev>',
-    to: ['delivered@resend.dev'],
-    subject: 'Hello World',
-    html: '<p>Email body here</p>'
+    from: "Acme <onboarding@resend.dev>",
+    to: ["delivered@resend.dev"],
+    subject: "Hello World",
+    html: "<p>Email body here</p>",
   },
-  { idempotencyKey: `welcome-email/${userId}` }
-)
+  { idempotencyKey: `welcome-email/${userId}` },
+);
 
 if (error) {
-  console.error('Failed:', error.message)
-  return
+  console.error("Failed:", error.message);
+  return;
 }
-console.log('Sent:', data.id)
+console.log("Sent:", data.id);
 ```
 
 ### Example (Python)
@@ -112,36 +112,36 @@ print(email)
 ### Example (Node.js)
 
 ```typescript
-import { Resend } from 'resend'
+import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const { data, error } = await resend.batch.send(
   [
     {
-      from: 'Acme <notifications@acme.com>',
-      to: ['delivered@resend.dev'],
-      subject: 'Order Shipped',
-      html: '<p>Your order has shipped!</p>'
+      from: "Acme <notifications@acme.com>",
+      to: ["delivered@resend.dev"],
+      subject: "Order Shipped",
+      html: "<p>Your order has shipped!</p>",
     },
     {
-      from: 'Acme <notifications@acme.com>',
-      to: ['delivered@resend.dev'],
-      subject: 'Order Confirmed',
-      html: '<p>Your order is confirmed!</p>'
-    }
+      from: "Acme <notifications@acme.com>",
+      to: ["delivered@resend.dev"],
+      subject: "Order Confirmed",
+      html: "<p>Your order is confirmed!</p>",
+    },
   ],
-  { idempotencyKey: `batch-orders/${batchId}` }
-)
+  { idempotencyKey: `batch-orders/${batchId}` },
+);
 
 if (error) {
-  console.error('Batch failed:', error.message)
-  return
+  console.error("Batch failed:", error.message);
+  return;
 }
 console.log(
-  'Sent:',
-  data.map(e => e.id)
-)
+  "Sent:",
+  data.map((e) => e.id),
+);
 ```
 
 ## Large Batches (100+ Emails)
@@ -181,20 +181,20 @@ Prevent duplicate emails when retrying failed requests.
 ```typescript
 async function sendWithRetry(emailData, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
-    const { data, error } = await resend.emails.send(emailData)
+    const { data, error } = await resend.emails.send(emailData);
 
-    if (!error) return data
+    if (!error) return data;
 
     // Don't retry client errors
     if (error.statusCode >= 400 && error.statusCode < 500 && error.statusCode !== 429) {
-      throw error
+      throw error;
     }
 
     // Exponential backoff for rate limits and server errors
-    const delay = Math.pow(2, i) * 1000
-    await new Promise(r => setTimeout(r, delay))
+    const delay = Math.pow(2, i) * 1000;
+    await new Promise((r) => setTimeout(r, delay));
   }
-  throw new Error('Max retries exceeded')
+  throw new Error("Max retries exceeded");
 }
 ```
 
@@ -234,12 +234,12 @@ Track email delivery status in real-time:
 const event = resend.webhooks.verify({
   payload,
   headers: {
-    'svix-id': req.headers.get('svix-id'),
-    'svix-timestamp': req.headers.get('svix-timestamp'),
-    'svix-signature': req.headers.get('svix-signature')
+    "svix-id": req.headers.get("svix-id"),
+    "svix-timestamp": req.headers.get("svix-timestamp"),
+    "svix-signature": req.headers.get("svix-signature"),
   },
-  secret: process.env.RESEND_WEBHOOK_SECRET
-})
+  secret: process.env.RESEND_WEBHOOK_SECRET,
+});
 ```
 
 ## Tags
@@ -248,10 +248,10 @@ Key/value pairs for tracking and filtering:
 
 ```typescript
 tags: [
-  { name: 'user_id', value: 'usr_123' },
-  { name: 'email_type', value: 'welcome' },
-  { name: 'plan', value: 'enterprise' }
-]
+  { name: "user_id", value: "usr_123" },
+  { name: "email_type", value: "welcome" },
+  { name: "plan", value: "enterprise" },
+];
 ```
 
 **Constraints:** ASCII letters, numbers, underscores, dashes only. Max 256 chars each.
@@ -262,17 +262,17 @@ Use pre-built templates instead of sending HTML:
 
 ```typescript
 const { data, error } = await resend.emails.send({
-  from: 'Acme <hello@acme.com>',
-  to: ['delivered@resend.dev'],
-  subject: 'Welcome!',
+  from: "Acme <hello@acme.com>",
+  to: ["delivered@resend.dev"],
+  subject: "Welcome!",
   template: {
-    id: 'tmpl_abc123',
+    id: "tmpl_abc123",
     variables: {
-      USER_NAME: 'John', // Case-sensitive!
-      ORDER_TOTAL: '$99.00'
-    }
-  }
-})
+      USER_NAME: "John", // Case-sensitive!
+      ORDER_TOTAL: "$99.00",
+    },
+  },
+});
 ```
 
 **Important:** Variable names are **case-sensitive**. Templates must be **published** before use.

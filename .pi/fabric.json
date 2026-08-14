@@ -9,7 +9,9 @@
     "trustedCommands": {
       "canonical-check": {
         "command": "node",
-        "args": ["scripts/check.mjs"],
+        "args": [
+          "scripts/check.mjs"
+        ],
         "shell": false,
         "timeoutMs": 120000
       }

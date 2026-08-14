@@ -1,6 +1,6 @@
 ---
 name: rust-development
-description: 'Use when writing or reviewing Rust - ownership, error handling, traits, async, Cargo, and testing conventions.'
+description: "Use when writing or reviewing Rust - ownership, error handling, traits, async, Cargo, and testing conventions."
 disable-model-invocation: true
 ---
 

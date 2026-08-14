@@ -9,7 +9,7 @@ Actors protect mutable state by ensuring only one task accesses it at a time. Th
 ```swift
 actor Counter {
     var value = 0
-
+    
     func increment() {
         value += 1
     }
@@ -27,7 +27,7 @@ actor Counter {
 ```swift
 actor BankAccount {
     var balance: Int = 0
-
+    
     func deposit(_ amount: Int) {
         balance += amount
     }
@@ -158,7 +158,7 @@ func updateUI() {
 ```swift
 func methodB() {
     assert(Thread.isMainThread) // Validate assumption
-
+    
     MainActor.assumeIsolated {
         someMainActorMethod()
     }
@@ -178,7 +178,7 @@ Actor methods are isolated by default:
 ```swift
 actor BankAccount {
     var balance: Double
-
+    
     // Implicitly isolated
     func deposit(_ amount: Double) {
         balance += amount
@@ -250,7 +250,7 @@ Opt out of isolation for immutable data:
 ```swift
 actor BankAccount {
     let accountHolder: String
-
+    
     nonisolated var details: String {
         "Account: \(accountHolder)"
     }
@@ -279,7 +279,7 @@ Clean up actor state on deallocation:
 ```swift
 actor FileDownloader {
     var downloadTask: Task<Void, Error>?
-
+    
     isolated deinit {
         downloadTask?.cancel() // Can call isolated methods
     }
@@ -319,13 +319,13 @@ extension PersonViewModel: @MainActor Equatable {
 ```swift
 actor BankAccount {
     var balance: Double
-
+    
     func deposit(amount: Double) async {
         balance += amount
-
+        
         // [!]️ Actor unlocked during await
         await logActivity("Deposited \(amount)")
-
+        
         // [!]️ Balance may have changed!
         print("Balance: \(balance)")
     }
@@ -353,7 +353,7 @@ Complete actor work before suspending:
 func deposit(amount: Double) async {
     balance += amount
     print("Balance: \(balance)") // Before suspension
-
+    
     await logActivity("Deposited \(amount)")
 }
 ```
@@ -422,7 +422,6 @@ func process(
 **Why `_ = isolation` is required**: Per [SE-0420](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0420-inheritance-of-actor-isolation.md), `Task` closures only inherit isolation when "a non-optional binding of an isolated parameter is captured by the closure." The `_ = isolation` statement forces this capture. The capture list syntax `[isolation]` should work but currently does not.
 
 **When to use this pattern**:
-
 - Spawning `Task`s that work with `non-Sendable` delegate objects
 - Fire-and-forget async work that needs access to caller's state
 - Bridging callback-based APIs to async streams while keeping delegates alive
@@ -440,15 +439,15 @@ func process(
 ```swift
 final class DispatchQueueExecutor: SerialExecutor {
     private let queue: DispatchQueue
-
+    
     init(queue: DispatchQueue) {
         self.queue = queue
     }
-
+    
     func enqueue(_ job: consuming ExecutorJob) {
         let unownedJob = UnownedJob(job)
         let executor = asUnownedSerialExecutor()
-
+        
         queue.async {
             unownedJob.runSynchronously(on: executor)
         }
@@ -457,11 +456,11 @@ final class DispatchQueueExecutor: SerialExecutor {
 
 actor LoggingActor {
     private let executor: DispatchQueueExecutor
-
+    
     nonisolated var unownedExecutor: UnownedSerialExecutor {
         executor.asUnownedSerialExecutor()
     }
-
+    
     init(queue: DispatchQueue) {
         executor = DispatchQueueExecutor(queue: queue)
     }
@@ -489,11 +488,11 @@ import Synchronization
 
 final class Counter {
     private let count = Mutex<Int>(0)
-
+    
     var currentCount: Int {
         count.withLock { $0 }
     }
-
+    
     func increment() {
         count.withLock { $0 += 1 }
     }
@@ -505,7 +504,7 @@ final class Counter {
 ```swift
 final class TouchesCapturer: Sendable {
     let path = Mutex<NSBezierPath>(NSBezierPath())
-
+    
     func storeTouch(_ point: NSPoint) {
         path.withLock { path in
             path.move(to: point)
@@ -529,23 +528,21 @@ func decrement() throws {
 
 ### Mutex vs Actor
 
-| Feature                 | Mutex | Actor                |
-| ----------------------- | ----- | -------------------- |
-| Synchronous             | [x]   | [ ] (requires await) |
-| Async support           | [ ]   | [x]                  |
-| Thread blocking         | [x]   | [ ] (cooperative)    |
-| Fine-grained locking    | [x]   | [ ] (whole actor)    |
-| Legacy code integration | [x]   | [ ]                  |
+| Feature | Mutex | Actor |
+|---------|-------|-------|
+| Synchronous | [x] | [ ] (requires await) |
+| Async support | [ ] | [x] |
+| Thread blocking | [x] | [ ] (cooperative) |
+| Fine-grained locking | [x] | [ ] (whole actor) |
+| Legacy code integration | [x] | [ ] |
 
 **Use Mutex when**:
-
 - Need synchronous access
 - Working with legacy non-async APIs
 - Fine-grained locking required
 - Low contention, short critical sections
 
 **Use Actor when**:
-
 - Can adopt async/await
 - Need logical isolation
 - Working in async context
@@ -560,7 +557,7 @@ func decrement() throws {
 @MainActor
 final class ContentViewModel: ObservableObject {
     @Published var items: [Item] = []
-
+    
     func loadItems() async {
         items = try await api.fetchItems()
     }
@@ -583,11 +580,11 @@ final class ImageProcessor {
 ```swift
 actor DataStore {
     private var items: [Item] = []
-
+    
     func add(_ item: Item) {
         items.append(item)
     }
-
+    
     nonisolated func itemCount() -> Int {
         // [ ] Can't access items
         return 0
@@ -640,3 +637,4 @@ Need thread-safe mutable state?
 ## Further Learning
 
 For migration strategies, advanced patterns, and real-world examples, see [Swift Concurrency Course](https://www.swiftconcurrencycourse.com).
+

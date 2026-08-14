@@ -22,45 +22,31 @@ import { Button } from "@/components/ui/button"
 ## Card
 
 ```tsx
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 
-;<Card>
+<Card>
   <CardHeader>
     <CardTitle>Title</CardTitle>
     <CardDescription>Description</CardDescription>
   </CardHeader>
   <CardContent>Content</CardContent>
-  <CardFooter>
-    <Button>Action</Button>
-  </CardFooter>
+  <CardFooter><Button>Action</Button></CardFooter>
 </Card>
 ```
 
 ## Dialog
 
 ```tsx
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter
-} from '@/components/ui/dialog'
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 
-;<Dialog>
-  <DialogTrigger asChild>
-    <Button>Open</Button>
-  </DialogTrigger>
+<Dialog>
+  <DialogTrigger asChild><Button>Open</Button></DialogTrigger>
   <DialogContent>
     <DialogHeader>
       <DialogTitle>Are you sure?</DialogTitle>
       <DialogDescription>Cannot be undone.</DialogDescription>
     </DialogHeader>
-    <DialogFooter>
-      <Button>Confirm</Button>
-    </DialogFooter>
+    <DialogFooter><Button>Confirm</Button></DialogFooter>
   </DialogContent>
 </Dialog>
 ```
@@ -68,9 +54,9 @@ import {
 ## Select
 
 ```tsx
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 
-;<Select>
+<Select>
   <SelectTrigger className="w-[180px]">
     <SelectValue placeholder="Theme" />
   </SelectTrigger>
@@ -84,9 +70,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 ## Tabs
 
 ```tsx
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-;<Tabs defaultValue="account">
+<Tabs defaultValue="account">
   <TabsList>
     <TabsTrigger value="account">Account</TabsTrigger>
     <TabsTrigger value="password">Password</TabsTrigger>
@@ -99,20 +85,20 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 ## Toast (Sonner)
 
 ```tsx
-import { toast } from 'sonner'
+import { toast } from "sonner"
 
-toast('Event created')
-toast.success('Saved')
-toast.error('Failed')
-toast.promise(saveData(), { loading: 'Saving...', success: 'Done!', error: 'Error' })
+toast("Event created")
+toast.success("Saved")
+toast.error("Failed")
+toast.promise(saveData(), { loading: "Saving...", success: "Done!", error: "Error" })
 ```
 
 ## Command
 
 ```tsx
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command'
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 
-;<Command>
+<Command>
   <CommandInput placeholder="Search..." />
   <CommandList>
     <CommandEmpty>No results.</CommandEmpty>
@@ -127,27 +113,16 @@ import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, Command
 ## Sidebar
 
 ```tsx
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton
-} from '@/components/ui/sidebar'
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar"
 
-;<Sidebar>
+<Sidebar>
   <SidebarContent>
     <SidebarGroup>
       <SidebarGroupLabel>App</SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <a href="/dashboard">
-              <HomeIcon />
-              Dashboard
-            </a>
+            <a href="/dashboard"><HomeIcon />Dashboard</a>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
@@ -159,9 +134,9 @@ import {
 ## Table
 
 ```tsx
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 
-;<Table>
+<Table>
   <TableHeader>
     <TableRow>
       <TableHead>Name</TableHead>

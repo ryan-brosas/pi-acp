@@ -5,7 +5,6 @@
 **Symptom**: Legitimate traffic blocked/challenged
 
 **Diagnosis**:
-
 ```typescript
 // Query GraphQL API for flagged requests
 const query = `
@@ -28,11 +27,10 @@ const query = `
       }
     }
   }
-`
+`;
 ```
 
 **Fix**:
-
 1. Lower sensitivity for specific rule/category
 2. Use `log` action first to validate (Enterprise Advanced)
 3. Add exception with custom expression (e.g., allowlist IPs)
@@ -43,21 +41,18 @@ const query = `
 **Cause**: Sensitivity too low, wrong action
 
 **Fix**:
-
 ```typescript
 // Increase to default (high) sensitivity
 const config = {
-  rules: [
-    {
-      expression: 'true',
-      action: 'execute',
-      action_parameters: {
-        id: managedRulesetId,
-        overrides: { sensitivity_level: 'default', action: 'block' }
-      }
-    }
-  ]
-}
+  rules: [{
+    expression: "true",
+    action: "execute",
+    action_parameters: {
+      id: managedRulesetId,
+      overrides: { sensitivity_level: "default", action: "block" },
+    },
+  }],
+};
 ```
 
 ## Adaptive Rules Not Working
@@ -81,7 +76,6 @@ const config = {
 ## Rule Limit Exceeded
 
 **Plans**:
-
 - Free/Pro/Business: 1 override rule only
 - Enterprise Advanced: Up to 10 rules
 

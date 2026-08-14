@@ -9,7 +9,6 @@ Constraints ensure uniqueness of attribute values. When combined with the correc
 ### Setting Up Constraints
 
 In Xcode's Data Model Editor:
-
 1. Select your entity
 2. In the Data Model Inspector, find "Constraints"
 3. Click "+" and add attribute names
@@ -84,7 +83,6 @@ Derived attributes are computed from other attributes or relationships and store
 ```
 
 **Why this is better than `articles.count`:**
-
 - Doesn't fire faults
 - Faster queries
 - Always up-to-date after save
@@ -115,13 +113,11 @@ Derived attributes are computed from other attributes or relationships and store
 ```
 
 **What it does:**
-
 - Converts to lowercase
 - Removes diacritics
 - Perfect for case-insensitive, diacritic-insensitive searches
 
 **Example:**
-
 ```swift
 // name = "Café"
 // searchName = "cafe"
@@ -150,10 +146,10 @@ fetchRequest.predicate = NSPredicate(format: "searchName CONTAINS %@", "cafe")
 class Article: NSManagedObject {
     @NSManaged var name: String
     @NSManaged var category: Category?
-
+    
     // Derived from category.name
     @NSManaged var categoryName: String?
-
+    
     // Derived from canonical:(name)
     @NSManaged var searchName: String?
 }
@@ -181,14 +177,14 @@ class ColorTransformer: ValueTransformer {
     override class func transformedValueClass() -> AnyClass {
         return NSData.self
     }
-
+    
     override class func allowsReverseTransformation() -> Bool {
         return true
     }
-
+    
     override func transformedValue(_ value: Any?) -> Any? {
         guard let color = value as? UIColor else { return nil }
-
+        
         do {
             let data = try NSKeyedArchiver.archivedData(
                 withRootObject: color,
@@ -200,10 +196,10 @@ class ColorTransformer: ValueTransformer {
             return nil
         }
     }
-
+    
     override func reverseTransformedValue(_ value: Any?) -> Any? {
         guard let data = value as? Data else { return nil }
-
+        
         do {
             let color = try NSKeyedUnarchiver.unarchivedObject(
                 ofClass: UIColor.self,
@@ -258,11 +254,11 @@ Modern Core Data requires secure coding:
 // Make your custom type conform to NSSecureCoding
 extension CustomType: NSSecureCoding {
     static var supportsSecureCoding: Bool { return true }
-
+    
     func encode(with coder: NSCoder) {
         // Encode properties
     }
-
+    
     required init?(coder: NSCoder) {
         // Decode properties
     }
@@ -278,18 +274,15 @@ Core Data provides built-in validation that runs before saving.
 Set in Data Model Editor:
 
 **String Validation:**
-
 - Minimum Length
 - Maximum Length
 - Regular Expression
 
 **Numeric Validation:**
-
 - Minimum Value
 - Maximum Value
 
 **Example:**
-
 ```
 Attribute: name
 Type: String
@@ -304,23 +297,23 @@ Override validation methods in your `NSManagedObject` subclass:
 ```swift
 class Article: NSManagedObject {
     @NSManaged var name: String?
-
+    
     // Validate before insert
     override func validateForInsert() throws {
         try super.validateForInsert()
         try validateName()
     }
-
+    
     // Validate before update
     override func validateForUpdate() throws {
         try super.validateForUpdate()
         try validateName()
     }
-
+    
     // Validate before delete
     override func validateForDelete() throws {
         try super.validateForDelete()
-
+        
         // Example: Can't delete if has related objects
         if let attachments = attachments, !attachments.isEmpty {
             throw NSError(
@@ -330,7 +323,7 @@ class Article: NSManagedObject {
             )
         }
     }
-
+    
     // Custom validation
     private func validateName() throws {
         guard let name = name, !name.isEmpty else {
@@ -340,7 +333,7 @@ class Article: NSManagedObject {
                 userInfo: [NSLocalizedDescriptionKey: "Name cannot be empty"]
             )
         }
-
+        
         // Check for protected names
         let protectedNames = ["Admin", "System", "Root"]
         if protectedNames.contains(name) {
@@ -359,7 +352,7 @@ class Article: NSManagedObject {
 ```swift
 class Article: NSManagedObject {
     @NSManaged var name: String?
-
+    
     override func validateName(_ value: AutoreleasingUnsafeMutablePointer<AnyObject?>) throws {
         guard let name = value.pointee as? String, !name.isEmpty else {
             throw NSError(
@@ -404,7 +397,7 @@ Called once when object is first inserted into context.
 ```swift
 override func awakeFromInsert() {
     super.awakeFromInsert()
-
+    
     // Set default values
     setPrimitiveValue(Date(), forKey: #keyPath(Article.creationDate))
     setPrimitiveValue(Date(), forKey: #keyPath(Article.lastModified))
@@ -413,7 +406,6 @@ override func awakeFromInsert() {
 ```
 
 **Use `setPrimitiveValue` to avoid:**
-
 - KVO notifications
 - Marking object as changed
 - Infinite loops
@@ -425,10 +417,10 @@ Called before every save. Use for updating modification dates or cleaning up.
 ```swift
 override func willSave() {
     super.willSave()
-
+    
     // Update modification date
     setPrimitiveValue(Date(), forKey: #keyPath(Article.lastModified))
-
+    
     // Delete local files if object is deleted
     if isDeleted, let localResource = localResourceURL {
         try? FileManager.default.removeItem(at: localResource)
@@ -445,7 +437,7 @@ Called after save completes.
 ```swift
 override func didSave() {
     super.didSave()
-
+    
     // Post notification, update cache, etc.
     NotificationCenter.default.post(
         name: .articleDidSave,
@@ -461,10 +453,10 @@ Called when object is marked for deletion (before save).
 ```swift
 override func prepareForDeletion() {
     super.prepareForDeletion()
-
+    
     // Cancel ongoing operations
     downloadTask?.cancel()
-
+    
     // Don't delete files here! Use willSave() instead
     // (prepareForDeletion is called even if save is rolled back)
 }
@@ -479,7 +471,7 @@ Called when object is fetched from store.
 ```swift
 override func awakeFromFetch() {
     super.awakeFromFetch()
-
+    
     // Initialize transient properties
     setupObservers()
 }
@@ -493,32 +485,32 @@ class Article: NSManagedObject {
     @NSManaged var creationDate: Date?
     @NSManaged var lastModified: Date?
     @NSManaged var localResourceURL: URL?
-
+    
     override func awakeFromInsert() {
         super.awakeFromInsert()
-
+        
         // Set creation date once
         setPrimitiveValue(Date(), forKey: #keyPath(Article.creationDate))
         setPrimitiveValue(Date(), forKey: #keyPath(Article.lastModified))
     }
-
+    
     override func willSave() {
         super.willSave()
-
+        
         // Update modification date on every save
         if !isDeleted && changedValues().keys.contains("name") {
             setPrimitiveValue(Date(), forKey: #keyPath(Article.lastModified))
         }
-
+        
         // Clean up files when deleted
         if isDeleted, let url = localResourceURL {
             try? FileManager.default.removeItem(at: url)
         }
     }
-
+    
     override func prepareForDeletion() {
         super.prepareForDeletion()
-
+        
         // Cancel ongoing operations
         // Don't delete files here!
     }
@@ -548,10 +540,10 @@ article.categoryName = "Swift" // Ignored!
 ```swift
 override func awakeFromInsert() {
     super.awakeFromInsert()
-
+    
     // [ ] Triggers KVO, marks as changed
     self.creationDate = Date()
-
+    
     // [x] Use primitive values
     setPrimitiveValue(Date(), forKey: #keyPath(Article.creationDate))
 }
@@ -562,7 +554,7 @@ override func awakeFromInsert() {
 ```swift
 override func prepareForDeletion() {
     super.prepareForDeletion()
-
+    
     // [ ] Bad: Deletion might be rolled back
     try? FileManager.default.removeItem(at: fileURL)
 }

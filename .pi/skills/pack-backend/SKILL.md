@@ -1,6 +1,6 @@
 ---
 name: pack-backend
-description: 'Backend and service router: server architecture, API implementation, Python web frameworks, background jobs, observability, and distributed-system patterns.'
+description: "Backend and service router: server architecture, API implementation, Python web frameworks, background jobs, observability, and distributed-system patterns."
 ---
 
 # Backend & Services

@@ -3,7 +3,6 @@
 ### Wrangler Setup
 
 **wrangler.toml:**
-
 ```toml
 [[analytics_engine_datasets]]
 binding = "WEATHER"
@@ -11,7 +10,6 @@ dataset = "weather_data"
 ```
 
 **wrangler.jsonc:**
-
 ```jsonc
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
@@ -25,7 +23,6 @@ dataset = "weather_data"
 ```
 
 **Key Points:**
-
 - Datasets are created automatically on first write - no manual dashboard setup needed
 - `binding` = variable name accessible in Worker env
 - `dataset` = logical table name (like SQL table - rows/columns should have consistent meaning)
@@ -46,4 +43,3 @@ interface AnalyticsEngineDataset {
 interface AnalyticsEngineDataPoint {
   blobs?: string[];      // Up to 20 strings (dimensions for grouping/filtering)
   doubles?
-```

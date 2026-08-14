@@ -5,7 +5,6 @@ Spacing, typography, colors, borders, shadows, transforms.
 ## Spacing
 
 ### Padding
-
 ```html
 <div class="p-4">All</div>
 <div class="px-6">X axis</div>
@@ -14,7 +13,6 @@ Spacing, typography, colors, borders, shadows, transforms.
 ```
 
 ### Margin
-
 ```html
 <div class="m-4">All</div>
 <div class="mx-auto">Center</div>
@@ -24,7 +22,6 @@ Spacing, typography, colors, borders, shadows, transforms.
 ```
 
 ### Scale
-
 ```
 0=0px, px=1px, 0.5=2px, 1=4px, 2=8px, 3=12px, 4=16px
 6=24px, 8=32px, 12=48px, 16=64px, 24=96px

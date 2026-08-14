@@ -18,49 +18,46 @@ Workers VPC connectivity enables Workers to communicate with resources in privat
 Create outbound TCP connections to private resources:
 
 ```typescript
-import { connect } from 'cloudflare:sockets'
+import { connect } from 'cloudflare:sockets';
 
 export default {
   async fetch(req: Request): Promise<Response> {
-    const socket = connect(
-      {
-        hostname: 'internal-db.private.com',
-        port: 5432
-      },
-      {
-        secureTransport: 'starttls' // or "on" for immediate TLS
-      }
-    )
+    const socket = connect({
+      hostname: "internal-db.private.com",
+      port: 5432
+    }, {
+      secureTransport: "starttls" // or "on" for immediate TLS
+    });
 
     // Get readable/writable streams
-    const writer = socket.writable.getWriter()
-    const reader = socket.readable.getReader()
+    const writer = socket.writable.getWriter();
+    const reader = socket.readable.getReader();
 
     // Write data
-    const encoder = new TextEncoder()
-    await writer.write(encoder.encode('QUERY\r\n'))
-    await writer.close()
+    const encoder = new TextEncoder();
+    await writer.write(encoder.encode("QUERY\r\n"));
+    await writer.close();
 
     // Read response
-    const { value } = await reader.read()
-
-    await socket.close()
-    return new Response(value)
+    const { value } = await reader.read();
+    
+    await socket.close();
+    return new Response(value);
   }
-}
+};
 ```
 
 ### SocketOptions
 
 ```typescript
 interface SocketOptions {
-  secureTransport?: 'off' | 'on' | 'starttls' // Default: "off"
-  allowHalfOpen?: boolean // Default: false
+  secureTransport?: "off" | "on" | "starttls"; // Default: "off"
+  allowHalfOpen?: boolean; // Default: false
 }
 
 interface SocketAddress {
-  hostname: string // e.g., "db.private.net"
-  port: number // e.g., 5432
+  hostname: string; // e.g., "db.private.net"
+  port: number;     // e.g., 5432
 }
 ```
 
@@ -68,12 +65,12 @@ interface SocketAddress {
 
 ```typescript
 interface Socket {
-  readable: ReadableStream<Uint8Array>
-  writable: WritableStream<Uint8Array>
-  opened: Promise<SocketInfo>
-  closed: Promise<void>
-  close(): Promise<void>
-  startTls(): Socket // Upgrade to TLS
+  readable: ReadableStream<Uint8Array>;
+  writable: WritableStream<Uint8Array>;
+  opened: Promise<SocketInfo>;
+  closed: Promise<void>;
+  close(): Promise<void>;
+  startTls(): Socket; // Upgrade to TLS
 }
 ```
 
@@ -82,27 +79,30 @@ interface Socket {
 ### 1. Connect to Internal Database
 
 ```typescript
-import { connect } from 'cloudflare:sockets'
+import { connect } from 'cloudflare:sockets';
 
 export default {
   async fetch(req: Request) {
-    const socket = connect({ hostname: '10.0.1.50', port: 5432 }, { secureTransport: 'on' })
+    const socket = connect(
+      { hostname: "10.0.1.50", port: 5432 },
+      { secureTransport: "on" }
+    );
 
     try {
-      await socket.opened // Wait for connection
+      await socket.opened; // Wait for connection
+      
+      const writer = socket.writable.getWriter();
+      await writer.write(new TextEncoder().encode("SELECT 1\n"));
+      await writer.close();
 
-      const writer = socket.writable.getWriter()
-      await writer.write(new TextEncoder().encode('SELECT 1\n'))
-      await writer.close()
-
-      return new Response(socket.readable)
+      return new Response(socket.readable);
     } catch (error) {
-      return new Response(`Connection failed: ${error}`, { status: 500 })
+      return new Response(`Connection failed: ${error}`, { status: 500 });
     } finally {
-      await socket.close()
+      await socket.close();
     }
   }
-}
+};
 ```
 
 ### 2. StartTLS Pattern (Opportunistic TLS)
@@ -110,86 +110,98 @@ export default {
 Many databases require starting insecure then upgrading:
 
 ```typescript
-import { connect } from 'cloudflare:sockets'
+import { connect } from 'cloudflare:sockets';
 
-const socket = connect({ hostname: 'postgres.internal', port: 5432 }, { secureTransport: 'starttls' })
+const socket = connect(
+  { hostname: "postgres.internal", port: 5432 },
+  { secureTransport: "starttls" }
+);
 
 // Initially insecure connection
-const writer = socket.writable.getWriter()
-await writer.write(new TextEncoder().encode('STARTTLS\n'))
+const writer = socket.writable.getWriter();
+await writer.write(new TextEncoder().encode("STARTTLS\n"));
 
 // Upgrade to TLS
-const secureSocket = socket.startTls()
+const secureSocket = socket.startTls();
 
 // Now use secureSocket for encrypted communication
-const secureWriter = secureSocket.writable.getWriter()
-await secureWriter.write(new TextEncoder().encode('AUTH\n'))
+const secureWriter = secureSocket.writable.getWriter();
+await secureWriter.write(new TextEncoder().encode("AUTH\n"));
 ```
 
 ### 3. SSH/MQTT/SMTP Protocols
 
 ```typescript
 // SSH connection example
-import { connect } from 'cloudflare:sockets'
+import { connect } from 'cloudflare:sockets';
 
 export default {
   async fetch(req: Request) {
-    const socket = connect({ hostname: 'bastion.internal', port: 22 }, { secureTransport: 'on' })
+    const socket = connect(
+      { hostname: "bastion.internal", port: 22 },
+      { secureTransport: "on" }
+    );
 
-    const writer = socket.writable.getWriter()
-    const reader = socket.readable.getReader()
+    const writer = socket.writable.getWriter();
+    const reader = socket.readable.getReader();
 
     // SSH handshake
-    await writer.write(new TextEncoder().encode('SSH-2.0-CloudflareWorker\r\n'))
+    await writer.write(new TextEncoder().encode("SSH-2.0-CloudflareWorker\r\n"));
 
     // Read server response
-    const { value } = await reader.read()
-    const response = new TextDecoder().decode(value)
+    const { value } = await reader.read();
+    const response = new TextDecoder().decode(value);
 
-    await socket.close()
-    return new Response(response)
+    await socket.close();
+    return new Response(response);
   }
-}
+};
 ```
 
 ### 4. Connection with Error Handling
 
 ```typescript
-import { connect } from 'cloudflare:sockets'
+import { connect } from 'cloudflare:sockets';
 
-async function connectToPrivateService(host: string, port: number, data: string): Promise<string> {
-  let socket: ReturnType<typeof connect> | null = null
+async function connectToPrivateService(
+  host: string,
+  port: number,
+  data: string
+): Promise<string> {
+  let socket: ReturnType<typeof connect> | null = null;
 
   try {
-    socket = connect({ hostname: host, port }, { secureTransport: 'on' })
+    socket = connect({ hostname: host, port }, { secureTransport: "on" });
+    
+    await socket.opened; // Throws if connection fails
 
-    await socket.opened // Throws if connection fails
+    const writer = socket.writable.getWriter();
+    await writer.write(new TextEncoder().encode(data));
+    await writer.close();
 
-    const writer = socket.writable.getWriter()
-    await writer.write(new TextEncoder().encode(data))
-    await writer.close()
-
-    const reader = socket.readable.getReader()
-    const chunks: Uint8Array[] = []
-
+    const reader = socket.readable.getReader();
+    const chunks: Uint8Array[] = [];
+    
     while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      chunks.push(value)
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
     }
 
-    const combined = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0))
-    let offset = 0
+    const combined = new Uint8Array(
+      chunks.reduce((acc, chunk) => acc + chunk.length, 0)
+    );
+    let offset = 0;
     chunks.forEach(chunk => {
-      combined.set(chunk, offset)
-      offset += chunk.length
-    })
+      combined.set(chunk, offset);
+      offset += chunk.length;
+    });
 
-    return new TextDecoder().decode(combined)
+    return new TextDecoder().decode(combined);
   } catch (error) {
-    throw new Error(`Socket error: ${error}`)
+    throw new Error(`Socket error: ${error}`);
   } finally {
-    if (socket) await socket.close()
+    if (socket) await socket.close();
   }
 }
 ```
@@ -232,24 +244,21 @@ ingress:
 3. **Connect from Worker:**
 
 ```typescript
-import { connect } from 'cloudflare:sockets'
+import { connect } from 'cloudflare:sockets';
 
 export default {
   async fetch(req: Request) {
     // Connect through Tunnel to private resource
-    const socket = connect(
-      {
-        hostname: 'db.internal.example.com',
-        port: 5432
-      },
-      {
-        secureTransport: 'on'
-      }
-    )
+    const socket = connect({
+      hostname: "db.internal.example.com",
+      port: 5432
+    }, {
+      secureTransport: "on"
+    });
 
     // Use socket...
   }
-}
+};
 ```
 
 ## Wrangler Configuration
@@ -283,8 +292,8 @@ API_PORT = "8080"
 
 ```typescript
 interface Env {
-  DB_HOST: string
-  DB_PORT: string
+  DB_HOST: string;
+  DB_PORT: string;
 }
 
 export default {
@@ -292,10 +301,10 @@ export default {
     const socket = connect({
       hostname: env.DB_HOST,
       port: parseInt(env.DB_PORT)
-    })
+    });
     // ...
   }
-}
+};
 ```
 
 ## Smart Placement
@@ -312,10 +321,10 @@ mode = "smart"
 export default {
   async fetch(req: Request, env: Env, ctx: ExecutionContext) {
     // Worker automatically runs closest to your backend
-    const socket = connect({ hostname: 'backend.internal', port: 8080 })
+    const socket = connect({ hostname: "backend.internal", port: 8080 });
     // Minimized latency to private network
   }
-}
+};
 ```
 
 ## Hyperdrive for Databases
@@ -330,25 +339,25 @@ id = "<HYPERDRIVE_ID>"
 ```
 
 ```typescript
-import { Client } from 'pg'
+import { Client } from 'pg';
 
 interface Env {
-  DB: Hyperdrive
+  DB: Hyperdrive;
 }
 
 export default {
   async fetch(req: Request, env: Env) {
     const client = new Client({
       connectionString: env.DB.connectionString
-    })
+    });
+    
+    await client.connect();
+    const result = await client.query('SELECT * FROM users');
+    await client.end();
 
-    await client.connect()
-    const result = await client.query('SELECT * FROM users')
-    await client.end()
-
-    return Response.json(result.rows)
+    return Response.json(result.rows);
   }
-}
+};
 ```
 
 ## Limits and Considerations
@@ -373,11 +382,11 @@ export default {
 // [x] GOOD: Create in handler
 export default {
   async fetch(req: Request) {
-    const socket = connect({ hostname: 'db', port: 5432 })
+    const socket = connect({ hostname: "db", port: 5432 });
     // Use socket
-    await socket.close()
+    await socket.close();
   }
-}
+};
 ```
 
 ### Security
@@ -389,24 +398,28 @@ function isAllowedHost(hostname: string): boolean {
     'internal-db.company.com',
     'api.private.net',
     /^10\.0\.1\.\d+$/ // Private subnet regex
-  ]
-
-  return allowed.some(pattern => (pattern instanceof RegExp ? pattern.test(hostname) : pattern === hostname))
+  ];
+  
+  return allowed.some(pattern => 
+    pattern instanceof RegExp 
+      ? pattern.test(hostname)
+      : pattern === hostname
+  );
 }
 
 export default {
   async fetch(req: Request) {
-    const url = new URL(req.url)
-    const target = url.searchParams.get('target')
-
+    const url = new URL(req.url);
+    const target = url.searchParams.get('target');
+    
     if (!target || !isAllowedHost(target)) {
-      return new Response('Forbidden', { status: 403 })
+      return new Response('Forbidden', { status: 403 });
     }
-
-    const socket = connect({ hostname: target, port: 443 })
+    
+    const socket = connect({ hostname: target, port: 443 });
     // ...
   }
-}
+};
 ```
 
 ## Common Errors
@@ -447,27 +460,28 @@ wrangler dev
 
 ```typescript
 // test.ts
-import { connect } from 'cloudflare:sockets'
+import { connect } from 'cloudflare:sockets';
 
 export default {
   async fetch(req: Request) {
-    const socket = connect({ hostname: 'google.com', port: 80 })
-
-    const writer = socket.writable.getWriter()
-    await writer.write(new TextEncoder().encode('GET / HTTP/1.0\r\n\r\n'))
-    await writer.close()
+    const socket = connect({ hostname: "google.com", port: 80 });
+    
+    const writer = socket.writable.getWriter();
+    await writer.write(
+      new TextEncoder().encode("GET / HTTP/1.0\r\n\r\n")
+    );
+    await writer.close();
 
     return new Response(socket.readable, {
-      headers: { 'Content-Type': 'text/plain' }
-    })
+      headers: { "Content-Type": "text/plain" }
+    });
   }
-}
+};
 ```
 
 ## Best Practices
 
 1. **Always close sockets:**
-
    ```typescript
    const socket = connect(...);
    try {
@@ -482,7 +496,6 @@ export default {
 3. **Validate destinations** - Prevent connections to unintended hosts
 
 4. **Handle errors gracefully:**
-
    ```typescript
    try {
      const socket = connect(...);
@@ -503,51 +516,54 @@ export default {
 ### Multi-Protocol Gateway
 
 ```typescript
-import { connect } from 'cloudflare:sockets'
+import { connect } from 'cloudflare:sockets';
 
 interface Protocol {
-  connect(host: string, port: number): Promise<string>
+  connect(host: string, port: number): Promise<string>;
 }
 
 class SSHProtocol implements Protocol {
   async connect(host: string, port: number): Promise<string> {
-    const socket = connect({ hostname: host, port }, { secureTransport: 'on' })
+    const socket = connect({ hostname: host, port }, { secureTransport: "on" });
     // SSH implementation
-    await socket.close()
-    return 'SSH connection established'
+    await socket.close();
+    return "SSH connection established";
   }
 }
 
 class PostgresProtocol implements Protocol {
   async connect(host: string, port: number): Promise<string> {
-    const socket = connect({ hostname: host, port }, { secureTransport: 'starttls' })
-
+    const socket = connect(
+      { hostname: host, port },
+      { secureTransport: "starttls" }
+    );
+    
     // Postgres wire protocol
-    const secureSocket = socket.startTls()
-    await secureSocket.close()
-    return 'Postgres connection established'
+    const secureSocket = socket.startTls();
+    await secureSocket.close();
+    return "Postgres connection established";
   }
 }
 
 export default {
   async fetch(req: Request) {
-    const url = new URL(req.url)
-    const protocol = url.pathname.slice(1) // /ssh or /postgres
-
+    const url = new URL(req.url);
+    const protocol = url.pathname.slice(1); // /ssh or /postgres
+    
     const protocols: Record<string, Protocol> = {
       ssh: new SSHProtocol(),
       postgres: new PostgresProtocol()
-    }
-
-    const handler = protocols[protocol]
+    };
+    
+    const handler = protocols[protocol];
     if (!handler) {
-      return new Response('Unknown protocol', { status: 400 })
+      return new Response('Unknown protocol', { status: 400 });
     }
-
-    const result = await handler.connect('internal.net', 22)
-    return new Response(result)
+    
+    const result = await handler.connect('internal.net', 22);
+    return new Response(result);
   }
-}
+};
 ```
 
 ## Reference

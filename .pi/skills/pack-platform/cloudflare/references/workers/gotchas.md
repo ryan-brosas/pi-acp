@@ -6,7 +6,6 @@
 **Unbound**: 30ms CPU time
 
 **Solutions**:
-
 - Use `ctx.waitUntil()` for background work
 - Offload heavy compute to Durable Objects
 - Consider Workers AI for ML workloads
@@ -21,15 +20,15 @@ Workers are stateless between requests - module-level variables reset unpredicta
 
 ```typescript
 // [ ] BAD
-const response = await fetch(url)
-await logBody(response.text()) // First read
-return response // Body already consumed!
+const response = await fetch(url);
+await logBody(response.text());  // First read
+return response;  // Body already consumed!
 
 // [x] GOOD
-const response = await fetch(url)
-const text = await response.text()
-await logBody(text)
-return new Response(text, response)
+const response = await fetch(url);
+const text = await response.text();
+await logBody(text);
+return new Response(text, response);
 ```
 
 ## No Node.js Built-ins (by default)
@@ -49,34 +48,32 @@ const data = await env.MY_BUCKET.get('file.txt');
 
 ```typescript
 // [ ] BAD
-const config = await fetch('/config.json') // Error!
+const config = await fetch('/config.json');  // Error!
 
 export default {
-  async fetch() {
-    return new Response('OK')
-  }
-}
+  async fetch() { return new Response('OK'); },
+};
 
 // [x] GOOD
 export default {
   async fetch() {
-    const config = await fetch('/config.json') // OK
-    return new Response('OK')
-  }
-}
+    const config = await fetch('/config.json');  // OK
+    return new Response('OK');
+  },
+};
 ```
 
 ## Limits
 
-| Resource         | Limit                            |
-| ---------------- | -------------------------------- |
-| Request size     | 100 MB                           |
-| Response size    | Unlimited (streaming)            |
-| CPU time         | 10ms (standard) / 30ms (unbound) |
-| Subrequests      | 1000 per request                 |
-| KV reads         | 1000 per request                 |
-| KV write size    | 25 MB                            |
-| Environment size | 5 MB                             |
+| Resource | Limit |
+|----------|-------|
+| Request size | 100 MB |
+| Response size | Unlimited (streaming) |
+| CPU time | 10ms (standard) / 30ms (unbound) |
+| Subrequests | 1000 per request |
+| KV reads | 1000 per request |
+| KV write size | 25 MB |
+| Environment size | 5 MB |
 
 ## Common Errors
 

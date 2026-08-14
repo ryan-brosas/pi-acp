@@ -135,11 +135,11 @@ TabView {
     Tab("Home", systemImage: "house") {
         HomeView()
     }
-
+    
     Tab("Search", systemImage: "magnifyingglass") {
         SearchView()
     }
-
+    
     Tab("Profile", systemImage: "person") {
         ProfileView()
     }
@@ -164,7 +164,7 @@ TabView {
     } label: {
         Label("Search", systemImage: "magnifyingglass")
     }
-
+    
     Tab {
         HomeView()
     } label: {
@@ -179,7 +179,7 @@ TabView {
     } label: {
         Label("Search", systemImage: "magnifyingglass")
     }
-
+    
     HomeView()  // Error: can't mix with Tab(role:)
         .tabItem {
             Label("Home", systemImage: "house")

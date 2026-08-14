@@ -3,7 +3,6 @@
 ## Workers Binding
 
 **wrangler.jsonc:**
-
 ```jsonc
 {
   "r2_buckets": [
@@ -16,7 +15,6 @@
 ```
 
 **wrangler.toml:**
-
 ```toml
 [[r2_buckets]]
 binding = 'MY_BUCKET'
@@ -26,14 +24,12 @@ bucket_name = 'my-bucket-name'
 ## TypeScript Types
 
 ```typescript
-interface Env {
-  MY_BUCKET: R2Bucket
-}
+interface Env { MY_BUCKET: R2Bucket; }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const object = await env.MY_BUCKET.get('file.txt')
-    return new Response(object?.body)
+    const object = await env.MY_BUCKET.get('file.txt');
+    return new Response(object?.body);
   }
 }
 ```
@@ -41,7 +37,7 @@ export default {
 ## S3 SDK Setup
 
 ```typescript
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 const s3 = new S3Client({
   region: 'auto',
@@ -50,16 +46,14 @@ const s3 = new S3Client({
     accessKeyId: env.R2_ACCESS_KEY_ID,
     secretAccessKey: env.R2_SECRET_ACCESS_KEY
   }
-})
+});
 
-await s3.send(
-  new PutObjectCommand({
-    Bucket: 'my-bucket',
-    Key: 'file.txt',
-    Body: data,
-    StorageClass: 'STANDARD' // or 'STANDARD_IA'
-  })
-)
+await s3.send(new PutObjectCommand({
+  Bucket: 'my-bucket',
+  Key: 'file.txt',
+  Body: data,
+  StorageClass: 'STANDARD' // or 'STANDARD_IA'
+}));
 ```
 
 ## Location Hints

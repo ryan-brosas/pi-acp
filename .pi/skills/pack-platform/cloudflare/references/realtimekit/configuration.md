@@ -5,19 +5,16 @@ Configuration guide for RealtimeKit setup, client SDKs, and wrangler integration
 ## Installation
 
 ### React
-
 ```bash
 npm install @cloudflare/realtimekit @cloudflare/realtimekit-react-ui
 ```
 
 ### Angular
-
 ```bash
 npm install @cloudflare/realtimekit @cloudflare/realtimekit-angular-ui
 ```
 
 ### Web Components/HTML
-
 ```bash
 npm install @cloudflare/realtimekit @cloudflare/realtimekit-ui
 ```
@@ -25,60 +22,40 @@ npm install @cloudflare/realtimekit @cloudflare/realtimekit-ui
 ## Client SDK Configuration
 
 ### React UI Kit
-
 ```tsx
-import { RtkMeeting } from '@cloudflare/realtimekit-react-ui'
-;<RtkMeeting
-  authToken="<token>"
-  onLeave={() => {}}
-/>
+import { RtkMeeting } from '@cloudflare/realtimekit-react-ui';
+<RtkMeeting authToken="<token>" onLeave={() => {}} />
 ```
 
 ### Angular UI Kit
-
 ```typescript
-@Component({
-  template: `<rtk-meeting
-    [authToken]="authToken"
-    (rtkLeave)="onLeave($event)"
-  ></rtk-meeting>`
-})
-export class AppComponent {
-  authToken = '<token>'
-  onLeave() {}
-}
+@Component({ template: `<rtk-meeting [authToken]="authToken" (rtkLeave)="onLeave($event)"></rtk-meeting>` })
+export class AppComponent { authToken = '<token>'; onLeave() {} }
 ```
 
 ### Web Components
-
 ```html
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@cloudflare/realtimekit-ui/dist/realtimekit-ui/realtimekit-ui.esm.js"
-></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@cloudflare/realtimekit-ui/dist/realtimekit-ui/realtimekit-ui.esm.js"></script>
 <rtk-meeting id="meeting"></rtk-meeting>
 <script>
-  document.getElementById('meeting').authToken = '<token>'
+  document.getElementById('meeting').authToken = '<token>';
 </script>
 ```
 
 ### Core SDK Configuration
-
 ```typescript
-import RealtimeKitClient from '@cloudflare/realtimekit'
+import RealtimeKitClient from '@cloudflare/realtimekit';
 
 const meeting = new RealtimeKitClient({
   authToken: '<token>',
-  video: true,
-  audio: true,
-  autoSwitchAudioDevice: true,
+  video: true, audio: true, autoSwitchAudioDevice: true,
   mediaConfiguration: {
     video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
     audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
     screenshare: { width: { max: 1920 }, height: { max: 1080 }, frameRate: { ideal: 15 } }
   }
-})
-await meeting.join()
+});
+await meeting.join();
 ```
 
 ## Backend Setup
@@ -88,7 +65,6 @@ await meeting.join()
 **Dashboard**: https://dash.cloudflare.com/?to=/:account/realtime/kit
 
 **API**:
-
 ```bash
 curl -X POST 'https://api.cloudflare.com/client/v4/accounts/<account_id>/realtime/kit/apps' \
   -H 'Content-Type: application/json' \
@@ -118,13 +94,12 @@ curl -X POST 'https://api.cloudflare.com/client/v4/accounts/<account_id>/realtim
 ## Wrangler Configuration
 
 ### Basic Configuration
-
 ```jsonc
 // wrangler.jsonc
 {
   "name": "realtimekit-app",
   "main": "src/index.ts",
-  "compatibility_date": "2025-01-01", // Use current date
+  "compatibility_date": "2025-01-01",  // Use current date
   "vars": {
     "CLOUDFLARE_ACCOUNT_ID": "abc123",
     "REALTIMEKIT_APP_ID": "xyz789"
@@ -134,7 +109,6 @@ curl -X POST 'https://api.cloudflare.com/client/v4/accounts/<account_id>/realtim
 ```
 
 ### With Database & Storage
-
 ```jsonc
 {
   "d1_databases": [{ "binding": "DB", "database_name": "meetings", "database_id": "d1-id" }],
@@ -144,7 +118,6 @@ curl -X POST 'https://api.cloudflare.com/client/v4/accounts/<account_id>/realtim
 ```
 
 ### Multi-Environment
-
 ```bash
 # Deploy to environments
 wrangler deploy --env staging

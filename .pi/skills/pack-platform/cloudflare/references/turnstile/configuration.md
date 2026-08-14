@@ -1,7 +1,6 @@
 ## Configuration Options
 
 ### Widget Configurations
-
 ```javascript
 {
   sitekey: 'required',              // Your widget sitekey
@@ -18,4 +17,3 @@
   tabindex: 0,                      // Tab index for accessibility
   'response-field': true,           // Create hidden input (default: true)
   'response-field-name': 'cf-turnstile-response', /
-```

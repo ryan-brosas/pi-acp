@@ -1,8 +1,9 @@
 ---
 name: playwright
-description: 'Use when running automated browser tests, taking screenshots, validating forms, or verifying UX flows. Playwright CLI for token efficiency with MCP fallback for complex exploration; also covers the agent-browser CLI alternative.'
+description: "Use when running automated browser tests, taking screenshots, validating forms, or verifying UX flows. Playwright CLI for token efficiency with MCP fallback for complex exploration; also covers the agent-browser CLI alternative."
 disable-model-invocation: true
 ---
+
 
 # Playwright (Automated Browser Testing)
 
@@ -41,48 +42,48 @@ Prefer CLI over MCP for token efficiency. Use MCP only for: complex exploration,
 
 ```ts
 // PREFERRED: by role (semantic, accessible)
-await page.getByRole('button', { name: 'Submit' }).click()
-await page.getByLabel('Email').fill('user@example.com')
-await page.getByText('Welcome').toBeVisible()
+await page.getByRole("button", { name: "Submit" }).click()
+await page.getByLabel("Email").fill("user@example.com")
+await page.getByText("Welcome").toBeVisible()
 
 // OK: by test id (when role isn't available)
-await page.getByTestId('submit-button').click()
+await page.getByTestId("submit-button").click()
 
 // AVOID: CSS selectors (brittle)
-await page.locator('.btn.btn-primary.submit').click() // NO
+await page.locator(".btn.btn-primary.submit").click() // NO
 ```
 
 ## Wait Strategy
 
 ```ts
 // GOOD: wait for user-visible state
-await expect(page.getByText('Order confirmed')).toBeVisible()
+await expect(page.getByText("Order confirmed")).toBeVisible()
 
 // GOOD: wait for navigation
-await page.getByRole('link', { name: 'Dashboard' }).click()
+await page.getByRole("link", { name: "Dashboard" }).click()
 await expect(page).toHaveURL(/\/dashboard/)
 
 // BAD: arbitrary timeout
 await page.waitForTimeout(2000) // NO
 
 // BAD: wait for network (race conditions)
-await page.waitForResponse('**/api/save') // NO
+await page.waitForResponse("**/api/save") // NO
 ```
 
 ## Test Anatomy
 
 ```ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test"
 
-test('user can submit a form', async ({ page }) => {
+test("user can submit a form", async ({ page }) => {
   // Arrange
-  await page.goto('/contact')
+  await page.goto("/contact")
   // Act
-  await page.getByLabel('Email').fill('user@example.com')
-  await page.getByLabel('Message').fill('Hello')
-  await page.getByRole('button', { name: 'Send' }).click()
+  await page.getByLabel("Email").fill("user@example.com")
+  await page.getByLabel("Message").fill("Hello")
+  await page.getByRole("button", { name: "Send" }).click()
   // Assert
-  await expect(page.getByText('Message sent')).toBeVisible()
+  await expect(page.getByText("Message sent")).toBeVisible()
 })
 ```
 
@@ -91,7 +92,7 @@ AAA: Arrange, Act, Assert. One intent per test. Comments are not needed for the 
 ## Screenshots
 
 ```ts
-await page.screenshot({ path: 'screenshot.png', fullPage: true })
+await page.screenshot({ path: "screenshot.png", fullPage: true })
 ```
 
 Use for visual regression. Don't screenshot in every test — only when visual state matters.

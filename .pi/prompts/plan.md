@@ -1,12 +1,11 @@
 ---
 description: Create an advisory assembly-line implementation plan with stations
-argument-hint: ''
+argument-hint: ""
 ---
 
 # Plan
 
 Create an advisory assembly-line plan: an ordered list of stations, each with an acceptance check and a handoff payload for the next station. The plan is quick to produce; the assembly (station packages, compaction, acceptance ledger) carries the quality.
-
 > **Workflow:** `/create` → **`/plan`** (optional) → `/ship`
 > **When to use:** complex tasks where spec verification steps aren't enough guidance. Skip for simple tasks.
 
@@ -40,7 +39,6 @@ Load only enough codebase knowledge to name stations correctly. Do not research 
 ## Phase 1: Guards
 
 Verify:
-
 - `.pi/work/$(cat .pi/work/.active)/spec.md` exists (if not, tell the user to run `/create` first)
 - If `.pi/work/$(cat .pi/work/.active)/plan.md` already exists, ask the user: overwrite or skip?
 
@@ -65,12 +63,12 @@ Each station (S1..Sn) has exactly:
 
 ### Station Quality
 
-| Good station                                                   | Bad station                                                |
-| -------------------------------------------------------------- | ---------------------------------------------------------- |
+| Good station | Bad station |
+| --- | --- |
 | One complete path through the layers; independently verifiable | One layer in isolation; untestable until all stations done |
-| Adds user-visible behavior or fixes a bug                      | Pure prep with no signal                                   |
-| Has a concrete acceptance check                                | Acceptance is "looks right"                                |
-| Ships a handoff payload the next station can run on            | Leaves the next station to re-derive context               |
+| Adds user-visible behavior or fixes a bug | Pure prep with no signal |
+| Has a concrete acceptance check | Acceptance is "looks right" |
+| Ships a handoff payload the next station can run on | Leaves the next station to re-derive context |
 
 ## Phase 3: Write the Plan (output contract)
 
@@ -140,8 +138,8 @@ reports `enforce` → Schema mode; otherwise → main-session mode.
 
 ## Related Commands
 
-| Need                  | Command   |
-| --------------------- | --------- |
+| Need | Command |
+| --- | --- |
 | Create the spec first | `/create` |
-| Implement the plan    | `/ship`   |
-| Verify gates          | `/verify` |
+| Implement the plan | `/ship` |
+| Verify gates | `/verify` |

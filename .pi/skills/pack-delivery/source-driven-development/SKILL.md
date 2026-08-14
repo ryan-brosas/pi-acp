@@ -4,6 +4,7 @@ description: Use when using unfamiliar libraries, external APIs, framework behav
 disable-model-invocation: true
 ---
 
+
 # Source-Driven Development
 
 ## Overview
@@ -48,12 +49,12 @@ Higher-ranked sources win on conflicts.
 
 ## Common Rationalizations
 
-| Rationalization               | Rebuttal                                             |
-| ----------------------------- | ---------------------------------------------------- |
-| "I know this API"             | APIs change; verify version-specific behavior.       |
-| "A blog said so"              | Blogs lose to official docs/source.                  |
+| Rationalization | Rebuttal |
+| --- | --- |
+| "I know this API" | APIs change; verify version-specific behavior. |
+| "A blog said so" | Blogs lose to official docs/source. |
 | "The package name is obvious" | Similar packages differ in security and maintenance. |
-| "Citations slow us down"      | A bad integration costs more than a source check.    |
+| "Citations slow us down" | A bad integration costs more than a source check. |
 
 ## Red Flags
 
@@ -82,16 +83,17 @@ Higher-ranked sources win on conflicts.
 </skill_result>
 ```
 
+
 ## Consolidated Research Workflow
 
 This is the canonical active source-grounding skill. It absorbs deep-research and source-code-research for normal work. Use opensrc as the tool-specific companion only when the source demands it.
 
 Evidence hierarchy:
-
 1. local code and tests;
 2. official docs and source;
 3. maintained examples from reputable repos;
 4. blog posts or issues with dates and caveats.
+
 
 ## Removed Optional Companion
 

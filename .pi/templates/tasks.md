@@ -13,7 +13,7 @@ Each task can have these optional fields in YAML frontmatter:
 
 ```yaml
 ---
-id: '1.1' # Task identifier
+id: "1.1" # Task identifier
 depends_on: [] # Task IDs that must complete first
 parallel: true # Independent read-only checks may batch; file mutations stay serialized
 conflicts_with: [] # Task IDs that modify same files (cannot parallelize)
@@ -32,7 +32,7 @@ estimated_minutes: 30 # Time estimate for planning
 ```yaml
 depends_on: []
 parallel: false
-files: ['package.json', 'tsconfig.json']
+files: ["package.json", "tsconfig.json"]
 ```
 
 - [ ] [Task description]
@@ -40,9 +40,9 @@ files: ['package.json', 'tsconfig.json']
 ### 1.2 [Environment or config task]
 
 ```yaml
-depends_on: ['1.1']
+depends_on: ["1.1"]
 parallel: false
-files: ['config/example.yaml']
+files: ["config/example.yaml"]
 ```
 
 - [ ] [Task description]
@@ -54,10 +54,10 @@ files: ['config/example.yaml']
 ### 2.1 [Primary implementation task]
 
 ```yaml
-depends_on: ['1.1', '1.2']
+depends_on: ["1.1", "1.2"]
 parallel: true
 conflicts_with: []
-files: ['src/feature/index.ts']
+files: ["src/feature/index.ts"]
 ```
 
 - [ ] [Task description]
@@ -65,10 +65,10 @@ files: ['src/feature/index.ts']
 ### 2.2 [Secondary implementation task]
 
 ```yaml
-depends_on: ['1.1', '1.2']
+depends_on: ["1.1", "1.2"]
 parallel: true
 conflicts_with: []
-files: ['src/feature/utils.ts']
+files: ["src/feature/utils.ts"]
 ```
 
 - [ ] [Task description]
@@ -76,10 +76,10 @@ files: ['src/feature/utils.ts']
 ### 2.3 [Integration task]
 
 ```yaml
-depends_on: ['2.1', '2.2']
+depends_on: ["2.1", "2.2"]
 parallel: false
 conflicts_with: []
-files: ['src/feature/index.ts', 'src/feature/utils.ts']
+files: ["src/feature/index.ts", "src/feature/utils.ts"]
 ```
 
 - [ ] [Task description]
@@ -91,9 +91,9 @@ files: ['src/feature/index.ts', 'src/feature/utils.ts']
 ### 3.1 [Unit test task]
 
 ```yaml
-depends_on: ['2.1']
+depends_on: ["2.1"]
 parallel: true
-files: ['tests/feature.test.ts']
+files: ["tests/feature.test.ts"]
 ```
 
 - [ ] [Task description]
@@ -101,9 +101,9 @@ files: ['tests/feature.test.ts']
 ### 3.2 [Integration test task]
 
 ```yaml
-depends_on: ['2.3']
+depends_on: ["2.3"]
 parallel: true
-files: ['tests/integration/feature.test.ts']
+files: ["tests/integration/feature.test.ts"]
 ```
 
 - [ ] [Task description]
@@ -111,7 +111,7 @@ files: ['tests/integration/feature.test.ts']
 ### 3.3 [Edge case verification]
 
 ```yaml
-depends_on: ['3.1', '3.2']
+depends_on: ["3.1", "3.2"]
 parallel: false
 files: []
 ```
@@ -125,9 +125,9 @@ files: []
 ### 4.1 [Code comments / JSDoc]
 
 ```yaml
-depends_on: ['2.3']
+depends_on: ["2.3"]
 parallel: true
-files: ['src/feature/*.ts']
+files: ["src/feature/*.ts"]
 ```
 
 - [ ] [Task description]
@@ -135,9 +135,9 @@ files: ['src/feature/*.ts']
 ### 4.2 [README updates]
 
 ```yaml
-depends_on: ['2.3']
+depends_on: ["2.3"]
 parallel: true
-files: ['README.md']
+files: ["README.md"]
 ```
 
 - [ ] [Task description]
@@ -149,7 +149,7 @@ files: ['README.md']
 ### 5.1 All tests pass
 
 ```yaml
-depends_on: ['3.1', '3.2', '3.3']
+depends_on: ["3.1", "3.2", "3.3"]
 parallel: false
 ```
 
@@ -158,7 +158,7 @@ parallel: false
 ### 5.2 Lint clean
 
 ```yaml
-depends_on: ['2.3', '4.1']
+depends_on: ["2.3", "4.1"]
 parallel: true
 ```
 
@@ -167,7 +167,7 @@ parallel: true
 ### 5.3 Build succeeds
 
 ```yaml
-depends_on: ['5.1', '5.2']
+depends_on: ["5.1", "5.2"]
 parallel: false
 ```
 

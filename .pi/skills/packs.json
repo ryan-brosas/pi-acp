@@ -99,17 +99,31 @@
     {
       "id": "pack-data",
       "description": "Data and persistence router: Supabase, Postgres best practices, Core Data, Polar, Resend.",
-      "members": ["core-data-expert", "polar", "resend", "supabase", "supabase-postgres-best-practices"]
+      "members": [
+        "core-data-expert",
+        "polar",
+        "resend",
+        "supabase",
+        "supabase-postgres-best-practices"
+      ]
     },
     {
       "id": "pack-apple",
       "description": "Apple platform router: Swift concurrency and SwiftUI development.",
-      "members": ["swift-concurrency", "swiftui-expert-skill"]
+      "members": [
+        "swift-concurrency",
+        "swiftui-expert-skill"
+      ]
     },
     {
       "id": "pack-authoring",
       "description": "Authoring and documentation router: writing or editing skills, documentation, ADRs, API and interface design.",
-      "members": ["documentation-and-adrs", "notion-workspace", "upwork-proposals", "writing-skills"]
+      "members": [
+        "documentation-and-adrs",
+        "notion-workspace",
+        "upwork-proposals",
+        "writing-skills"
+      ]
     },
     {
       "id": "pack-backend",

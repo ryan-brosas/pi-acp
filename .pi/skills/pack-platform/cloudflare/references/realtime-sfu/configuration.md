@@ -31,12 +31,10 @@ wrangler deploy
 ## Environment Variables
 
 **Required:**
-
 - `CALLS_APP_ID`: From dashboard
 - `CALLS_APP_SECRET`: From dashboard (secret)
 
 **Optional:**
-
 - `MAX_WEBCAM_BITRATE` (default: 1200000)
 - `MAX_WEBCAM_FRAMERATE` (default: 24)
 - `MAX_WEBCAM_QUALITY_LEVEL` (default: 1080)
@@ -59,7 +57,7 @@ const pc = new RTCPeerConnection({
       credential: turnCredential
     }
   ]
-})
+});
 ```
 
 **Ports:** 3478 (UDP/TCP), 53 (UDP), 80 (TCP), 443 (TLS), 5349 (TLS)

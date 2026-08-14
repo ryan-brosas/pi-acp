@@ -240,7 +240,7 @@ This is a paragraph with **bold** text.
 struct MeasuredText: View {
     let text: String
     @State private var textHeight: CGFloat = 0
-
+    
     var body: some View {
         Text(text)
             .background(
@@ -258,7 +258,7 @@ struct MeasuredText: View {
 struct MeasuredText: View {
     let text: String
     @State private var textHeight: CGFloat = 0
-
+    
     var body: some View {
         Text(text)
             .onGeometryChange(for: CGFloat.self) { geometry in

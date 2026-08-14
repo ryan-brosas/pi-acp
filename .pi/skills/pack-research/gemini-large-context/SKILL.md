@@ -1,6 +1,6 @@
 ---
 name: gemini-large-context
-description: 'Use when large-context repository research exceeds the local window; routes through budget-aware Veda AGY Gemini profiles, while direct AGY Claude is reserved for architecture planning and review.'
+description: "Use when large-context repository research exceeds the local window; routes through budget-aware Veda AGY Gemini profiles, while direct AGY Claude is reserved for architecture planning and review."
 disable-model-invocation: true
 ---
 

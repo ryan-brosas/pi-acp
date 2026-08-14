@@ -1,11 +1,9 @@
 # Cloudflare Tail Workers Skill
 
 ## Purpose
-
 Expert guidance on Cloudflare Tail Workers—specialized Workers that consume execution events from producer Workers for logging, debugging, analytics, and observability.
 
 ## When to Use
-
 - User implements observability/logging for Cloudflare Workers
 - User needs to process Worker execution events, logs, exceptions
 - User builds custom analytics or error tracking
@@ -15,9 +13,7 @@ Expert guidance on Cloudflare Tail Workers—specialized Workers that consume ex
 ## Core Concepts
 
 ### What Are Tail Workers?
-
 Tail Workers automatically process events from producer Workers (the Workers being monitored). They receive:
-
 - HTTP request/response info
 - Console logs (console.log/error/warn/debug)
 - Uncaught exceptions
@@ -25,16 +21,13 @@ Tail Workers automatically process events from producer Workers (the Workers bei
 - Diagnostic channel events
 
 **Key characteristics:**
-
 - Invoked AFTER producer finishes executing
 - Capture entire request lifecycle including Service Bindings and Dynamic Dispatch sub-requests
 - Billed by CPU time, not request count
 - Available on Workers Paid and Enterprise tiers
 
 ### Alternative: OpenTelemetry Export
-
 For batch exports to observability tools (Sentry, Grafana, Honeycomb):
-
 - Consider OTEL export instead of Tail Workers
 - OTEL sends logs/traces in batches (more efficient)
 - Tail Workers = advanced mode for custom processing
@@ -48,11 +41,10 @@ export default {
   async tail(events, env, ctx) {
     // Process events from producer Worker
   }
-}
+};
 ```
 
 **Parameters:**
-
 - `events`: Array of `TailItem` objects (one per producer invocation)
 - `env`: Bindings (KV, D1, R2, env vars, etc.)
 - `ctx`: Context with `waitUntil()` for async work
@@ -63,62 +55,53 @@ export default {
 
 ```typescript
 interface TailItem {
-  scriptName: string // Producer Worker name
-  eventTimestamp: number // Epoch time
-  outcome:
-    | 'ok'
-    | 'exception'
-    | 'exceededCpu'
-    | 'exceededMemory'
-    | 'canceled'
-    | 'scriptNotFound'
-    | 'responseStreamDisconnected'
-    | 'unknown'
-
+  scriptName: string;           // Producer Worker name
+  eventTimestamp: number;        // Epoch time
+  outcome: 'ok' | 'exception' | 'exceededCpu' | 'exceededMemory' 
+         | 'canceled' | 'scriptNotFound' | 'responseStreamDisconnected' | 'unknown';
+  
   event: {
     request?: {
-      url: string // Redacted by default
-      method: string
-      headers: Record<string, string> // Sensitive headers redacted
-      cf: IncomingRequestCfProperties
-      getUnredacted(): TailRequest // Bypass redaction (use carefully)
-    }
+      url: string;               // Redacted by default
+      method: string;
+      headers: Record<string, string>;  // Sensitive headers redacted
+      cf: IncomingRequestCfProperties;
+      getUnredacted(): TailRequest;     // Bypass redaction (use carefully)
+    };
     response?: {
-      status: number
-    }
-  }
-
+      status: number;
+    };
+  };
+  
   logs: Array<{
-    timestamp: number
-    level: 'debug' | 'info' | 'log' | 'warn' | 'error'
-    message: any[] // Args passed to console function
-  }>
-
+    timestamp: number;
+    level: 'debug' | 'info' | 'log' | 'warn' | 'error';
+    message: any[];              // Args passed to console function
+  }>;
+  
   exceptions: Array<{
-    timestamp: number
-    name: string // Error type (Error, TypeError, etc.)
-    message: string // Error description
-  }>
-
+    timestamp: number;
+    name: string;                // Error type (Error, TypeError, etc.)
+    message: string;             // Error description
+  }>;
+  
   diagnosticsChannelEvents: Array<{
-    channel: string
-    message: any
-    timestamp: number
-  }>
+    channel: string;
+    message: any;
+    timestamp: number;
+  }>;
 }
 ```
 
 ### Configuration
 
 **Producer Worker wrangler.toml:**
-
 ```toml
 name = "my-producer-worker"
 tail_consumers = [{service = "my-tail-worker"}]
 ```
 
 **Producer Worker wrangler.jsonc:**
-
 ```json
 {
   "name": "my-producer-worker",
@@ -131,7 +114,6 @@ tail_consumers = [{service = "my-tail-worker"}]
 ```
 
 **Tail Worker wrangler.toml:**
-
 ```toml
 name = "my-tail-worker"
 # No special config needed, just must have tail() handler
@@ -151,18 +133,18 @@ export default {
       url: event.event?.request?.url,
       status: event.event?.response?.status,
       logs: event.logs,
-      exceptions: event.exceptions
-    }))
-
+      exceptions: event.exceptions,
+    }));
+    
     ctx.waitUntil(
       fetch(env.LOG_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       })
-    )
+    );
   }
-}
+};
 ```
 
 ### 2. Error Tracking to External Service
@@ -174,25 +156,25 @@ export default {
       // Only process errors
       if (event.outcome === 'exception' || event.exceptions.length > 0) {
         ctx.waitUntil(
-          fetch('https://error-tracker.example.com/errors', {
-            method: 'POST',
+          fetch("https://error-tracker.example.com/errors", {
+            method: "POST",
             headers: {
-              Authorization: `Bearer ${env.ERROR_TRACKER_TOKEN}`,
-              'Content-Type': 'application/json'
+              "Authorization": `Bearer ${env.ERROR_TRACKER_TOKEN}`,
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               script: event.scriptName,
               timestamp: event.eventTimestamp,
               exceptions: event.exceptions,
-              request: event.event?.request?.getUnredacted?.(), // If needed
-              logs: event.logs
-            })
+              request: event.event?.request?.getUnredacted?.(),  // If needed
+              logs: event.logs,
+            }),
           })
-        )
+        );
       }
     }
   }
-}
+};
 ```
 
 ### 3. Store Logs in KV
@@ -201,20 +183,20 @@ export default {
 export default {
   async tail(events, env, ctx) {
     const promises = events.map(event => {
-      const key = `log:${event.scriptName}:${event.eventTimestamp}`
+      const key = `log:${event.scriptName}:${event.eventTimestamp}`;
       const value = JSON.stringify({
         outcome: event.outcome,
         logs: event.logs,
-        exceptions: event.exceptions
-      })
-
+        exceptions: event.exceptions,
+      });
+      
       // TTL: 24 hours
-      return env.LOGS_KV.put(key, value, { expirationTtl: 86400 })
-    })
-
-    ctx.waitUntil(Promise.all(promises))
+      return env.LOGS_KV.put(key, value, { expirationTtl: 86400 });
+    });
+    
+    ctx.waitUntil(Promise.all(promises));
   }
-}
+};
 ```
 
 ### 4. Analytics Engine for Aggregated Metrics
@@ -222,23 +204,29 @@ export default {
 ```typescript
 export default {
   async tail(events, env, ctx) {
-    const writes = events.map(event =>
+    const writes = events.map(event => 
       env.ANALYTICS.writeDataPoint({
         // String dimensions
-        blobs: [event.scriptName, event.outcome, event.event?.request?.method ?? 'unknown'],
+        blobs: [
+          event.scriptName,
+          event.outcome,
+          event.event?.request?.method ?? 'unknown',
+        ],
         // Numeric metrics
         doubles: [
-          1, // Count
-          event.event?.response?.status ?? 0
+          1,  // Count
+          event.event?.response?.status ?? 0,
         ],
         // Indexed fields for filtering
-        indexes: [event.event?.request?.cf?.colo ?? 'unknown']
+        indexes: [
+          event.event?.request?.cf?.colo ?? 'unknown',
+        ],
       })
-    )
-
-    ctx.waitUntil(Promise.all(writes))
+    );
+    
+    ctx.waitUntil(Promise.all(writes));
   }
-}
+};
 ```
 
 ### 5. Filter Specific Routes/Patterns
@@ -247,18 +235,20 @@ export default {
 export default {
   async tail(events, env, ctx) {
     // Only process API routes
-    const apiEvents = events.filter(event => event.event?.request?.url?.includes('/api/'))
-
-    if (apiEvents.length === 0) return
-
+    const apiEvents = events.filter(event => 
+      event.event?.request?.url?.includes('/api/')
+    );
+    
+    if (apiEvents.length === 0) return;
+    
     ctx.waitUntil(
       fetch(env.API_LOGS_ENDPOINT, {
-        method: 'POST',
-        body: JSON.stringify(apiEvents)
+        method: "POST",
+        body: JSON.stringify(apiEvents),
       })
-    )
+    );
   }
-}
+};
 ```
 
 ### 6. Multi-Destination Logging
@@ -267,32 +257,32 @@ export default {
 export default {
   async tail(events, env, ctx) {
     // Send errors to one place, everything else to another
-    const errors = events.filter(e => e.outcome === 'exception')
-    const success = events.filter(e => e.outcome === 'ok')
-
-    const tasks = []
-
+    const errors = events.filter(e => e.outcome === 'exception');
+    const success = events.filter(e => e.outcome === 'ok');
+    
+    const tasks = [];
+    
     if (errors.length > 0) {
       tasks.push(
         fetch(env.ERROR_ENDPOINT, {
-          method: 'POST',
-          body: JSON.stringify(errors)
+          method: "POST",
+          body: JSON.stringify(errors),
         })
-      )
+      );
     }
-
+    
     if (success.length > 0) {
       tasks.push(
         fetch(env.SUCCESS_ENDPOINT, {
-          method: 'POST',
-          body: JSON.stringify(success)
+          method: "POST",
+          body: JSON.stringify(success),
         })
-      )
+      );
     }
-
-    ctx.waitUntil(Promise.all(tasks))
+    
+    ctx.waitUntil(Promise.all(tasks));
   }
-}
+};
 ```
 
 ### 7. Performance Monitoring
@@ -303,50 +293,45 @@ export default {
     const metrics = events.map(event => ({
       script: event.scriptName,
       timestamp: event.eventTimestamp,
-      duration: calculateDuration(event), // Custom logic
+      duration: calculateDuration(event),  // Custom logic
       outcome: event.outcome,
       status: event.event?.response?.status,
-      colo: event.event?.request?.cf?.colo
-    }))
-
+      colo: event.event?.request?.cf?.colo,
+    }));
+    
     ctx.waitUntil(
       fetch(env.METRICS_ENDPOINT, {
-        method: 'POST',
-        headers: { 'X-API-Key': env.METRICS_API_KEY },
-        body: JSON.stringify(metrics)
+        method: "POST",
+        headers: { "X-API-Key": env.METRICS_API_KEY },
+        body: JSON.stringify(metrics),
       })
-    )
+    );
   }
-}
+};
 ```
 
 ## Security & Privacy
 
 ### Automatic Redaction
-
 By default, sensitive data is redacted from `TailRequest`:
 
 **Header redaction:**
-
 - Headers containing: `auth`, `key`, `secret`, `token`, `jwt` (case-insensitive)
 - `cookie` and `set-cookie` headers
 - Redacted values show as `"REDACTED"`
 
 **URL redaction:**
-
 - Hex IDs: 32+ hex digits → `"REDACTED"`
 - Base-64 IDs: 21+ chars with 2+ upper, 2+ lower, 2+ digits → `"REDACTED"`
 
 ### Bypassing Redaction
-
 ```typescript
 // Use with extreme caution
-const unredacted = event.event?.request?.getUnredacted()
+const unredacted = event.event?.request?.getUnredacted();
 // unredacted.url and unredacted.headers contain raw values
 ```
 
 **Best practices:**
-
 - Only call `getUnredacted()` when absolutely necessary
 - Never log unredacted sensitive data
 - Implement additional filtering before external transmission
@@ -355,27 +340,23 @@ const unredacted = event.event?.request?.getUnredacted()
 ## Wrangler CLI Usage
 
 ### Deploy Tail Worker
-
 ```bash
 wrangler deploy
 ```
 
 ### View Live Tail Locally (NOT Tail Workers)
-
 ```bash
 # This streams logs to terminal, different from Tail Workers
 wrangler tail <producer-worker-name>
 ```
 
 ### Update Producer Configuration
-
 ```bash
 # Edit wrangler.toml to add tail_consumers
 wrangler deploy
 ```
 
 ### Remove Tail Consumer
-
 ```toml
 # Remove from wrangler.toml or set empty array
 tail_consumers = []
@@ -386,28 +367,30 @@ tail_consumers = []
 ```typescript
 // Add to your Tail Worker
 export default {
-  async tail(events: TailItem[], env: Env, ctx: ExecutionContext): Promise<void> {
+  async tail(
+    events: TailItem[],
+    env: Env,
+    ctx: ExecutionContext
+  ): Promise<void> {
     // Implementation
   }
-} satisfies ExportedHandler<Env>
+} satisfies ExportedHandler<Env>;
 
 interface Env {
   // Your bindings
-  LOGS_KV: KVNamespace
-  ANALYTICS: AnalyticsEngineDataset
-  LOG_ENDPOINT: string
-  API_TOKEN: string
+  LOGS_KV: KVNamespace;
+  ANALYTICS: AnalyticsEngineDataset;
+  LOG_ENDPOINT: string;
+  API_TOKEN: string;
 }
 ```
 
 ## Testing & Development
 
 ### Local Testing
-
 Tail Workers cannot be fully tested locally with `wrangler dev`. Deploy to staging environment for testing.
 
 ### Testing Strategy
-
 1. Deploy producer Worker to staging
 2. Deploy Tail Worker to staging
 3. Configure `tail_consumers` in producer
@@ -415,59 +398,54 @@ Tail Workers cannot be fully tested locally with `wrangler dev`. Deploy to stagi
 5. Verify Tail Worker receives events (check destination logs/storage)
 
 ### Debugging Tips
-
 ```typescript
 export default {
   async tail(events, env, ctx) {
     // Log to console for debugging (won't be captured by self)
-    console.log('Received events:', events.length)
-
+    console.log('Received events:', events.length);
+    
     try {
       // Your logic
-      await processEvents(events, env)
+      await processEvents(events, env);
     } catch (error) {
       // Log errors
-      console.error('Tail Worker error:', error)
+      console.error('Tail Worker error:', error);
       // Consider sending errors to monitoring service
     }
   }
-}
+};
 ```
 
 ## Advanced Patterns
 
 ### Batching Events
-
 ```typescript
 // Use KV or Durable Objects to batch events before sending
 export default {
   async tail(events, env, ctx) {
-    const batch = await env.BATCH_DO.get(env.BATCH_DO.idFromName('batch'))
-    ctx.waitUntil(batch.addEvents(events))
+    const batch = await env.BATCH_DO.get(env.BATCH_DO.idFromName("batch"));
+    ctx.waitUntil(batch.addEvents(events));
   }
-}
+};
 ```
 
 ### Sampling
-
 ```typescript
 // Only process a percentage of events
 export default {
   async tail(events, env, ctx) {
-    const sampleRate = 0.1 // 10%
-    const sampledEvents = events.filter(() => Math.random() < sampleRate)
-
+    const sampleRate = 0.1;  // 10%
+    const sampledEvents = events.filter(() => Math.random() < sampleRate);
+    
     if (sampledEvents.length > 0) {
-      ctx.waitUntil(sendToEndpoint(sampledEvents, env))
+      ctx.waitUntil(sendToEndpoint(sampledEvents, env));
     }
   }
-}
+};
 ```
 
 ### Workers for Platforms
-
 For dynamic dispatch Workers, `events` array contains TWO elements:
-
 1. Dynamic dispatch Worker event
 2. User Worker event
 
@@ -483,27 +461,28 @@ export default {
       }
     }
   }
-}
+};
 ```
 
 ## Common Pitfalls
 
 1. **Not using `ctx.waitUntil()`:**
-
    ```typescript
    // [ ] WRONG - async work may not complete
    export default {
      async tail(events) {
-       fetch(endpoint, { body: JSON.stringify(events) })
+       fetch(endpoint, { body: JSON.stringify(events) });
      }
-   }
-
+   };
+   
    // [x] CORRECT
    export default {
      async tail(events, env, ctx) {
-       ctx.waitUntil(fetch(endpoint, { body: JSON.stringify(events) }))
+       ctx.waitUntil(
+         fetch(endpoint, { body: JSON.stringify(events) })
+       );
      }
-   }
+   };
    ```
 
 2. **Missing tail() handler:**
@@ -521,65 +500,64 @@ export default {
 ## Integration Examples
 
 ### Sentry
-
 ```typescript
 export default {
   async tail(events, env, ctx) {
-    const errors = events.filter(e => e.outcome === 'exception' || e.exceptions.length > 0)
-
+    const errors = events.filter(e => 
+      e.outcome === 'exception' || e.exceptions.length > 0
+    );
+    
     for (const event of errors) {
       ctx.waitUntil(
         fetch(`https://sentry.io/api/${env.SENTRY_PROJECT}/store/`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'X-Sentry-Auth': `Sentry sentry_key=${env.SENTRY_KEY}`,
-            'Content-Type': 'application/json'
+            "X-Sentry-Auth": `Sentry sentry_key=${env.SENTRY_KEY}`,
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             message: event.exceptions[0]?.message,
-            level: 'error',
+            level: "error",
             tags: { worker: event.scriptName },
-            extra: { event }
-          })
+            extra: { event },
+          }),
         })
-      )
+      );
     }
   }
-}
+};
 ```
 
 ### Datadog
-
 ```typescript
 export default {
   async tail(events, env, ctx) {
-    const logs = events.flatMap(event =>
+    const logs = events.flatMap(event => 
       event.logs.map(log => ({
-        ddsource: 'cloudflare-worker',
+        ddsource: "cloudflare-worker",
         ddtags: `worker:${event.scriptName},outcome:${event.outcome}`,
         hostname: event.event?.request?.cf?.colo,
-        message: log.message.join(' '),
+        message: log.message.join(" "),
         status: log.level,
-        timestamp: log.timestamp
+        timestamp: log.timestamp,
       }))
-    )
-
+    );
+    
     ctx.waitUntil(
-      fetch('https://http-intake.logs.datadoghq.com/v1/input', {
-        method: 'POST',
+      fetch("https://http-intake.logs.datadoghq.com/v1/input", {
+        method: "POST",
         headers: {
-          'DD-API-KEY': env.DATADOG_API_KEY,
-          'Content-Type': 'application/json'
+          "DD-API-KEY": env.DATADOG_API_KEY,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(logs)
+        body: JSON.stringify(logs),
       })
-    )
+    );
   }
-}
+};
 ```
 
 ## Related Resources
-
 - Tail Workers Docs: https://developers.cloudflare.com/workers/observability/logs/tail-workers/
 - Tail Handler API: https://developers.cloudflare.com/workers/runtime-apis/handlers/tail/
 - Analytics Engine: https://developers.cloudflare.com/analytics/analytics-engine/
@@ -607,30 +585,32 @@ Need observability for Workers?
 ## Code Quality Guidelines
 
 ### Type Safety
-
 ```typescript
 // [x] Use proper types
 interface Env {
-  LOG_ENDPOINT: string
-  API_TOKEN: string
+  LOG_ENDPOINT: string;
+  API_TOKEN: string;
 }
 
 export default {
-  async tail(events: TailItem[], env: Env, ctx: ExecutionContext): Promise<void> {
+  async tail(
+    events: TailItem[],
+    env: Env,
+    ctx: ExecutionContext
+  ): Promise<void> {
     // Type-safe implementation
   }
-} satisfies ExportedHandler<Env>
+} satisfies ExportedHandler<Env>;
 
 // [ ] Avoid any
 export default {
   async tail(events: any, env: any, ctx: any) {
     // Unsafe
   }
-}
+};
 ```
 
 ### Error Handling
-
 ```typescript
 export default {
   async tail(events, env, ctx) {
@@ -638,25 +618,23 @@ export default {
       (async () => {
         try {
           await fetch(env.ENDPOINT, {
-            method: 'POST',
-            body: JSON.stringify(events)
-          })
+            method: "POST",
+            body: JSON.stringify(events),
+          });
         } catch (error) {
           // Log to console or send to fallback
-          console.error('Failed to send events:', error)
+          console.error("Failed to send events:", error);
         }
       })()
-    )
+    );
   }
-}
+};
 ```
 
 ### Minimal, Surgical Changes
-
 - Process only necessary events (filter early)
 - Avoid unnecessary data transformations
 - Keep handlers focused and simple
 
 ## Summary
-
 Tail Workers provide real-time, custom event processing for Cloudflare Workers. Use them when you need fine-grained control over logging, error tracking, or analytics that goes beyond standard OTEL export. Always use `ctx.waitUntil()` for async work, be mindful of sensitive data redaction, and consider Analytics Engine for aggregated metrics.

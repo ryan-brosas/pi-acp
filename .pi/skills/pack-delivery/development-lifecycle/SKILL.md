@@ -4,21 +4,22 @@ description: Use when starting, planning, shipping, or verifying a work session 
 disable-model-invocation: true
 ---
 
+
 # Development Lifecycle
 
 ## Canonical Artifact Files
 
 At the active work record `.pi/work/$(cat .pi/work/.active)/`, maintained in the working copy:
 
-| File              | Purpose                                   | Use when                                          |
-| ----------------- | ----------------------------------------- | ------------------------------------------------- |
-| `spec.md`         | PRD/spec for the work record              | `/create`                                         |
-| `tasks.md`        | Task list derived from the spec           | `/create`                                         |
-| `plan.md`         | Implementation plan and slice ordering    | `/plan`                                           |
-| `research.md`     | Exploration notes and evidence            | `/research`                                       |
-| `verification.md` | Verification evidence per gate run        | `/verify`                                         |
-| `adr.md`          | ADRs (Architecture Decision Records)      | Real trade-off between two or more viable options |
-| `.progress.md`    | Per-iteration log: tried, failed, learned | Long-running investigation or build               |
+| File | Purpose | Use when |
+|---|---|---|
+| `spec.md` | PRD/spec for the work record | `/create` |
+| `tasks.md` | Task list derived from the spec | `/create` |
+| `plan.md` | Implementation plan and slice ordering | `/plan` |
+| `research.md` | Exploration notes and evidence | `/research` |
+| `verification.md` | Verification evidence per gate run | `/verify` |
+| `adr.md` | ADRs (Architecture Decision Records) | Real trade-off between two or more viable options |
+| `.progress.md` | Per-iteration log: tried, failed, learned | Long-running investigation or build |
 
 **Entry format (tasks.md, .progress.md):** `### YYYY-MM-DD - <title>` followed by `status: active | done | abandoned | updated: <date>`.
 
@@ -43,12 +44,12 @@ At the active work record `.pi/work/$(cat .pi/work/.active)/`, maintained in the
 
 ## When to Use Each Phase
 
-| Phase       | Trigger                             | Skip if                                   |
-| ----------- | ----------------------------------- | ----------------------------------------- |
-| `/create`   | New feature / product / PRD         | Trivial one-liner                         |
-| `/plan`     | Multi-file change, ambiguous spec   | Single known file, clear spec             |
-| `/ship`     | Before merge / commit               | No code change this session               |
-| `/verify`   | Before "done" claim, always         | Never skip                                |
+| Phase | Trigger | Skip if |
+|---|---|---|
+| `/create` | New feature / product / PRD | Trivial one-liner |
+| `/plan` | Multi-file change, ambiguous spec | Single known file, clear spec |
+| `/ship` | Before merge / commit | No code change this session |
+| `/verify` | Before "done" claim, always | Never skip |
 | `/research` | Open-ended question, no answer path | The answer is in the code or docs already |
 
 ## Lifecycle Rules

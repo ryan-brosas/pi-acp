@@ -1,6 +1,6 @@
 ---
 description: Debug and fix a bug or failing test
-argument-hint: '<description of bug or error>'
+argument-hint: "<description of bug or error>"
 ---
 
 # Fix: $ARGUMENTS
@@ -21,7 +21,6 @@ Reproduce the issue with the exact steps or command given by the user. If the us
 ### Phase 2: Symptom Inventory
 
 Before proposing a root cause, list every symptom the report and repro show:
-
 - What fails, what still works?
 - When did it start (recent change? always?)
 - What inputs trigger it; what inputs do not?
@@ -66,11 +65,9 @@ fix in the same `fabric_exec`. Mark completed steps `[DONE:n]`. If
 verification fails or scope changes, do not mutate. After verification, record the gate decision (passed/disposition; evidence kinds: command, artifact, trace, custom) with the session's workflow recorder when available, or carry it in the completion report.
 
 **Dual mode.** Read-only discovery is identical in both modes; only mutation authorization differs. Schema mode (`schema.status().mode === "enforce"`): the loop above applies. Main-session mode (guard off or project untrusted): propose each mutation to the user and apply only after explicit approval of the exact action and files. Detect at the mutation boundary: `schema.status()` reports `enforce` → Schema mode; otherwise → main-session mode.
-
 ## Output
 
 Report:
-
 1. Root cause (with file:line)
 2. Symptoms explained by the theory
 3. Fix applied (diff summary)
@@ -80,8 +77,8 @@ Report:
 
 ## Related Commands
 
-| Need             | Command     |
-| ---------------- | ----------- |
-| Verify gates     | `/verify`   |
-| Audit a pattern  | `/audit`    |
+| Need | Command |
+| --- | --- |
+| Verify gates | `/verify` |
+| Audit a pattern | `/audit` |
 | Research a topic | `/research` |

@@ -5,17 +5,16 @@ v4/v4.1 additions: gradients, 3D transforms, masks, text shadows, new variants.
 ## Container Queries (Built-in)
 
 No plugin needed:
-
 ```html
 <div class="@container">
-  <div class="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4"></div>
-
-  <!-- Max-width -->
-  <div class="grid-cols-3 @max-md:grid-cols-1">
-    <!-- Range -->
-    <div class="@min-md:@max-xl:hidden"></div>
-  </div>
+  <div class="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4">
 </div>
+
+<!-- Max-width -->
+<div class="grid-cols-3 @max-md:grid-cols-1">
+
+<!-- Range -->
+<div class="@min-md:@max-xl:hidden">
 ```
 
 ## Gradients
@@ -23,39 +22,34 @@ No plugin needed:
 ```html
 <!-- Angle-based -->
 <div class="bg-linear-45 from-indigo-500 to-pink-500">
-  <!-- OKLCH interpolation -->
-  <div class="bg-linear-to-r/oklch from-indigo-500 to-teal-400">
-    <!-- Conic and radial -->
-    <div class="bg-conic from-red-500 to-red-500">
-      <div class="bg-radial from-white to-zinc-900"></div>
-    </div>
-  </div>
-</div>
+
+<!-- OKLCH interpolation -->
+<div class="bg-linear-to-r/oklch from-indigo-500 to-teal-400">
+
+<!-- Conic and radial -->
+<div class="bg-conic from-red-500 to-red-500">
+<div class="bg-radial from-white to-zinc-900">
 ```
 
 ## 3D Transforms
 
 ```html
 <div class="perspective-distant">
-  <div class="rotate-x-45 rotate-z-30 transform-3d"></div>
+  <div class="rotate-x-45 rotate-z-30 transform-3d">
 </div>
 ```
 
 ## @starting-style (Enter Transitions)
 
 ```html
-<div
-  popover
-  class="transition-all starting:open:opacity-0 starting:open:scale-95"
-></div>
+<div popover class="transition-all starting:open:opacity-0 starting:open:scale-95">
 ```
 
-## not-\* Variant
+## not-* Variant
 
 ```html
 <div class="not-hover:opacity-75">
-  <div class="not-supports-backdrop-blur:bg-white"></div>
-</div>
+<div class="not-supports-backdrop-blur:bg-white">
 ```
 
 ## Text Shadows (v4.1)
@@ -106,18 +100,18 @@ No plugin needed:
 ```html
 <!-- Pointer device -->
 <div class="pointer-fine:p-2 pointer-coarse:p-4">
-  <!-- Form validation (after interaction) -->
-  <input class="user-valid:border-green-500 user-invalid:border-red-500" />
 
-  <!-- Details content -->
-  <details class="details-content:mt-3">
-    <!-- Inverted colors -->
-    <div class="inverted-colors:shadow-none">
-      <!-- Noscript -->
-      <div class="noscript:block hidden">Enable JS</div>
-    </div>
-  </details>
-</div>
+<!-- Form validation (after interaction) -->
+<input class="user-valid:border-green-500 user-invalid:border-red-500">
+
+<!-- Details content -->
+<details class="details-content:mt-3">
+
+<!-- Inverted colors -->
+<div class="inverted-colors:shadow-none">
+
+<!-- Noscript -->
+<div class="noscript:block hidden">Enable JS</div>
 ```
 
 ## Source Directives (v4.1)

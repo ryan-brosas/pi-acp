@@ -1,12 +1,11 @@
 ---
 description: Verify the current work against the spec and gates before claiming completion
-argument-hint: '[--full|--no-cache|--quick]'
+argument-hint: "[--full|--no-cache|--quick]"
 ---
 
 # Verify: $ARGUMENTS
 
 Verify the current work against the spec and the project gates, and report readiness.
-
 > **Workflow:** `/ship` → **`/verify`**
 
 ## Read-only
@@ -15,11 +14,11 @@ This command is read-only: it runs gates, checks completeness, and reports. It n
 
 ## Parse Arguments
 
-| Argument     | Default | Description                                                 |
-| ------------ | ------- | ----------------------------------------------------------- |
-| `--full`     | false   | Bypass the cache and run fresh (no incremental mode exists) |
-| `--no-cache` | false   | Bypass the verification cache                               |
-| `--quick`    | false   | Skip the Phase 4 coherence cross-check                      |
+| Argument | Default | Description |
+| --- | --- | --- |
+| `--full` | false | Bypass the cache and run fresh (no incremental mode exists) |
+| `--no-cache` | false | Bypass the verification cache |
+| `--quick` | false | Skip the Phase 4 coherence cross-check |
 
 ## Phase 0: Check Verification Cache
 
@@ -31,25 +30,23 @@ LAST_STAMP=$(tail -1 .pi/work/$(cat .pi/work/.active)/.verify.log 2>/dev/null | 
 # Optional: cross-check the cached stamp via state.get('verification_stamp') instead of the dotfile tail.
 ```
 
-| Condition                     | Action                              |
-| ----------------------------- | ----------------------------------- |
-| `--no-cache` or `--full`      | Skip cache check, run fresh         |
+| Condition | Action |
+| --- | --- |
+| `--no-cache` or `--full` | Skip cache check, run fresh |
 | `CURRENT_STAMP == LAST_STAMP` | Report cached PASS, skip to Phase 2 |
-| otherwise                     | Run gates normally                  |
+| otherwise | Run gates normally |
 
 ## Phase 1: Gather Context
 
 Read `.pi/work/$(cat .pi/work/.active)/spec.md` to understand the requirements.
 
 **Verify guards:**
-
 - [ ] Plan/spec exists and is up to date
 - [ ] You have read the full spec
 
 ## Phase 2: Completeness Matrix
 
 Extract all requirements/tasks from the PRD and verify each is implemented:
-
 - For each requirement, find evidence in the codebase (file:line reference)
 - Mark as: complete, partial, or missing
 - Report completeness score (X/Y requirements met)
@@ -67,7 +64,6 @@ Follow the verification protocol: `.pi/skills/verification-before-completion/ref
 For browser/manual local-web requirements, use stable URLs as verification evidence. A reachable URL supplements, but never replaces, the canonical gate evidence.
 
 Report results with a mode column:
-
 ```text
 | Gate                     | Status | Mode | Time   |
 |--------------------------|--------|------|--------|
@@ -89,7 +85,6 @@ Report results with a mode column:
 **IDE layer:** when the JetBrains IDE MCP catalog is exposed, run `lint_files`/`get_file_problems` on changed source and report findings; an independent reviewer must report no unresolved P0/P1 findings. If IDE tools are unavailable, report that explicitly — it is neither a pass nor a failure by itself.
 
 **After all gates pass**, record to the verification cache:
-
 ```bash
 echo "$CURRENT_STAMP $(date -u +%Y-%m-%dT%H:%M:%SZ) PASS" >> .pi/work/$(cat .pi/work/.active)/.verify.log
 ```
@@ -102,7 +97,6 @@ result). Writing `verification.md` is a mutation: it requires the Schema loop
 ## Phase 4: Coherence (skip with --quick)
 
 Cross-reference artifacts for contradictions:
-
 - PRD vs implementation (does code address all PRD requirements?)
 - Plan vs implementation (did code follow the plan?)
 - Research recommendations vs actual approach (if different, is it justified?)
@@ -112,7 +106,6 @@ Flag contradictions with specific file references.
 ## Phase 5: Local vs Live
 
 Separate what was verified locally from what still needs confirmation on live servers:
-
 - Name the servers and flags that must be checked before deployment.
 - A local pass does not imply a live pass; label unverified claims as unconfirmed.
 
@@ -121,7 +114,6 @@ Separate what was verified locally from what still needs confirmation on live se
 Append to `.pi/work/$(cat .pi/work/.active)/.progress.md`: `Verification: [PASS|PARTIAL|FAIL] - [summary]`.
 
 Output:
-
 1. **Result**: READY TO SHIP / NEEDS WORK / BLOCKED
 2. **Completeness**: score and status
 3. **Correctness**: gate results (with mode column)
@@ -131,7 +123,6 @@ Output:
 7. **Next step**: `/ship $ARGUMENTS` if ready, or list fixes needed
 
 Record significant findings in context files:
-
 ```bash
 # Append to .pi/MEMORY.md:
 #   - YYYY-MM-DD: [scope] [key finding] — [what, impact, resolution]
@@ -157,8 +148,8 @@ Schema mode; otherwise → main-session mode.
 
 ## Related Commands
 
-| Need              | Command      |
-| ----------------- | ------------ |
+| Need | Command |
+| --- | --- |
 | Ship after verify | `/ship <id>` |
-| Plan a feature    | `/plan`      |
-| Fix a bug         | `/fix`       |
+| Plan a feature | `/plan` |
+| Fix a bug | `/fix` |

@@ -16,26 +16,18 @@ function FilteredList({ items }: { items: Item[] }) {
   // buildSearchIndex() runs on EVERY render, even after initialization
   const [searchIndex, setSearchIndex] = useState(buildSearchIndex(items))
   const [query, setQuery] = useState('')
-
+  
   // When query changes, buildSearchIndex runs again unnecessarily
-  return (
-    <SearchResults
-      index={searchIndex}
-      query={query}
-    />
-  )
+  return <SearchResults index={searchIndex} query={query} />
 }
 
 function UserProfile() {
   // JSON.parse runs on every render
-  const [settings, setSettings] = useState(JSON.parse(localStorage.getItem('settings') || '{}'))
-
-  return (
-    <SettingsForm
-      settings={settings}
-      onChange={setSettings}
-    />
+  const [settings, setSettings] = useState(
+    JSON.parse(localStorage.getItem('settings') || '{}')
   )
+  
+  return <SettingsForm settings={settings} onChange={setSettings} />
 }
 ```
 
@@ -46,13 +38,8 @@ function FilteredList({ items }: { items: Item[] }) {
   // buildSearchIndex() runs ONLY on initial render
   const [searchIndex, setSearchIndex] = useState(() => buildSearchIndex(items))
   const [query, setQuery] = useState('')
-
-  return (
-    <SearchResults
-      index={searchIndex}
-      query={query}
-    />
-  )
+  
+  return <SearchResults index={searchIndex} query={query} />
 }
 
 function UserProfile() {
@@ -61,13 +48,8 @@ function UserProfile() {
     const stored = localStorage.getItem('settings')
     return stored ? JSON.parse(stored) : {}
   })
-
-  return (
-    <SettingsForm
-      settings={settings}
-      onChange={setSettings}
-    />
-  )
+  
+  return <SettingsForm settings={settings} onChange={setSettings} />
 }
 ```
 

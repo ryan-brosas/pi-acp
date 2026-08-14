@@ -19,7 +19,6 @@ secrets_store_secrets = [
 ```
 
 Fields:
-
 - `binding`: Variable name for `env` access
 - `store_id`: From `wrangler secrets-store store list`
 - `secret_name`: Identifier (no spaces)
@@ -110,7 +109,6 @@ secrets_store_secrets = [
 **Method 2**: Create secret directly from Worker settings dropdown
 
 Deploy options:
-
 - **Deploy**: Immediate 100%
 - **Save version**: Gradual rollout
 

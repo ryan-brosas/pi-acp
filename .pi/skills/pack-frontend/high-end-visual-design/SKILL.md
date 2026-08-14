@@ -1,8 +1,9 @@
 ---
 name: high-end-visual-design
-description: 'Use when the user explicitly requests premium, agency-quality, or luxury visual design instead of design-taste-frontend - exact fonts, spacing, shadows, and animations; blocks cheap AI defaults.'
+description: "Use when the user explicitly requests premium, agency-quality, or luxury visual design instead of design-taste-frontend - exact fonts, spacing, shadows, and animations; blocks cheap AI defaults."
 disable-model-invocation: true
 ---
+
 
 # High-End Visual Design
 

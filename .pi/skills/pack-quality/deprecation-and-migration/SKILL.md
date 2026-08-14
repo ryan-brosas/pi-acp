@@ -4,6 +4,7 @@ description: Use when deprecating APIs, migrating between library versions, remo
 disable-model-invocation: true
 ---
 
+
 # Deprecation & Migration
 
 ## Iron Laws
@@ -47,24 +48,19 @@ In code: `@deprecated` JSDoc + runtime `console.warn` (rate-limited). In docs: a
 # Migrating from X to Y
 
 ## Why
-
 [What changed and why.]
 
 ## TL;DR
-
 [Smallest possible change.]
 
 ## Step-by-step
-
 1. [First change. With code example.]
 2. [...]
 
 ## Codemod
-
 [Link to or inline a script that does the migration.]
 
 ## FAQ
-
 [Common questions from the team or community.]
 ```
 
@@ -79,8 +75,8 @@ A codemod script that automates the migration. Lives in `scripts/codemod/`. Test
 module.exports = (file, api) => {
   const j = api.jscodeshift
   return j(file.source)
-    .find(j.CallExpression, { callee: { name: 'oldApi' } })
-    .replaceWith(({ node }) => j.callExpression(j.identifier('newApi'), node.arguments))
+    .find(j.CallExpression, { callee: { name: "oldApi" } })
+    .replaceWith(({ node }) => j.callExpression(j.identifier("newApi"), node.arguments))
     .toSource()
 }
 ```

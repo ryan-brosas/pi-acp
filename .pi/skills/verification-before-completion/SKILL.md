@@ -1,6 +1,6 @@
 ---
 name: verification-before-completion
-description: 'Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always.'
+description: "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always."
 ---
 
 # Verification Before Completion
@@ -25,24 +25,24 @@ Pure prose changes (review the diff); claims backed by a directly observable art
 
 ## Verification Hierarchy
 
-| Claim                       | Required evidence                                                    |
-| --------------------------- | -------------------------------------------------------------------- |
-| "Test passes"               | Test runner output, exit 0                                           |
-| "Typecheck clean"           | `tsc --noEmit`, exit 0                                               |
-| "Lint clean"                | Linter output, exit 0                                                |
-| "Build succeeds"            | Build output, exit 0                                                 |
-| "Behavior is X"             | Repro + observed output                                              |
-| "Code matches spec"         | Diff or path + line range                                            |
-| "Bug is fixed"              | Regression test fails without, passes with                           |
-| "Shipped"                   | All + commit / PR link                                               |
-| "IDE inspections clean"     | `lint_files`/`get_file_problems` output for changed files, no errors |
-| "Independent review passes" | Reviewer report with no unresolved P0/P1 findings                    |
+| Claim | Required evidence |
+| --- | --- |
+| "Test passes" | Test runner output, exit 0 |
+| "Typecheck clean" | `tsc --noEmit`, exit 0 |
+| "Lint clean" | Linter output, exit 0 |
+| "Build succeeds" | Build output, exit 0 |
+| "Behavior is X" | Repro + observed output |
+| "Code matches spec" | Diff or path + line range |
+| "Bug is fixed" | Regression test fails without, passes with |
+| "Shipped" | All + commit / PR link |
+| "IDE inspections clean" | `lint_files`/`get_file_problems` output for changed files, no errors |
+| "Independent review passes" | Reviewer report with no unresolved P0/P1 findings |
 
 Lower levels (prose, code review) are inspection, not verification.
 
 ## Workflow
 
-1. **Name the check(s)** _before_ editing.
+1. **Name the check(s)** *before* editing.
 2. **Run the check** — paste the output or its relevant tail. Truncate, don't paraphrase.
 3. **Inspect the exit code** — 0 is green; non-zero means the claim is false.
 4. **Inspect the output** — "0 tests run", "all skipped", "compiled with warnings" are not passes.
@@ -51,12 +51,12 @@ Lower levels (prose, code review) are inspection, not verification.
 
 ## Common Rationalizations
 
-| Rationalization     | Counter                  |
-| ------------------- | ------------------------ |
-| "One-line change"   | They break builds.       |
-| "Tested in my head" | Mental model ≠ code.     |
-| "Add tests later"   | There is no later.       |
-| "CI will catch it"  | That's the failure mode. |
+| Rationalization | Counter |
+| --- | --- |
+| "One-line change" | They break builds. |
+| "Tested in my head" | Mental model ≠ code. |
+| "Add tests later" | There is no later. |
+| "CI will catch it" | That's the failure mode. |
 
 ## Red Flags
 

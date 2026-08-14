@@ -40,32 +40,27 @@ POST /jwt_validation_rules             # Rule: {name,hostname,token_validation_i
 ## Workers
 
 API client:
-
 ```js
 export default {
   async fetch(req, env) {
-    const jwt = await generateJWT(env.JWT_SECRET)
+    const jwt = await generateJWT(env.JWT_SECRET);
     return fetch('https://api.example.com/data', {
-      headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' }
-    })
+      headers: {'Authorization': `Bearer ${jwt}`, 'Content-Type': 'application/json'}
+    });
   }
 }
 ```
 
 Dynamic JWKS:
-
 ```js
 export default {
   async scheduled(event, env) {
-    const jwks = await (await fetch('https://auth.example.com/.well-known/jwks.json')).json()
-    await fetch(
-      `https://api.cloudflare.com/client/v4/zones/${env.ZONE_ID}/api_gateway/token_validation/${env.CONFIG_ID}`,
-      {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${env.CF_API_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jwks: JSON.stringify(jwks) })
-      }
-    )
+    const jwks = await (await fetch('https://auth.example.com/.well-known/jwks.json')).json();
+    await fetch(`https://api.cloudflare.com/client/v4/zones/${env.ZONE_ID}/api_gateway/token_validation/${env.CONFIG_ID}`, {
+      method: 'PATCH',
+      headers: {'Authorization': `Bearer ${env.CF_API_TOKEN}`, 'Content-Type': 'application/json'},
+      body: JSON.stringify({jwks: JSON.stringify(jwks)})
+    });
   }
 }
 ```
@@ -73,11 +68,11 @@ export default {
 ## Firewall Fields
 
 ```js
-cf.api_gateway.auth_id_present // Session ID present
-cf.api_gateway.request_violates_schema // Schema violation
-cf.api_gateway.fallthrough_triggered // No endpoint match
-cf.api_gateway.jwt_claims_valid // JWT valid
-lookup_json_string(http.request.jwt.claims['{config_id}'][0], 'claim_name')
-cf.tls_client_auth.cert_verified // mTLS cert valid
+cf.api_gateway.auth_id_present           // Session ID present
+cf.api_gateway.request_violates_schema   // Schema violation
+cf.api_gateway.fallthrough_triggered     // No endpoint match
+cf.api_gateway.jwt_claims_valid          // JWT valid
+lookup_json_string(http.request.jwt.claims["{config_id}"][0], "claim_name")
+cf.tls_client_auth.cert_verified         // mTLS cert valid
 cf.tls_client_auth.cert_fingerprint_sha256
 ```

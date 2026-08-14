@@ -25,10 +25,7 @@ function MessageList({ messages }: { messages: Message[] }) {
   return (
     <div className="overflow-y-auto h-screen">
       {messages.map(msg => (
-        <div
-          key={msg.id}
-          className="message-item"
-        >
+        <div key={msg.id} className="message-item">
           <Avatar user={msg.author} />
           <div>{msg.content}</div>
         </div>

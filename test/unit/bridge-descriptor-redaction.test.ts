@@ -32,9 +32,7 @@ test('sanitizeBridgeDescriptors redacts nested env values by default (F-028)', (
 })
 
 test('sanitizeBridgeDescriptors handles non-array env and empty values', () => {
-  const out = sanitizeBridgeDescriptors([
-    { name: 'x', command: 'x', args: [], env: 'not-an-array' }
-  ] as never[]) as Array<{
+  const out = sanitizeBridgeDescriptors([{ name: 'x', command: 'x', args: [], env: 'not-an-array' }] as never[]) as Array<{
     env?: unknown
   }>
   assert.equal(out[0].env, '[redacted non-array env]')

@@ -1,6 +1,6 @@
 ---
 name: api-implementation
-description: 'Use when designing or implementing HTTP APIs - REST, GraphQL, gRPC, validation, pagination, error contracts, idempotency, and versioning.'
+description: "Use when designing or implementing HTTP APIs - REST, GraphQL, gRPC, validation, pagination, error contracts, idempotency, and versioning."
 disable-model-invocation: true
 ---
 
