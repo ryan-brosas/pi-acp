@@ -133,6 +133,8 @@ it('dedupes factory activation and permits reactivation after session shutdown',
   const sockets: FakeSocket[] = []
   const registeredTools: string[] = []
   const shutdownHandlers: Array<() => void> = []
+  const prevMode = process.env.PI_ACP_IDE_MODE
+  delete process.env.PI_ACP_IDE_MODE
   const pi = {
     on(event: string, handler: () => void) {
       if (event === 'session_shutdown') shutdownHandlers.push(handler)
@@ -183,6 +185,8 @@ it('dedupes factory activation and permits reactivation after session shutdown',
   shutdownHandlers[0]()
   makeExtension()(pi as never)
   assert.equal(sockets.length, 2)
+  if (prevMode === undefined) delete process.env.PI_ACP_IDE_MODE
+  else process.env.PI_ACP_IDE_MODE = prevMode
 })
 
 describe('ACP MCP Pi extension lifecycle', () => {
