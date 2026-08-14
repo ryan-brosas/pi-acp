@@ -25,14 +25,15 @@ npm i -D miniflare
 ```
 
 Requires ES modules in `package.json`:
+
 ```json
-{"type": "module"}
+{ "type": "module" }
 ```
 
 ## Quick Start
 
 ```js
-import { Miniflare } from "miniflare";
+import { Miniflare } from 'miniflare'
 
 const mf = new Miniflare({
   modules: true,
@@ -42,12 +43,12 @@ const mf = new Miniflare({
         return new Response("Hello Miniflare!");
       }
     }
-  `,
-});
+  `
+})
 
-const res = await mf.dispatchFetch("http://localhost:8787/");
-console.log(await res.text()); // Hello Miniflare!
-await mf.dispose();
+const res = await mf.dispatchFetch('http://localhost:8787/')
+console.log(await res.text()) // Hello Miniflare!
+await mf.dispose()
 ```
 
 ## See Also

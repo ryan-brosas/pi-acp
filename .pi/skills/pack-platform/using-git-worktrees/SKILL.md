@@ -4,7 +4,6 @@ description: Use when starting feature work that needs isolation from current wo
 disable-model-invocation: true
 ---
 
-
 # Git Worktrees
 
 ## When to Use
@@ -43,13 +42,13 @@ git worktree add --detach ~/code/myapp-pr origin/pr/123
 
 ## Common Patterns
 
-| Pattern | Command |
-|---|---|
-| Feature work, isolated | `git worktree add -b feature/X ../X main` |
-| Switch back to main | `cd ../myapp && git checkout main` |
-| Compare two branches | Two worktrees, diff between them |
-| Review a PR | `git worktree add --detach ../pr-123 origin/pr/123` |
-| Cleanup old | `git worktree remove ../X && git worktree prune` |
+| Pattern                | Command                                             |
+| ---------------------- | --------------------------------------------------- |
+| Feature work, isolated | `git worktree add -b feature/X ../X main`           |
+| Switch back to main    | `cd ../myapp && git checkout main`                  |
+| Compare two branches   | Two worktrees, diff between them                    |
+| Review a PR            | `git worktree add --detach ../pr-123 origin/pr/123` |
+| Cleanup old            | `git worktree remove ../X && git worktree prune`    |
 
 ## Smart Directory Selection
 
@@ -68,6 +67,7 @@ git worktree add -b $BRANCH ../myapp-$BRANCH main
 ## Safety Checks
 
 Before creating a worktree:
+
 - **Is the branch already on a worktree?** `git worktree list` shows all.
 - **Is the working copy dirty?** `git status` — commit or stash first.
 - **Is the target directory empty?** Don't overwrite.

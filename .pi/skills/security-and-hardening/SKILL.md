@@ -1,6 +1,6 @@
 ---
 name: security-and-hardening
-description: "Use when auditing for security vulnerabilities, implementing auth or authz, handling secrets, or hardening against OWASP Top 10 - covers input validation, authentication, dependency auditing, and secure defaults."
+description: 'Use when auditing for security vulnerabilities, implementing auth or authz, handling secrets, or hardening against OWASP Top 10 - covers input validation, authentication, dependency auditing, and secure defaults.'
 ---
 
 # Security & Hardening
@@ -17,18 +17,18 @@ description: "Use when auditing for security vulnerabilities, implementing auth 
 
 ## OWASP Top 10 (Quick Map)
 
-| Risk | Defense |
-|---|---|
-| Injection | Parameterized queries, schema-validated input |
-| Broken auth | Rate limit, MFA, bcrypt/argon2 |
-| Data exposure | Encrypt at rest + transit, minimize retention |
-| XXE | Disable external entities |
-| Access control | Authz on every action, deny default |
-| Misconfig | Secure defaults, no debug in prod, headers |
-| XSS | Output encoding, CSP, no innerHTML with user input |
-| Deserialization | Schema-validate, no eval on untrusted |
-| Vulns (deps) | `npm audit`, Dependabot, lockfile pinning |
-| Logging | Auth events, anomalies, access denials |
+| Risk            | Defense                                            |
+| --------------- | -------------------------------------------------- |
+| Injection       | Parameterized queries, schema-validated input      |
+| Broken auth     | Rate limit, MFA, bcrypt/argon2                     |
+| Data exposure   | Encrypt at rest + transit, minimize retention      |
+| XXE             | Disable external entities                          |
+| Access control  | Authz on every action, deny default                |
+| Misconfig       | Secure defaults, no debug in prod, headers         |
+| XSS             | Output encoding, CSP, no innerHTML with user input |
+| Deserialization | Schema-validate, no eval on untrusted              |
+| Vulns (deps)    | `npm audit`, Dependabot, lockfile pinning          |
+| Logging         | Auth events, anomalies, access denials             |
 
 ## Input Validation
 

@@ -4,7 +4,6 @@ description: Use when the user wants to improve architecture, find refactoring o
 disable-model-invocation: true
 ---
 
-
 # Improve Codebase Architecture
 
 ## Iron Laws
@@ -50,16 +49,16 @@ Start at the bottom. Don't jump to 5.
 
 ## Common Smells
 
-| Smell | Indicator | First move |
-|---|---|---|
-| Long method | > 30 lines, multiple responsibilities | Extract method |
-| God class | 1000+ lines, 20+ methods | Extract class |
-| Tight coupling | Changing A forces changes in B | Dependency injection |
-| Feature envy | Method uses B's data more | Move method to B |
-| Primitive obsession | Strings/numbers for domain | Value objects / branded |
-| Long parameter list | > 3 params, especially bools | Parameter object / options |
-| Shotgun surgery | One change touches 5+ files | Consolidate |
-| Divergent change | One class changes for many reasons | Split by axis |
+| Smell               | Indicator                             | First move                 |
+| ------------------- | ------------------------------------- | -------------------------- |
+| Long method         | > 30 lines, multiple responsibilities | Extract method             |
+| God class           | 1000+ lines, 20+ methods              | Extract class              |
+| Tight coupling      | Changing A forces changes in B        | Dependency injection       |
+| Feature envy        | Method uses B's data more             | Move method to B           |
+| Primitive obsession | Strings/numbers for domain            | Value objects / branded    |
+| Long parameter list | > 3 params, especially bools          | Parameter object / options |
+| Shotgun surgery     | One change touches 5+ files           | Consolidate                |
+| Divergent change    | One class changes for many reasons    | Split by axis              |
 
 ## Module Boundaries
 
@@ -73,6 +72,7 @@ Stop if tests are easy to write, build time decreased, new features easy, onboar
 ## Strangler Fig Pattern
 
 For larger refactors:
+
 1. **Build new alongside old.** Both work.
 2. **Route traffic incrementally.** 10% → 50% → 100%.
 3. **Remove old path.** Once 100% on new.

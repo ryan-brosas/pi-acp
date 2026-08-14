@@ -1,9 +1,8 @@
 ---
 name: industrial-brutalist-ui
-description: "Use when the user requests brutalist, military-terminal, or raw mechanical aesthetics instead of design-taste-frontend, for data-heavy dashboards or editorial sites."
+description: 'Use when the user requests brutalist, military-terminal, or raw mechanical aesthetics instead of design-taste-frontend, for data-heavy dashboards or editorial sites.'
 disable-model-invocation: true
 ---
-
 
 # Industrial / Brutalist UI
 
@@ -29,9 +28,9 @@ Consumer / lifestyle; image-heavy; e-commerce; user wants warmth/elegance; "appr
 
 ```css
 :root {
-  --font-mono: "JetBrains Mono", "Berkeley Mono", "IBM Plex Mono", monospace;
-  --font-sans: "Inter", -apple-system, system-ui;  /* minimal use */
-  --font-serif: "IBM Plex Serif", Georgia;  /* editorial accent */
+  --font-mono: 'JetBrains Mono', 'Berkeley Mono', 'IBM Plex Mono', monospace;
+  --font-sans: 'Inter', -apple-system, system-ui; /* minimal use */
+  --font-serif: 'IBM Plex Serif', Georgia; /* editorial accent */
 }
 
 body {
@@ -39,7 +38,7 @@ body {
   font-size: 13px;
   line-height: 1.4;
   letter-spacing: 0.02em;
-  text-transform: uppercase;  /* optional — for headers/labels */
+  text-transform: uppercase; /* optional — for headers/labels */
 }
 ```
 
@@ -49,15 +48,15 @@ Mono for everything. Sans for nothing. Serif for editorial accent.
 
 ```css
 :root {
-  --bg: #f5f5f0;           /* paper / off-white */
-  --fg: #0a0a0a;           /* near-black */
-  --border: #0a0a0a;       /* black borders */
-  --muted: #707070;        /* gray */
-  --data-1: #1a1a1a;       /* near-black */
-  --data-2: #c44d3a;       /* brick red */
-  --data-3: #3a6b3a;       /* forest green */
-  --warn: #c4a02a;         /* amber */
-  --error: #8b1a1a;        /* deep red */
+  --bg: #f5f5f0; /* paper / off-white */
+  --fg: #0a0a0a; /* near-black */
+  --border: #0a0a0a; /* black borders */
+  --muted: #707070; /* gray */
+  --data-1: #1a1a1a; /* near-black */
+  --data-2: #c44d3a; /* brick red */
+  --data-3: #3a6b3a; /* forest green */
+  --warn: #c4a02a; /* amber */
+  --error: #8b1a1a; /* deep red */
 }
 ```
 
@@ -66,9 +65,16 @@ NO gradients, NO shadows, NO bright accents. Color is information, not decoratio
 ## Borders (Heavy / Hairline)
 
 ```css
-.border-default { border: 1px solid #0a0a0a; }
-.border-thick { border: 2px solid #0a0a0a; }
-.border-quad { border-top: 1px solid #0a0a0a; border-bottom: 1px solid #0a0a0a; }
+.border-default {
+  border: 1px solid #0a0a0a;
+}
+.border-thick {
+  border: 2px solid #0a0a0a;
+}
+.border-quad {
+  border-top: 1px solid #0a0a0a;
+  border-bottom: 1px solid #0a0a0a;
+}
 ```
 
 Black on white. Always. Or white on black. The border is the design.
@@ -86,7 +92,10 @@ Black on white. Always. Or white on black. The border is the design.
   </thead>
   <tbody>
     {rows.map(r => (
-      <tr key={r.id} className="border-b border-fg">
+      <tr
+        key={r.id}
+        className="border-b border-fg"
+      >
         <td className="py-1 px-2">{r.id}</td>
         <td className="py-1 px-2 uppercase">{r.status}</td>
         <td className="py-1 px-2 text-right tabular-nums">{r.value}</td>

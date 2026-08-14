@@ -5,6 +5,7 @@ Flexible message queuing for async task processing with guaranteed at-least-once
 ## Overview
 
 Queues provide:
+
 - At-least-once delivery guarantee
 - Push-based (Worker) and pull-based (HTTP) consumers
 - Configurable batching and retries
@@ -22,28 +23,28 @@ wrangler queues consumer add my-queue my-worker
 
 ```typescript
 // Producer
-await env.MY_QUEUE.send({ userId: 123, action: 'notify' });
+await env.MY_QUEUE.send({ userId: 123, action: 'notify' })
 
 // Consumer
 export default {
   async queue(batch: MessageBatch, env: Env): Promise<void> {
     for (const msg of batch.messages) {
-      await process(msg.body);
-      msg.ack();
+      await process(msg.body)
+      msg.ack()
     }
   }
-};
+}
 ```
 
 ## Core Operations
 
-| Operation | Purpose | Limit |
-|-----------|---------|-------|
-| `send(body, options?)` | Publish message | 128 KB |
-| `sendBatch(messages)` | Bulk publish | 100 msgs/256 KB |
-| `message.ack()` | Acknowledge success | - |
-| `message.retry(options?)` | Retry with delay | - |
-| `batch.ackAll()` | Ack entire batch | - |
+| Operation                 | Purpose             | Limit           |
+| ------------------------- | ------------------- | --------------- |
+| `send(body, options?)`    | Publish message     | 128 KB          |
+| `sendBatch(messages)`     | Bulk publish        | 100 msgs/256 KB |
+| `message.ack()`           | Acknowledge success | -               |
+| `message.retry(options?)` | Retry with delay    | -               |
+| `batch.ackAll()`          | Ack entire batch    | -               |
 
 ## Architecture
 

@@ -1,9 +1,8 @@
 ---
 name: root-cause-tracing
-description: "Use when errors occur deep in execution and you need to trace back to the original trigger - trace bugs backward through the call stack, adding instrumentation when needed."
+description: 'Use when errors occur deep in execution and you need to trace back to the original trigger - trace bugs backward through the call stack, adding instrumentation when needed.'
 disable-model-invocation: true
 ---
-
 
 # Root-Cause Tracing
 
@@ -44,15 +43,15 @@ Each `↑` is a step. At each step: log the input, log the output, confirm the b
 ```ts
 // BAD: log in the middle
 function processUser(user) {
-  console.log("processing user", user) // noise
+  console.log('processing user', user) // noise
   // ...
 }
 
 // GOOD: log at the boundary
 function processUser(user: User): Result {
-  logger.debug("processUser.input", { userId: user.id, ...user })
+  logger.debug('processUser.input', { userId: user.id, ...user })
   // ...
-  logger.debug("processUser.output", { result })
+  logger.debug('processUser.output', { result })
   return result
 }
 ```

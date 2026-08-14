@@ -49,22 +49,22 @@ this.ctx.storage.transactionSync(async () => { await fetch(...); }); // Error!
 
 ```typescript
 // [ ] Types don't validate at runtime
-type User = { id: number; name: string };
-const user = this.sql.exec<User>('SELECT id FROM users WHERE id = ?', id).one(); // Only has { id }!
+type User = { id: number; name: string }
+const user = this.sql.exec<User>('SELECT id FROM users WHERE id = ?', id).one() // Only has { id }!
 
 // [x] Query must match type
-const user = this.sql.exec<User>('SELECT id, name FROM users WHERE id = ?', id).one();
+const user = this.sql.exec<User>('SELECT id, name FROM users WHERE id = ?', id).one()
 ```
 
 ## Alarm Persistence
 
 ```typescript
 // [ ] deleteAll() doesn't delete alarms
-await this.ctx.storage.deleteAll(); // Alarm remains!
+await this.ctx.storage.deleteAll() // Alarm remains!
 
 // [x] Delete alarm explicitly
-await this.ctx.storage.deleteAlarm();
-await this.ctx.storage.deleteAll();
+await this.ctx.storage.deleteAlarm()
+await this.ctx.storage.deleteAll()
 ```
 
 ## Auto Caching & Bypass

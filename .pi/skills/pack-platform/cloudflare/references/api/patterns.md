@@ -6,24 +6,24 @@
 // List zones (with filtering)
 const zones = await client.zones.list({
   account: { id: 'account-id' },
-  status: 'active',
-});
+  status: 'active'
+})
 
 // Create zone
 const zone = await client.zones.create({
   account: { id: 'account-id' },
   name: 'example.com',
-  type: 'full', // or 'partial'
-});
+  type: 'full' // or 'partial'
+})
 
 // Update zone
 await client.zones.edit('zone-id', {
   paused: false,
-  vanity_name_servers: ['ns1.example.com', 'ns2.example.com'],
-});
+  vanity_name_servers: ['ns1.example.com', 'ns2.example.com']
+})
 
 // Delete zone
-await client.zones.delete('zone-id');
+await client.zones.delete('zone-id')
 ```
 
 ### DNS Management
@@ -45,3 +45,4 @@ const records = await client.dns.records.list({
   zone_id: 'zone-id',
   type: 'A',
   name: 'exa
+```

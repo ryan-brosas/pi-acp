@@ -3,19 +3,21 @@
 ## Class Structure
 
 ```typescript
-import { DurableObject } from "cloudflare:workers";
+import { DurableObject } from 'cloudflare:workers'
 
 export class MyDO extends DurableObject<Env> {
   constructor(ctx: DurableObjectState, env: Env) {
-    super(ctx, env);
+    super(ctx, env)
     // Initialize storage/run migrations before any requests
     ctx.blockConcurrencyWhile(async () => {
-      await this.migrate();
-    });
+      await this.migrate()
+    })
   }
-  async myMethod(arg: string): Promise<string> { return arg; }
-  async alarm() { }
-  async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) { }
+  async myMethod(arg: string): Promise<string> {
+    return arg
+  }
+  async alarm() {}
+  async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) {}
 }
 ```
 
@@ -69,7 +71,7 @@ async updateFromExternal(key: string) {
   const version = this.ctx.storage.sql.exec<{ v: number }>("SELECT version as v FROM data WHERE key = ?", key).one()?.v;
   const externalData = await fetch("https://api.example.com/data");  // Other requests can interleave here
   const newVersion = this.ctx.storage.sql.exec<{ v: number }>("SELECT version as v FROM data WHERE key = ?", key).one()?.v;
-  
+
   if (version !== newVersion) throw new Error("Concurrent modification");
   this.ctx.storage.sql.exec("UPDATE data SET value = ?, version = version + 1 WHERE key = ?", await externalData.text(), key);
 }
@@ -79,28 +81,28 @@ async updateFromExternal(key: string) {
 
 ```typescript
 // Query
-const cursor = this.ctx.storage.sql.exec("SELECT * FROM users WHERE age > ?", 18);
-cursor.toArray()          // All rows
-cursor.one()              // 1 row or throw
-cursor.raw().toArray()    // [[1, 'Alice']]
-cursor.rowsRead, cursor.rowsWritten, cursor.columnNames
+const cursor = this.ctx.storage.sql.exec('SELECT * FROM users WHERE age > ?', 18)
+cursor.toArray() // All rows
+cursor.one() // 1 row or throw
+cursor.raw().toArray() // [[1, 'Alice']]
+;(cursor.rowsRead, cursor.rowsWritten, cursor.columnNames)
 this.ctx.storage.sql.databaseSize
 
 // Schema
-this.ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)");
+this.ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)')
 ```
 
 ## KV Storage
 
 ```typescript
 // Sync (SQLite only)
-this.ctx.storage.kv.get/put/delete("key", value)
-this.ctx.storage.kv.list({ prefix: "user:" })
+this.ctx.storage.kv.get / put / delete ('key', value)
+this.ctx.storage.kv.list({ prefix: 'user:' })
 
 // Async
-await this.ctx.storage.get/put/delete("key", value)
-await this.ctx.storage.put({ k1: "a", k2: "b" })  // Batch 128 max
-await this.ctx.storage.list({ prefix: "user:", start: "user:100", limit: 50 })
+;(await this.ctx.storage.get) / put / delete ('key', value)
+await this.ctx.storage.put({ k1: 'a', k2: 'b' }) // Batch 128 max
+await this.ctx.storage.list({ prefix: 'user:', start: 'user:100', limit: 50 })
 await this.ctx.storage.deleteAll()
 ```
 
@@ -108,12 +110,14 @@ await this.ctx.storage.deleteAll()
 
 ```typescript
 // Sync
-this.ctx.storage.transactionSync(() => { /* SQL ops */ });
+this.ctx.storage.transactionSync(() => {
+  /* SQL ops */
+})
 
 // Async
-await this.ctx.storage.transaction(async (txn) => {
-  await txn.get/put/delete("key", value);  // Throw to rollback
-});
+await this.ctx.storage.transaction(async txn => {
+  ;(await txn.get) / put / delete ('key', value) // Throw to rollback
+})
 ```
 
 ## Point-in-Time Recovery
@@ -121,7 +125,7 @@ await this.ctx.storage.transaction(async (txn) => {
 ```typescript
 await this.ctx.storage.getCurrentBookmark()
 await this.ctx.storage.getBookmarkForTime(Date.now() - 86400000)
-await this.ctx.storage.onNextSessionRestoreBookmark(bookmark)  // Call ctx.abort() after
+await this.ctx.storage.onNextSessionRestoreBookmark(bookmark) // Call ctx.abort() after
 ```
 
 ## Alarms

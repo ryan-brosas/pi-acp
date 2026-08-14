@@ -5,6 +5,7 @@ Persistent storage API for Durable Objects with SQLite and KV backends, PITR, an
 ## Overview
 
 DO Storage provides:
+
 - SQLite-backed (recommended) or KV-backed
 - SQL API + synchronous/async KV APIs
 - Automatic input/output gates (race-free)
@@ -17,27 +18,30 @@ DO Storage provides:
 
 ```typescript
 export class Counter extends DurableObject {
-  sql: SqlStorage;
-  
+  sql: SqlStorage
+
   constructor(ctx: DurableObjectState, env: Env) {
-    super(ctx, env);
-    this.sql = ctx.storage.sql;
-    this.sql.exec('CREATE TABLE IF NOT EXISTS data(key TEXT PRIMARY KEY, value INTEGER)');
+    super(ctx, env)
+    this.sql = ctx.storage.sql
+    this.sql.exec('CREATE TABLE IF NOT EXISTS data(key TEXT PRIMARY KEY, value INTEGER)')
   }
-  
+
   async increment(): Promise<number> {
-    this.sql.exec('INSERT OR REPLACE INTO data VALUES (?, ?) RETURNING value', 'counter', 
-      (this.sql.exec('SELECT value FROM data WHERE key = ?', 'counter').one()?.value || 0) + 1);
+    this.sql.exec(
+      'INSERT OR REPLACE INTO data VALUES (?, ?) RETURNING value',
+      'counter',
+      (this.sql.exec('SELECT value FROM data WHERE key = ?', 'counter').one()?.value || 0) + 1
+    )
   }
 }
 ```
 
 ## Storage Backends
 
-| Backend | Create Method | APIs | PITR |
-|---------|---------------|------|------|
-| SQLite (recommended) | `new_sqlite_classes` | SQL + sync KV + async KV | [x] |
-| KV (legacy) | `new_classes` | async KV only | [ ] |
+| Backend              | Create Method        | APIs                     | PITR |
+| -------------------- | -------------------- | ------------------------ | ---- |
+| SQLite (recommended) | `new_sqlite_classes` | SQL + sync KV + async KV | [x]  |
+| KV (legacy)          | `new_classes`        | async KV only            | [ ]  |
 
 ## Core APIs
 

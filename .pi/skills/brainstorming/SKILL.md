@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Use when creating or developing, before writing code or implementation plans - refines rough ideas into designs through collaborative questioning, alternative exploration, and incremental validation."
+description: 'Use when creating or developing, before writing code or implementation plans - refines rough ideas into designs through collaborative questioning, alternative exploration, and incremental validation.'
 ---
 
 # Brainstorming
@@ -20,6 +20,7 @@ Bug fixes with known root cause; mechanical refactor with a clear spec; trivial 
 ## Core Principle
 
 **Classify unknowns before acting.**
+
 - **Known knowns** — in the prompt.
 - **Known unknowns** — ask the user.
 - **Unknown knowns** — you'd recognize the answer if you saw it. Show 2–4 cheap variants or point at a reference.
@@ -30,21 +31,21 @@ Map the gap before proposing. A simpler approach often exists — say so.
 ## Workflow
 
 1. **Map unknowns** — classify the gap; state assumptions for ambiguous cases.
-2. **Variants** — for novel or design-heavy work, show 2–4 cheap variants *before* recommending one. Each names the trade-off it accepts.
+2. **Variants** — for novel or design-heavy work, show 2–4 cheap variants _before_ recommending one. Each names the trade-off it accepts.
 3. **Interview** — one question at a time on architecture, data model, or UX. Multiple-choice when options are genuinely live. Reference-pointing beats 200 words.
 4. **Validate** — incremental check-in: "does this match what you wanted?" before going deeper.
 5. **Hand off** — after approval, switch to `planning-and-task-breakdown` (or `incremental-implementation` for trivial slices).
 
 ## Cheat Sheet
 
-| Situation | Default action |
-|---|---|
-| Spec concrete, single-file | Skip brainstorm, implement. |
+| Situation                                 | Default action                                   |
+| ----------------------------------------- | ------------------------------------------------ |
+| Spec concrete, single-file                | Skip brainstorm, implement.                      |
 | Spec concrete, multi-file or design-heavy | One question on the riskiest unknown, then plan. |
-| Spec vague | Variants first, then interview. |
-| "Sanity check" / "prototype" | Use `prototype` skill. |
-| Multiple valid approaches | Show 2–4 variants with trade-offs. |
-| New library / framework | Point at official docs/source. |
+| Spec vague                                | Variants first, then interview.                  |
+| "Sanity check" / "prototype"              | Use `prototype` skill.                           |
+| Multiple valid approaches                 | Show 2–4 variants with trade-offs.               |
+| New library / framework                   | Point at official docs/source.                   |
 
 ## Red Flags
 

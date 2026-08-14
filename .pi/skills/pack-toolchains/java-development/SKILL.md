@@ -1,6 +1,6 @@
 ---
 name: java-development
-description: "Use when writing or reviewing Java - Java 21 features, Spring Boot, dependency injection, persistence, and testing conventions."
+description: 'Use when writing or reviewing Java - Java 21 features, Spring Boot, dependency injection, persistence, and testing conventions.'
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: cgc-inspiration-workflow
-description: "Use when finding, cloning, indexing, refreshing, comparing, or extracting capabilities from inspiration repositories through CodeGraphContext."
+description: 'Use when finding, cloning, indexing, refreshing, comparing, or extracting capabilities from inspiration repositories through CodeGraphContext.'
 disable-model-invocation: true
 ---
 
@@ -31,7 +31,7 @@ machine-specific path.
    `cgc stats "<inspo-root>/<repo>"`. The indexed graph is the query surface;
    never grep an inspiration clone.
 5. **Query one repository.** Use `cgc find name "<symbol>" --context
-   "<inspo-root>/<repo>"`, `cgc find content "<pattern>" --context ...`, and
+"<inspo-root>/<repo>"`, `cgc find content "<pattern>" --context ...`, and
    `cgc analyze ...` for relationships. Treat each repository as a separate
    evidence source.
 6. **Fallback.** Use the current DeepWiki index/page actions only for a bounded
@@ -51,9 +51,9 @@ two named gaps produce no progress. Mark unknowns and ask instead of indexing
 more repositories.
 
 <skill_result>
-  <skill>cgc-inspiration-workflow</skill>
-  <status>success|partial|blocked|failure</status>
-  <evidence>Per-repository CGC queries with provenance, matrix, and decisions</evidence>
-  <artifacts>Provenance record and capability matrix</artifacts>
-  <risks>Missing license, stale graph, unregistered context, or none</risks>
+<skill>cgc-inspiration-workflow</skill>
+<status>success|partial|blocked|failure</status>
+<evidence>Per-repository CGC queries with provenance, matrix, and decisions</evidence>
+<artifacts>Provenance record and capability matrix</artifacts>
+<risks>Missing license, stale graph, unregistered context, or none</risks>
 </skill_result>

@@ -11,12 +11,12 @@ import CoreData
 
 class PersistentContainer: NSPersistentContainer {
     static let shared = PersistentContainer(name: "DataModel")
-    
+
     private override init(name: String, managedObjectModel model: NSManagedObjectModel) {
         super.init(name: name, managedObjectModel: model)
         configure()
     }
-    
+
     convenience init(name: String) {
         guard let modelURL = Bundle.main.url(forResource: name, withExtension: "momd"),
               let model = NSManagedObjectModel(contentsOf: modelURL) else {
@@ -24,20 +24,20 @@ class PersistentContainer: NSPersistentContainer {
         }
         self.init(name: name, managedObjectModel: model)
     }
-    
+
     private func configure() {
         // Set merge policy for constraint handling
         viewContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
-        
+
         // Enable automatic merging from parent
         viewContext.automaticallyMergesChangesFromParent = true
-        
+
         // Name the view context for debugging
         viewContext.name = "ViewContext"
 
         // Configure store options before loading
         configureStoreDescription()
-        
+
         // Load persistent stores
         loadPersistentStores { description, error in
             if let error = error {
@@ -46,7 +46,7 @@ class PersistentContainer: NSPersistentContainer {
             }
         }
     }
-    
+
     private func configureStoreDescription() {
         guard let description = persistentStoreDescriptions.first else { return }
 
@@ -63,7 +63,7 @@ class PersistentContainer: NSPersistentContainer {
 ```swift
 class PersistentContainer: NSPersistentContainer {
     static let shared = PersistentContainer(name: "DataModel")
-    
+
     // Prevent external initialization
     private override init(name: String, managedObjectModel model: NSManagedObjectModel) {
         super.init(name: name, managedObjectModel: model)
@@ -75,11 +75,13 @@ let context = PersistentContainer.shared.viewContext
 ```
 
 **Pros:**
+
 - Simple, consistent access across the app
 - No need to pass container through the app
 - Works well with SwiftUI environment
 
 **Cons:**
+
 - Harder to test with different configurations
 - Global state
 
@@ -88,21 +90,21 @@ let context = PersistentContainer.shared.viewContext
 ```swift
 class DataController {
     let container: NSPersistentContainer
-    
+
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "DataModel")
-        
+
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
         }
-        
+
         container.loadPersistentStores { description, error in
             if let error = error {
                 fatalError("Failed to load store: \(error)")
             }
         }
     }
-    
+
     var viewContext: NSManagedObjectContext {
         container.viewContext
     }
@@ -117,11 +119,13 @@ let testController = DataController(inMemory: true)
 ```
 
 **Pros:**
+
 - Easier to test with in-memory stores
 - More flexible configuration
 - Better for unit testing
 
 **Cons:**
+
 - Must pass controller through the app
 - More boilerplate
 
@@ -138,6 +142,7 @@ viewContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
 ```
 
 **Use when:**
+
 - Using unique constraints
 - Store data should take precedence
 - Multiple contexts might modify the same objects
@@ -151,6 +156,7 @@ viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 ```
 
 **Use when:**
+
 - User edits should always win
 - In-memory changes are more important
 
@@ -163,6 +169,7 @@ viewContext.mergePolicy = NSOverwriteMergePolicy
 ```
 
 **Use when:**
+
 - You want complete replacement
 - Conflicts should never occur
 
@@ -175,6 +182,7 @@ viewContext.mergePolicy = NSRollbackMergePolicy
 ```
 
 **Use when:**
+
 - Store is source of truth
 - In-memory changes should be discarded on conflict
 
@@ -195,6 +203,7 @@ do {
 ```
 
 **Use when:**
+
 - You need custom conflict resolution
 - Conflicts should be explicitly handled
 
@@ -212,6 +221,7 @@ viewContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
 ```
 
 **Best Practices:**
+
 - Only use for UI-related fetches and updates
 - Keep operations lightweight
 - Enable automatic merging from parent
@@ -240,6 +250,7 @@ context.perform {
 ```
 
 **Best Practices:**
+
 - Use for imports, exports, batch operations
 - Always wrap work in `perform { }`
 - Set transaction author for persistent history tracking
@@ -255,6 +266,7 @@ context.transactionAuthor = "ImportAuthor"
 ```
 
 **Benefits:**
+
 - Identify contexts in Instruments
 - Filter persistent history transactions
 - Debug threading issues more easily
@@ -295,12 +307,14 @@ container.loadPersistentStores { description, error in
 ```
 
 **Characteristics:**
+
 - Completion handler called asynchronously when loading finishes
 - Code after `loadPersistentStores` executes immediately
 - App typically waits for stores to load before showing UI
 - Most common and recommended pattern
 
 **When to use:**
+
 - Standard app initialization
 - When you control the setup flow
 - When you can ensure UI doesn't appear until stores are ready
@@ -331,12 +345,14 @@ func setupCoreData() async throws {
 ```
 
 **Benefits:**
+
 - Cleaner async/await syntax
 - Better error handling with try/catch
 - Easier to compose with other async operations
 - Explicit about async nature
 
 **When to use:**
+
 - iOS 15+ deployment target
 - Modern Swift concurrency codebase
 - When composing with other async operations
@@ -349,12 +365,12 @@ For rare cases where you need the app to start before stores are loaded:
 class CoreDataStack {
     let container: NSPersistentContainer
     private(set) var isStoreLoaded = false
-    
+
     init() {
         container = NSPersistentContainer(name: "Model")
         loadStoresInBackground()
     }
-    
+
     private func loadStoresInBackground() {
         container.loadPersistentStores { [weak self] description, error in
             if let error = error {
@@ -365,10 +381,10 @@ class CoreDataStack {
             NotificationCenter.default.post(name: .storeDidLoad, object: nil)
         }
     }
-    
+
     func waitForStoreLoad() async {
         guard !isStoreLoaded else { return }
-        
+
         await withCheckedContinuation { continuation in
             let observer = NotificationCenter.default.addObserver(
                 forName: .storeDidLoad,
@@ -377,7 +393,7 @@ class CoreDataStack {
             ) { _ in
                 continuation.resume()
             }
-            
+
             // Check again in case it loaded while setting up observer
             if self.isStoreLoaded {
                 NotificationCenter.default.removeObserver(observer)
@@ -389,12 +405,14 @@ class CoreDataStack {
 ```
 
 **Cautions:**
+
 - Must handle "not ready" state throughout app
 - More complex error handling
 - Potential race conditions if not careful
 - Only use if you have a specific reason
 
 **When to use:**
+
 - Very large databases where loading takes significant time
 - Apps that can show UI before data is available
 - Background initialization scenarios
@@ -418,6 +436,7 @@ container.persistentStoreDescriptions = [description]
 ```
 
 **Use for:**
+
 - Unit tests
 - Temporary data
 - Prototyping
@@ -431,6 +450,7 @@ container.persistentStoreDescriptions = [description]
 ```
 
 **Use for:**
+
 - Production apps
 - Persistent data
 - Most common use case
@@ -461,23 +481,23 @@ import CoreData
 
 final class CoreDataStack {
     static let shared = CoreDataStack()
-    
+
     private let containerName = "DataModel"
-    
+
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: containerName)
-        
+
         // Configure store description
         guard let description = container.persistentStoreDescriptions.first else {
             fatalError("Failed to retrieve store description")
         }
-        
+
         // Enable persistent history tracking
-        description.setOption(true as NSNumber, 
+        description.setOption(true as NSNumber,
                             forKey: NSPersistentHistoryTrackingKey)
         description.setOption(true as NSNumber,
                             forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-        
+
         // Load stores
         container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
@@ -485,19 +505,19 @@ final class CoreDataStack {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         }
-        
+
         // Configure view context
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
         container.viewContext.name = "ViewContext"
-        
+
         return container
     }()
-    
+
     var viewContext: NSManagedObjectContext {
         persistentContainer.viewContext
     }
-    
+
     func newBackgroundContext() -> NSManagedObjectContext {
         let context = persistentContainer.newBackgroundContext()
         context.name = "BackgroundContext"
@@ -506,7 +526,7 @@ final class CoreDataStack {
         context.automaticallyMergesChangesFromParent = true
         return context
     }
-    
+
     func performBackgroundTask(_ block: @escaping (NSManagedObjectContext) -> Void) {
         persistentContainer.performBackgroundTask { context in
             context.name = "BackgroundTask"
@@ -515,7 +535,7 @@ final class CoreDataStack {
             block(context)
         }
     }
-    
+
     private init() {}
 }
 
@@ -539,7 +559,7 @@ import SwiftUI
 @main
 struct MyApp: App {
     let persistenceController = PersistentContainer.shared
-    
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -551,12 +571,12 @@ struct MyApp: App {
 // Usage in views
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    
+
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Article.name, ascending: true)],
         animation: .default)
     private var articles: FetchedResults<Article>
-    
+
     var body: some View {
         List(articles) { article in
             Text(article.name ?? "")
@@ -602,7 +622,7 @@ let context = container.newBackgroundContext()
 ```swift
 class PersistentContainer: NSPersistentContainer {
     static let shared = PersistentContainer(name: "Model")
-    
+
     override func newBackgroundContext() -> NSManagedObjectContext {
         let context = super.newBackgroundContext()
         context.name = "BackgroundContext"

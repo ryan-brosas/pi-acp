@@ -4,7 +4,6 @@ description: Use when a feature/change has a spec or clear goal and needs an exe
 disable-model-invocation: true
 ---
 
-
 # Planning & Task Breakdown
 
 ## When to Use
@@ -35,12 +34,12 @@ disable-model-invocation: true
 
 ## Station Quality
 
-| Good station | Bad station |
-|---|---|
-| One complete path through all layers | One layer in isolation |
+| Good station                                       | Bad station                        |
+| -------------------------------------------------- | ---------------------------------- |
+| One complete path through all layers               | One layer in isolation             |
 | Independently verifiable (test/build/check passes) | Untestable until all stations done |
-| Adds user-visible behavior or fixes a bug | Pure prep with no signal |
-| Reverts cleanly | Tangles with unrelated code |
+| Adds user-visible behavior or fixes a bug          | Pure prep with no signal           |
+| Reverts cleanly                                    | Tangles with unrelated code        |
 
 ## Plan Template
 

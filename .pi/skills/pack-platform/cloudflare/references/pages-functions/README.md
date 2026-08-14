@@ -16,6 +16,7 @@ Serverless functions on Cloudflare Pages using Workers runtime. Full-stack dev w
 ```
 
 **Rules:**
+
 - `index.js` → directory root
 - Trailing slash optional
 - Specific routes precede catch-alls
@@ -24,19 +25,21 @@ Serverless functions on Cloudflare Pages using Workers runtime. Full-stack dev w
 ## Dynamic Routes
 
 **Single segment** `[param]` → string:
+
 ```js
 // /functions/users/[user].js
 export function onRequest(context) {
-  return new Response(`Hello ${context.params.user}`);
+  return new Response(`Hello ${context.params.user}`)
 }
 // Matches: /users/nevi
 ```
 
 **Multi-segment** `[[param]]` → array:
+
 ```js
 // /functions/users/[[catchall]].js
 export function onRequest(context) {
-  return new Response(JSON.stringify(context.params.catchall));
+  return new Response(JSON.stringify(context.params.catchall))
 }
 // Matches: /users/nevi/foobar → ["nevi", "foobar"]
 ```

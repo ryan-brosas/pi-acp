@@ -1,9 +1,8 @@
 ---
 name: fallow
-description: "Use when analyzing code quality, finding dead code, detecting duplication, assessing complexity, checking blast radius, or cleaning up a TS or JS codebase with deterministic static analysis."
+description: 'Use when analyzing code quality, finding dead code, detecting duplication, assessing complexity, checking blast radius, or cleaning up a TS or JS codebase with deterministic static analysis.'
 disable-model-invocation: true
 ---
-
 
 # Fallow — Codebase Intelligence
 
@@ -48,19 +47,21 @@ fallow --format json
 {
   "dead": {
     "files": ["src/legacy/foo.ts"],
-    "exports": [{" file": "...", "name": "bar", "used": false }],
+    "exports": [{ " file": "...", "name": "bar", "used": false }],
     "deps": ["lodash.debounce"]
   },
   "dupes": {
-    "blocks": [{" files": ["a.ts", "b.ts"], "lines": 12, "hash": "..." }]
+    "blocks": [{ " files": ["a.ts", "b.ts"], "lines": 12, "hash": "..." }]
   },
   "health": {
-    "files": [{
-      "path": "src/services/user.ts",
-      "complexity": 23,        // high
-      "blast": 47,            // files affected
-      "lines": 312
-    }]
+    "files": [
+      {
+        "path": "src/services/user.ts",
+        "complexity": 23, // high
+        "blast": 47, // files affected
+        "lines": 312
+      }
+    ]
   }
 }
 ```

@@ -28,33 +28,33 @@ Zaraz provides `zaraz` object in browser:
 
 ```javascript
 // Basic event
-zaraz.track('button_click');
+zaraz.track('button_click')
 
 // Event with properties
 zaraz.track('purchase', {
   value: 99.99,
   currency: 'USD',
   item_id: '12345'
-});
+})
 
 // E-commerce events
 zaraz.track('add_to_cart', {
   product_name: 'Widget',
   price: 29.99,
   quantity: 1
-});
+})
 ```
 
 ### Set User Properties
 
 ```javascript
-zaraz.set('userId', 'user_12345');
-zaraz.set('plan', 'premium');
+zaraz.set('userId', 'user_12345')
+zaraz.set('plan', 'premium')
 zaraz.set({
   email: '[email protected]',
   country: 'US',
   age: 30
-});
+})
 ```
 
 ### E-commerce Tracking
@@ -66,27 +66,25 @@ zaraz.ecommerce('Product Viewed', {
   name: 'Blue Widget',
   price: 49.99,
   currency: 'USD'
-});
+})
 
 // Add to cart
 zaraz.ecommerce('Product Added', {
   product_id: 'SKU123',
   quantity: 2,
   price: 49.99
-});
+})
 
 // Purchase
 zaraz.ecommerce('Order Completed', {
   order_id: 'ORD-789',
   total: 149.98,
   revenue: 149.98,
-  shipping: 10.00,
-  tax: 12.50,
+  shipping: 10.0,
+  tax: 12.5,
   currency: 'USD',
-  products: [
-    { product_id: 'SKU123', quantity: 2, price: 49.99 }
-  ]
-});
+  products: [{ product_id: 'SKU123', quantity: 2, price: 49.99 }]
+})
 ```
 
 ## Consent Management
@@ -94,23 +92,23 @@ zaraz.ecommerce('Order Completed', {
 ```javascript
 // Check consent status
 if (zaraz.consent.getAll().analytics) {
-  zaraz.track('page_view');
+  zaraz.track('page_view')
 }
 
 // Request consent
-zaraz.consent.modal = true; // Show consent modal
+zaraz.consent.modal = true // Show consent modal
 
 // Set consent programmatically
 zaraz.consent.setAll({
   analytics: true,
   marketing: false,
   preferences: true
-});
+})
 
 // Listen for consent changes
 zaraz.consent.addEventListener('consentChanged', () => {
-  console.log('Consent updated:', zaraz.consent.getAll());
-});
+  console.log('Consent updated:', zaraz.consent.getAll())
+})
 ```
 
 ## Workers Integration
@@ -120,28 +118,28 @@ Access Zaraz data in Workers:
 ```typescript
 export default {
   async fetch(req: Request): Promise<Response> {
-    const url = new URL(req.url);
-    
+    const url = new URL(req.url)
+
     // Inject Zaraz tracking
     if (url.pathname === '/checkout') {
-      const response = await fetch(req);
-      const html = await response.text();
-      
+      const response = await fetch(req)
+      const html = await response.text()
+
       const tracking = `
         <script>
           zaraz.track('checkout_started', {
             cart_value: 99.99
           });
         </script>
-      `;
-      
-      const modified = html.replace('</body>', tracking + '</body>');
-      return new Response(modified, response);
+      `
+
+      const modified = html.replace('</body>', tracking + '</body>')
+      return new Response(modified, response)
     }
-    
-    return fetch(req);
+
+    return fetch(req)
   }
-};
+}
 ```
 
 ## Triggers
@@ -172,22 +170,22 @@ Action: Track event "purchase_intent"
 
 ```javascript
 // Track page view (automatic)
-zaraz.track('pageview');
+zaraz.track('pageview')
 
 // Custom event
 zaraz.track('sign_up', {
   method: 'email'
-});
+})
 ```
 
 ### Facebook Pixel
 
 ```javascript
-zaraz.track('PageView');
+zaraz.track('PageView')
 zaraz.track('Purchase', {
   value: 99.99,
   currency: 'USD'
-});
+})
 ```
 
 ### Google Ads Conversion
@@ -195,9 +193,9 @@ zaraz.track('Purchase', {
 ```javascript
 zaraz.track('conversion', {
   send_to: 'AW-XXXXXXXXX/YYYYYY',
-  value: 1.00,
+  value: 1.0,
   currency: 'USD'
-});
+})
 ```
 
 ## Custom Managed Components
@@ -208,8 +206,8 @@ Build custom tools:
 // Example: Custom analytics tool
 export default class CustomAnalytics {
   async handleEvent(event) {
-    const { type, payload } = event;
-    
+    const { type, payload } = event
+
     await fetch('https://analytics.example.com/track', {
       method: 'POST',
       body: JSON.stringify({
@@ -217,7 +215,7 @@ export default class CustomAnalytics {
         properties: payload,
         timestamp: Date.now()
       })
-    });
+    })
   }
 }
 ```
@@ -232,7 +230,7 @@ window.zaraz.dataLayer = {
   user_id: '12345',
   page_type: 'product',
   category: 'electronics'
-};
+}
 
 // Access in triggers
 // Variable: {{client.__zarazTrack.page_type}}
@@ -278,13 +276,13 @@ match_rule = "Pageview"
 
 ```javascript
 // Enable debug mode in dashboard, then:
-zaraz.debug = true;
+zaraz.debug = true
 
 // View events in console
-zaraz.track('test_event', { debug: true });
+zaraz.track('test_event', { debug: true })
 
 // Check loaded tools
-console.log(zaraz.tools);
+console.log(zaraz.tools)
 ```
 
 ## Best Practices
@@ -306,25 +304,25 @@ router.afterEach((to, from) => {
   zaraz.track('pageview', {
     page_path: to.path,
     page_title: to.meta.title
-  });
-});
+  })
+})
 ```
 
 ### User Identification
 
 ```javascript
 // On login
-zaraz.set('user_id', user.id);
-zaraz.set('user_email', user.email);
-zaraz.track('login', { method: 'password' });
+zaraz.set('user_id', user.id)
+zaraz.set('user_email', user.email)
+zaraz.track('login', { method: 'password' })
 ```
 
 ### A/B Testing
 
 ```javascript
-const variant = Math.random() < 0.5 ? 'A' : 'B';
-zaraz.set('ab_test_variant', variant);
-zaraz.track('ab_test_view', { variant });
+const variant = Math.random() < 0.5 ? 'A' : 'B'
+zaraz.set('ab_test_variant', variant)
+zaraz.track('ab_test_view', { variant })
 ```
 
 ## Limits

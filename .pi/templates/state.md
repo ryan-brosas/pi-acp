@@ -30,8 +30,8 @@ updated: 2026-08-09
 
 <!-- What gates exist, what last ran, what passed -->
 
-| Gate | Command | Last result | Date |
-| --- | --- | --- | --- |
+| Gate   | Command   | Last result             | Date   |
+| ------ | --------- | ----------------------- | ------ |
 | [gate] | [command] | [pass / fail / not run] | [date] |
 | [gate] | [command] | [pass / fail / not run] | [date] |
 
@@ -41,28 +41,28 @@ updated: 2026-08-09
 
 <!-- Last 3-5 completed tasks, with evidence -->
 
-| Work | Title | Completed | Evidence |
-| --- | --- | --- | --- |
-| [id or none] | [Title] | [Date] | [artifact or command output] |
+| Work         | Title   | Completed | Evidence                     |
+| ------------ | ------- | --------- | ---------------------------- |
+| [id or none] | [Title] | [Date]    | [artifact or command output] |
 
 ## Active Decisions
 
 <!-- Decisions that affect current and future work; each cites rationale and impact -->
 
-| Date | Decision | Rationale | Impact | Evidence |
-| --- | --- | --- | --- | --- |
-| [Date] | [What was decided] | [Why] | [What it affects] | [source] |
+| Date   | Decision           | Rationale | Impact            | Evidence |
+| ------ | ------------------ | --------- | ----------------- | -------- |
+| [Date] | [What was decided] | [Why]     | [What it affects] | [source] |
 
 ## Blockers
 
-| Work | Blocker | Since | Owner | Unblock path |
-| --- | --- | --- | --- | --- |
+| Work | Blocker       | Since  | Owner | Unblock path         |
+| ---- | ------------- | ------ | ----- | -------------------- |
 | [id] | [Description] | [Date] | [Who] | [what would unblock] |
 
 ## Open Questions
 
-| Question | Context | Blocking | Priority |
-| --- | --- | --- | --- |
+| Question   | Context            | Blocking | Priority       |
+| ---------- | ------------------ | -------- | -------------- |
 | [Question] | [Where it came up] | [Yes/No] | [High/Med/Low] |
 
 ## Context Notes

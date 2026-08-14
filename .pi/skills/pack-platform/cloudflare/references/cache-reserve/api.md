@@ -11,9 +11,9 @@ Cache Reserve works automatically with Workers Cache API, but requires specific 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     // Standard fetch uses Cache Reserve automatically
-    return await fetch(request);
+    return await fetch(request)
   }
-};
+}
 ```
 
 ### Cache API Limitations
@@ -22,22 +22,22 @@ export default {
 
 ```typescript
 // [ ] WRONG: cache.put() bypasses Cache Reserve
-const cache = caches.default;
-let response = await cache.match(request);
+const cache = caches.default
+let response = await cache.match(request)
 if (!response) {
-  response = await fetch(request);
-  await cache.put(request, response.clone()); // Bypasses Cache Reserve!
+  response = await fetch(request)
+  await cache.put(request, response.clone()) // Bypasses Cache Reserve!
 }
 
 // [x] CORRECT: Use standard fetch for Cache Reserve compatibility
-return await fetch(request);
+return await fetch(request)
 
 // [x] CORRECT: Use Cache API only for custom cache namespaces
-const customCache = await caches.open('my-custom-cache');
-let response = await customCache.match(request);
+const customCache = await caches.open('my-custom-cache')
+let response = await customCache.match(request)
 if (!response) {
-  response = await fetch(request);
-  await customCache.put(request, response.clone()); // Custom cache OK
+  response = await fetch(request)
+  await customCache.put(request, response.clone()) // Custom cache OK
 }
 ```
 
@@ -47,54 +47,37 @@ if (!response) {
 
 ```typescript
 // Purge specific URL from Cache Reserve immediately
-const purgeCacheReserveByURL = async (
-  zoneId: string,
-  apiToken: string,
-  urls: string[]
-) => {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ files: urls })
-    }
-  );
-  return await response.json();
-};
+const purgeCacheReserveByURL = async (zoneId: string, apiToken: string, urls: string[]) => {
+  const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ files: urls })
+  })
+  return await response.json()
+}
 
 // Example usage
-await purgeCacheReserveByURL('zone123', 'token456', [
-  'https://example.com/image.jpg',
-  'https://example.com/video.mp4'
-]);
+await purgeCacheReserveByURL('zone123', 'token456', ['https://example.com/image.jpg', 'https://example.com/video.mp4'])
 ```
 
 ### Purge by Tag/Host/Prefix (Revalidation)
 
 ```typescript
 // Purge by cache tag - forces revalidation, not immediate removal
-const purgeCacheReserveByTag = async (
-  zoneId: string,
-  apiToken: string,
-  tags: string[]
-) => {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ tags })
-    }
-  );
-  return await response.json();
-};
+const purgeCacheReserveByTag = async (zoneId: string, apiToken: string, tags: string[]) => {
+  const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ tags })
+  })
+  return await response.json()
+}
 
 // Note: Assets remain in Cache Reserve but will revalidate on next request
 // Storage costs continue until retention TTL expires
@@ -112,36 +95,37 @@ const purgeCacheReserveByTag = async (
 // Clear ALL Cache Reserve data (requires Cache Reserve to be OFF)
 const clearAllCacheReserve = async (zoneId: string, apiToken: string) => {
   // Step 1: Verify Cache Reserve is off
-  const statusResponse = await fetch(
-    `https://api.cloudflare.com/client/v4/zones/${zoneId}/cache/cache_reserve`,
-    { method: 'GET', headers: { 'Authorization': `Bearer ${apiToken}` } }
-  );
-  const status = await statusResponse.json();
-  
+  const statusResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/cache/cache_reserve`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${apiToken}` }
+  })
+  const status = await statusResponse.json()
+
   if (status.result.value !== 'off') {
-    throw new Error('Cache Reserve must be OFF before clearing data');
+    throw new Error('Cache Reserve must be OFF before clearing data')
   }
-  
+
   // Step 2: Clear Cache Reserve data
-  const clearResponse = await fetch(
-    `https://api.cloudflare.com/client/v4/zones/${zoneId}/cache/cache_reserve_clear`,
-    { method: 'POST', headers: { 'Authorization': `Bearer ${apiToken}` } }
-  );
-  return await clearResponse.json();
-};
+  const clearResponse = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/cache/cache_reserve_clear`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiToken}` }
+  })
+  return await clearResponse.json()
+}
 
 // Check clear status
 const getClearStatus = async (zoneId: string, apiToken: string) => {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/zones/${zoneId}/cache/cache_reserve_clear`,
-    { method: 'GET', headers: { 'Authorization': `Bearer ${apiToken}` } }
-  );
-  return await response.json();
+  const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/cache/cache_reserve_clear`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${apiToken}` }
+  })
+  return await response.json()
   // Returns: { state: "In-progress" | "Completed", start_ts: "..." }
-};
+}
 ```
 
 **Clear process:**
+
 1. Disable Cache Reserve (`value: 'off'`)
 2. Call cache_reserve_clear endpoint
 3. Deletion takes up to 24 hours
@@ -158,7 +142,7 @@ const query = `
   SELECT ClientRequestHost, COUNT(*) as requests, SUM(EdgeResponseBytes) as bytes
   FROM http_requests WHERE CacheReserveUsed = true
   GROUP BY ClientRequestHost ORDER BY requests DESC
-`;
+`
 ```
 
 ## Pricing

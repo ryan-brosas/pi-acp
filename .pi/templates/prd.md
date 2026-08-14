@@ -180,7 +180,7 @@ files: [] # Files this task will modify
 **Metadata:**
 
 ```yaml
-depends_on: ["<Previous Task Title>"]
+depends_on: ['<Previous Task Title>']
 parallel: false
 files: []
 ```

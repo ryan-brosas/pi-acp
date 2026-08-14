@@ -22,6 +22,7 @@ container.loadPersistentStores { description, error in
 ### Configure CloudKit Container
 
 In Xcode:
+
 1. Add CloudKit capability
 2. Select or create CloudKit container
 3. Enable "Use CloudKit" in Core Data model
@@ -31,6 +32,7 @@ In Xcode:
 CloudKit has restrictions Core Data doesn't:
 
 **Not Supported:**
+
 - Unique constraints on entities
 - `Undefined` attribute type
 - `ObjectID` attribute type
@@ -39,6 +41,7 @@ CloudKit has restrictions Core Data doesn't:
 - Deny deletion rule
 
 **Supported:**
+
 - Adding new fields to record types
 - Adding new record types
 
@@ -79,7 +82,7 @@ NotificationCenter.default.addObserver(
             as? NSPersistentCloudKitContainer.Event else {
         return
     }
-    
+
     switch event.type {
     case .setup:
         print("Setup: \(event.succeeded ? "succeeded" : "failed")")
@@ -90,7 +93,7 @@ NotificationCenter.default.addObserver(
     @unknown default:
         break
     }
-    
+
     if let error = event.error {
         print("Error: \(error)")
     }
@@ -102,7 +105,7 @@ NotificationCenter.default.addObserver(
 ```swift
 func testSync() {
     let expectation = XCTestExpectation(description: "Export")
-    
+
     // Create expectation for export
     let observer = NotificationCenter.default.addObserver(
         forName: NSPersistentCloudKitContainer.eventChangedNotification,
@@ -113,17 +116,17 @@ func testSync() {
                 as? NSPersistentCloudKitContainer.Event else {
             return
         }
-        
+
         if event.type == .export && event.endDate != nil {
             expectation.fulfill()
         }
     }
-    
+
     // Make changes
     let article = Article(context: container.viewContext)
     article.name = "Test"
     try? container.viewContext.save()
-    
+
     wait(for: [expectation], timeout: 60)
     NotificationCenter.default.removeObserver(observer)
 }
@@ -169,6 +172,7 @@ description.cloudKitContainerOptions = options
 ### System Logs
 
 Monitor these processes:
+
 - **Application** - Core Data activity
 - **dasd** - Scheduling decisions
 - **cloudd** - CloudKit operations
@@ -201,6 +205,7 @@ log stream --predicate 'process == "dasd" AND message CONTAINS "YourApp"'
 ### Collecting Diagnostics
 
 **sysdiagnose:**
+
 - iOS: Volume Up + Volume Down + Power (hold)
 - macOS: Shift + Control + Option + Command + Period
 
@@ -211,6 +216,7 @@ log stream --predicate 'process == "dasd" AND message CONTAINS "YourApp"'
 **Problem:** Local schema doesn't match CloudKit schema.
 
 **Solution:**
+
 1. Delete app
 2. Reinstall
 3. Let schema reinitialize
@@ -218,6 +224,7 @@ log stream --predicate 'process == "dasd" AND message CONTAINS "YourApp"'
 ### Sync Not Working
 
 **Checklist:**
+
 - [ ] CloudKit capability enabled
 - [ ] Signed in to iCloud
 - [ ] Network connection available
@@ -230,6 +237,7 @@ log stream --predicate 'process == "dasd" AND message CONTAINS "YourApp"'
 **Problem:** First sync takes too long.
 
 **Solutions:**
+
 - Use background fetch
 - Show progress indicator
 - Implement data generators for testing

@@ -1,6 +1,6 @@
 ---
 name: backend-architecture
-description: "Use when designing or reviewing backend service structure - layering, module boundaries, dependency direction, service decomposition, and interface-first design."
+description: 'Use when designing or reviewing backend service structure - layering, module boundaries, dependency direction, service decomposition, and interface-first design.'
 disable-model-invocation: true
 ---
 

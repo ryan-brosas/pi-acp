@@ -4,7 +4,7 @@
 
 Cloudflare Email Routing enables custom email addresses for your domain that route to verified destination addresses. It's free, privacy-focused (no storage/access), and includes Email Workers for programmatic email processing.
 
-**Available to all Cloudflare customers using Cloudflare a...
+\*\*Available to all Cloudflare customers using Cloudflare a...
 
 ## In This Reference
 

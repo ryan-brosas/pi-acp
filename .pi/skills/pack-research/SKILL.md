@@ -1,6 +1,6 @@
 ---
 name: pack-research
-description: "Research and discovery router: web search, documentation lookup, package source inspection, deep-context study, adversarial review, PDF extraction."
+description: 'Research and discovery router: web search, documentation lookup, package source inspection, deep-context study, adversarial review, PDF extraction.'
 ---
 
 # Pack: Research

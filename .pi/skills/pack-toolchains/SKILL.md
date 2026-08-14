@@ -1,6 +1,6 @@
 ---
 name: pack-toolchains
-description: "Language and runtime router: Python, Go, Rust, Java, .NET, Ruby, PHP, Elixir, defensive shell scripting, and container development conventions."
+description: 'Language and runtime router: Python, Go, Rust, Java, .NET, Ruby, PHP, Elixir, defensive shell scripting, and container development conventions.'
 ---
 
 # Language Toolchains

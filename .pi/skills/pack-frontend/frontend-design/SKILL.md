@@ -1,9 +1,8 @@
 ---
 name: frontend-design
-description: "Use when building any web UI with React-based frameworks - components, pages, or full applications. Covers Tailwind CSS v4, shadcn/ui, and Motion animations; combine with an aesthetic overlay for a specific style."
+description: 'Use when building any web UI with React-based frameworks - components, pages, or full applications. Covers Tailwind CSS v4, shadcn/ui, and Motion animations; combine with an aesthetic overlay for a specific style.'
 disable-model-invocation: true
 ---
-
 
 # Frontend Design (React + Tailwind + shadcn)
 
@@ -48,8 +47,8 @@ Server components: no state, no effects, no browser APIs. Just data + JSX. Fast,
 ## Client Components (When Needed)
 
 ```tsx
-"use client"  // required at top
-import { useState } from "react"
+'use client' // required at top
+import { useState } from 'react'
 
 export function Counter() {
   const [count, setCount] = useState(0)
@@ -75,11 +74,11 @@ Common: Button, Card, Dialog, Input, Select, Form, Table, Tabs, Toast, Tooltip, 
 
 ```css
 /* globals.css */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-brand: oklch(0.7 0.15 240);
-  --font-sans: "Inter", system-ui;
+  --font-sans: 'Inter', system-ui;
 }
 ```
 
@@ -88,9 +87,9 @@ No more `tailwind.config.js` for most cases. Use `@theme` in CSS. v4 uses Lightn
 ## Motion (animations)
 
 ```tsx
-import { motion } from "motion/react"
+import { motion } from 'motion/react'
 
-<motion.div
+;<motion.div
   initial={{ opacity: 0 }}
   animate={{ opacity: 1 }}
   exit={{ opacity: 0 }}

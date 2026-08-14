@@ -1,6 +1,6 @@
 ---
 name: fastapi-development
-description: "Use when building FastAPI APIs - Pydantic models, dependency injection, async boundaries, OpenAPI generation, lifespan, and testing."
+description: 'Use when building FastAPI APIs - Pydantic models, dependency injection, async boundaries, OpenAPI generation, lifespan, and testing.'
 disable-model-invocation: true
 ---
 

@@ -21,13 +21,13 @@ Storing a reference is optional but enables cancellation and result waiting:
 ```swift
 final class ImageLoader {
     var loadTask: Task<UIImage, Error>?
-    
+
     func load() {
         loadTask = Task {
             try await fetchImage()
         }
     }
-    
+
     deinit {
         loadTask?.cancel()
     }
@@ -62,12 +62,12 @@ Add checks at natural breakpoints:
 let task = Task {
     // Before expensive work
     try Task.checkCancellation()
-    
+
     let data = try await URLSession.shared.data(from: url)
-    
+
     // After network, before processing
     try Task.checkCancellation()
-    
+
     return processData(data)
 }
 ```
@@ -139,7 +139,7 @@ Automatically manages task lifetime with view lifecycle:
 ```swift
 struct ContentView: View {
     @State private var data: Data?
-    
+
     var body: some View {
         Text(data?.description ?? "Loading...")
             .task {
@@ -160,6 +160,7 @@ Task cancels automatically when view disappears.
 ```
 
 When `searchQuery` changes:
+
 1. Previous task cancels
 2. New task starts with updated value
 
@@ -202,7 +203,7 @@ let images = await withTaskGroup(of: UIImage.self) { group in
     for url in photoURLs {
         group.addTask { await downloadPhoto(url: url) }
     }
-    
+
     return await group.reduce(into: []) { $0.append($1) }
 }
 ```
@@ -214,7 +215,7 @@ let images = try await withThrowingTaskGroup(of: UIImage.self) { group in
     for url in photoURLs {
         group.addTask { try await downloadPhoto(url: url) }
     }
-    
+
     // Iterate to propagate errors
     var results: [UIImage] = []
     for try await image in group {
@@ -235,7 +236,7 @@ try await withThrowingTaskGroup(of: Data.self) { group in
     for id in ids {
         group.addTask { try await fetch(id) }
     }
-    
+
     // First error cancels remaining tasks
     while let data = try await group.next() {
         process(data)
@@ -250,7 +251,7 @@ await withTaskGroup(of: Result.self) { group in
     for item in items {
         group.addTask { await process(item) }
     }
-    
+
     // Cancel all remaining tasks
     group.cancelAll()
 }
@@ -311,7 +312,7 @@ extension NotificationCenter {
                 }
                 continuation.finish()
             }
-            
+
             continuation.onTermination = { _ in task.cancel() }
         }
     }
@@ -367,6 +368,7 @@ Task.detached(priority: .background) {
 ## Detached Tasks
 
 **Use as last resort.** They don't inherit:
+
 - Priority
 - Task-local values
 - Cancellation state
@@ -433,6 +435,7 @@ Task(priority: .high) {
 ### Priority escalation
 
 System automatically elevates priority to prevent priority inversion:
+
 - Actor waiting on lower-priority task
 - High-priority task awaiting `.value` of lower-priority task
 
@@ -449,6 +452,7 @@ try await Task.sleep(for: .seconds(5))
 ```
 
 **Use for:**
+
 - Debouncing user input
 - Polling intervals
 - Rate limiting
@@ -465,6 +469,7 @@ await Task.yield()
 ```
 
 **Use for:**
+
 - Testing async code
 - Allowing cooperative scheduling
 
@@ -478,7 +483,7 @@ func search(_ query: String) async {
         searchResults = allResults
         return
     }
-    
+
     do {
         try await Task.sleep(for: .milliseconds(500))
         searchResults = allResults.filter { $0.contains(query) }
@@ -497,12 +502,12 @@ func search(_ query: String) async {
 
 ## async let vs TaskGroup
 
-| Feature | async let | TaskGroup |
-|---------|-----------|-----------|
-| Task count | Fixed at compile-time | Dynamic at runtime |
-| Syntax | Lightweight | More verbose |
-| Cancellation | Automatic on scope exit | Manual via `cancelAll()` |
-| Use when | 2-5 known parallel tasks | Loop-based parallel work |
+| Feature      | async let                | TaskGroup                |
+| ------------ | ------------------------ | ------------------------ |
+| Task count   | Fixed at compile-time    | Dynamic at runtime       |
+| Syntax       | Lightweight              | More verbose             |
+| Cancellation | Automatic on scope exit  | Manual via `cancelAll()` |
+| Use when     | 2-5 known parallel tasks | Loop-based parallel work |
 
 ```swift
 // async let: Known task count
@@ -529,16 +534,16 @@ func withTimeout<T>(
 ) async throws -> T {
     try await withThrowingTaskGroup(of: T.self) { group in
         group.addTask { try await operation() }
-        
+
         group.addTask {
             try await Task.sleep(for: duration)
             throw TimeoutError()
         }
-        
+
         guard let result = try await group.next() else {
             throw TimeoutError()
         }
-        
+
         group.cancelAll()
         return result
     }
@@ -601,4 +606,3 @@ let profile = Profile(
 ## Further Learning
 
 For hands-on examples, advanced patterns, and migration strategies, see [Swift Concurrency Course](https://www.swiftconcurrencycourse.com).
-

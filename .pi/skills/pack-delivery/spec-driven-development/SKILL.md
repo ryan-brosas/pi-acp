@@ -4,7 +4,6 @@ description: Use when starting a new feature, significant change, product idea, 
 disable-model-invocation: true
 ---
 
-
 # Spec-Driven Development
 
 ## Iron Laws
@@ -31,19 +30,24 @@ Trivial change; one-line fix; bug fix with known root cause; well-understood dom
 # Feature: [Name]
 
 ## Goal
+
 [1-2 sentences. What user-visible behavior?]
 
 ## Non-goals
+
 [What's explicitly out of scope.]
 
 ## User stories
+
 - As a [role], I want [action], so that [outcome].
 
 ## Acceptance criteria
+
 - [ ] [Observable behavior 1]
 - [ ] [Observable behavior 2]
 
 ## Open questions
+
 - [Question that must resolve before implementation]
 ```
 

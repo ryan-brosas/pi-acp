@@ -4,7 +4,6 @@ description: Use when converting UI mockups, screenshots, Figma/Sketch designs, 
 disable-model-invocation: true
 ---
 
-
 # Mockup to Code
 
 ## When to Use
@@ -27,6 +26,7 @@ You have a visual design (Figma, Sketch, screenshot, wireframe, hand-drawn mocku
 ## Token Extraction
 
 Map the visual design to a design system:
+
 - Colors → `--color-*` CSS variables or theme tokens
 - Typography → font family, size, weight, line-height
 - Spacing → smallest unit in the design (often 4px or 8px)
@@ -38,6 +38,7 @@ Map the visual design to a design system:
 ## Component Order
 
 Build in this order:
+
 1. **Typography** (headings, body, labels — the base layer)
 2. **Color tokens** (background, text, border, accent)
 3. **Layout primitives** (Container, Stack, Grid)

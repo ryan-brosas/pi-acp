@@ -26,10 +26,10 @@ updated: 2026-08-09
 
 ## Roadmap Overview
 
-| Phase | Goal | Outcome | Status | Depends on |
-| --- | --- | --- | --- | --- |
-| 1. [Name] | [goal] | [observable outcome when done] | [Not Started / In Progress / Complete] | — |
-| 2. [Name] | [goal] | [observable outcome] | [status] | Phase 1 |
+| Phase     | Goal   | Outcome                        | Status                                 | Depends on |
+| --------- | ------ | ------------------------------ | -------------------------------------- | ---------- |
+| 1. [Name] | [goal] | [observable outcome when done] | [Not Started / In Progress / Complete] | —          |
+| 2. [Name] | [goal] | [observable outcome]           | [status]                               | Phase 1    |
 
 ## Phase 1: [Name]
 
@@ -47,9 +47,9 @@ updated: 2026-08-09
 
 **Work Areas:**
 
-| Work area | Outcome | Evidence when complete |
-| --- | --- | --- |
-| [area] | [outcome] | [command or artifact that proves it] |
+| Work area | Outcome   | Evidence when complete               |
+| --------- | --------- | ------------------------------------ |
+| [area]    | [outcome] | [command or artifact that proves it] |
 
 **Dependencies:**
 

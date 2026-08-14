@@ -58,6 +58,7 @@ viewContext.perform {
 ```
 
 **Characteristics:**
+
 - Main queue concurrency type
 - Runs on main thread
 - Use for UI-related operations only
@@ -80,6 +81,7 @@ backgroundContext.perform {
 ```
 
 **Characteristics:**
+
 - Private queue concurrency type
 - Runs on background thread
 - Use for imports, exports, batch operations
@@ -99,6 +101,7 @@ context.perform {
 ```
 
 **Benefits:**
+
 - Non-blocking
 - Better performance
 - Recommended for most cases
@@ -115,6 +118,7 @@ context.performAndWait {
 ```
 
 **Caution:**
+
 - Blocks the calling thread
 - Can block main thread even for background contexts
 - Use only when you need the result immediately
@@ -147,7 +151,7 @@ func importArticles(_ data: [ArticleData]) {
             article.name = item.name
             article.content = item.content
         }
-        
+
         do {
             try backgroundContext.save()
         } catch {
@@ -163,12 +167,12 @@ func importArticles(_ data: [ArticleData]) {
 func updateArticle(_ article: Article, newName: String) {
     let objectID = article.objectID
     let backgroundContext = container.newBackgroundContext()
-    
+
     backgroundContext.perform {
         guard let article = try? backgroundContext.existingObject(with: objectID) as? Article else {
             return
         }
-        
+
         article.name = newName
         try? backgroundContext.save()
     }
@@ -180,21 +184,21 @@ func updateArticle(_ article: Article, newName: String) {
 ```swift
 func loadArticles(completion: @escaping ([Article]) -> Void) {
     let backgroundContext = container.newBackgroundContext()
-    
+
     backgroundContext.perform {
         let fetchRequest = Article.fetchRequest()
         guard let articles = try? backgroundContext.fetch(fetchRequest) else {
             return
         }
-        
+
         // Get object IDs (thread-safe)
         let objectIDs = articles.map { $0.objectID }
-        
+
         // Switch to main context for UI update
         DispatchQueue.main.async {
             let viewContext = self.container.viewContext
-            let mainArticles = objectIDs.compactMap { 
-                try? viewContext.existingObject(with: $0) as? Article 
+            let mainArticles = objectIDs.compactMap {
+                try? viewContext.existingObject(with: $0) as? Article
             }
             completion(mainArticles)
         }
@@ -208,7 +212,7 @@ func loadArticles(completion: @escaping ([Article]) -> Void) {
 func deleteArticles(_ articles: [Article]) {
     let objectIDs = articles.map { $0.objectID }
     let backgroundContext = container.newBackgroundContext()
-    
+
     backgroundContext.perform {
         for objectID in objectIDs {
             guard let article = try? backgroundContext.existingObject(with: objectID) else {
@@ -216,7 +220,7 @@ func deleteArticles(_ articles: [Article]) {
             }
             backgroundContext.delete(article)
         }
-        
+
         try? backgroundContext.save()
     }
 }
@@ -246,11 +250,13 @@ try? parentContext.save()
 ```
 
 **Benefits:**
+
 - Can discard changes by not saving child
 - Useful for forms/editing
 - Isolates changes
 
 **Caution:**
+
 - Adds complexity
 - Two saves required for persistence
 - Parent must be saved for changes to persist
@@ -260,16 +266,19 @@ try? parentContext.save()
 ### Enable Concurrency Debug
 
 Add launch argument:
+
 ```
 -com.apple.CoreData.ConcurrencyDebug 1
 ```
 
 **What it catches:**
+
 - Objects accessed from wrong thread
 - Contexts used from wrong queue
 - Thread safety violations
 
 **Example error:**
+
 ```
 CoreData: error: Serious application error.
 An exception was caught from the delegate of NSFetchedResultsController during a call to -controllerDidChangeContent:.
@@ -335,6 +344,7 @@ context.automaticallyMergesChangesFromParent = true
 ```
 
 **Benefits:**
+
 - Changes from other contexts automatically merge
 - No manual merge code needed
 - Recommended for most cases
@@ -365,7 +375,7 @@ NotificationCenter.default.addObserver(
 ```swift
 func fetchArticles() async throws -> [Article] {
     let context = container.newBackgroundContext()
-    
+
     return try await context.perform {
         let fetchRequest = Article.fetchRequest()
         return try context.fetch(fetchRequest)
@@ -388,7 +398,7 @@ Task {
 ```swift
 func saveArticle(name: String) async throws {
     let context = container.newBackgroundContext()
-    
+
     try await context.perform {
         let article = Article(context: context)
         article.name = name
@@ -416,11 +426,11 @@ func updateArticle2() {
 // [x] Better: Reuse context for related operations
 class DataManager {
     private lazy var backgroundContext = container.newBackgroundContext()
-    
+
     func updateArticle1() {
         backgroundContext.perform { /* ... */ }
     }
-    
+
     func updateArticle2() {
         backgroundContext.perform { /* ... */ }
     }
@@ -436,7 +446,7 @@ backgroundContext.perform {
     for (index, data) in largeDataset.enumerated() {
         let article = Article(context: backgroundContext)
         article.name = data.name
-        
+
         if index % 100 == 0 {
             try? backgroundContext.save()
             backgroundContext.reset() // Clear memory
@@ -534,7 +544,7 @@ backgroundContext.perform {
 backgroundContext.perform {
     let articles = try? backgroundContext.fetch(Article.fetchRequest())
     let objectIDs = articles?.map { $0.objectID } ?? []
-    
+
     DispatchQueue.main.async {
         // Update UI with objectIDs
     }
@@ -551,18 +561,18 @@ backgroundContext.perform {
 ```swift
 func testThreadSafety() {
     let expectation = XCTestExpectation(description: "Background save")
-    
+
     let objectID = article.objectID
     let backgroundContext = container.newBackgroundContext()
-    
+
     backgroundContext.perform {
         guard let article = try? backgroundContext.existingObject(with: objectID) as? Article else {
             XCTFail("Failed to fetch article")
             return
         }
-        
+
         article.name = "Updated"
-        
+
         do {
             try backgroundContext.save()
             expectation.fulfill()
@@ -570,7 +580,7 @@ func testThreadSafety() {
             XCTFail("Failed to save: \(error)")
         }
     }
-    
+
     wait(for: [expectation], timeout: 5.0)
 }
 ```

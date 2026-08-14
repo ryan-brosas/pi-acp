@@ -4,7 +4,6 @@ description: Use when designing REST/GraphQL APIs, SDK interfaces, or public mod
 disable-model-invocation: true
 ---
 
-
 # API & Interface Design
 
 ## Iron Laws
@@ -28,12 +27,12 @@ Never let a request body reach the implementation as `any` or `unknown`. Decode 
 
 ## Versioning Strategy
 
-| Strategy | When |
-|---|---|
-| URL path (`/v1/`, `/v2/`) | Public API, multiple versions live simultaneously |
-| Header (`Accept: application/vnd.api+json;v=2`) | Internal API, more flexible |
-| Query param (`?v=2`) | Web-only, simple cases |
-| None (breaking is breaking) | Internal-only, single consumer |
+| Strategy                                        | When                                              |
+| ----------------------------------------------- | ------------------------------------------------- |
+| URL path (`/v1/`, `/v2/`)                       | Public API, multiple versions live simultaneously |
+| Header (`Accept: application/vnd.api+json;v=2`) | Internal API, more flexible                       |
+| Query param (`?v=2`)                            | Web-only, simple cases                            |
+| None (breaking is breaking)                     | Internal-only, single consumer                    |
 
 For public APIs, prefer URL path. It's visible, cacheable, and easy to reason about.
 

@@ -4,7 +4,6 @@ description: Use when auditing an existing design system for consistency — tok
 disable-model-invocation: true
 ---
 
-
 # Design System Audit
 
 ## When to Use
@@ -28,10 +27,7 @@ Reviewing an existing design system for consistency; checking token coverage; co
 ```json
 {
   "missing": ["color.warning.bg", "spacing.6xl"],
-  "raw-values": [
-    "16px margin in Dialog (should use spacing.4)",
-    "#333 instead of color.text.secondary in Tooltip"
-  ],
+  "raw-values": ["16px margin in Dialog (should use spacing.4)", "#333 instead of color.text.secondary in Tooltip"],
   "drifted": ["Button radius is 8px, spec says 6px"]
 }
 ```
@@ -51,20 +47,21 @@ Every raw value is a breach. Every missing token is a gap. Every drift is a visu
 
 Compare the implementation against the design spec:
 
-| Check | Method |
-|---|---|
-| Color | Hex values vs spec tokens |
-| Typography | Family, size, weight, line-height |
-| Spacing | Padding, margin, gap |
-| Radius | Border radius on every component |
-| Shadow | Shadow tokens |
-| Iconography | Size, stroke, alignment |
-| States | Hover, active, disabled, focus, error |
-| Motion | Duration, easing, transforms |
+| Check       | Method                                |
+| ----------- | ------------------------------------- |
+| Color       | Hex values vs spec tokens             |
+| Typography  | Family, size, weight, line-height     |
+| Spacing     | Padding, margin, gap                  |
+| Radius      | Border radius on every component      |
+| Shadow      | Shadow tokens                         |
+| Iconography | Size, stroke, alignment               |
+| States      | Hover, active, disabled, focus, error |
+| Motion      | Duration, easing, transforms          |
 
 ## Reporting
 
 For each finding:
+
 ```
 [severity] Component / Token: What is wrong
   - Expected: <spec>

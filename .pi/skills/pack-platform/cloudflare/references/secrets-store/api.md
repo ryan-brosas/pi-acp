@@ -8,15 +8,15 @@
 
 ```typescript
 interface Env {
-  API_KEY: { get(): Promise<string> };
+  API_KEY: { get(): Promise<string> }
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const apiKey = await env.API_KEY.get();
-    return fetch("https://api.example.com", {
-      headers: { "Authorization": `Bearer ${apiKey}` }
-    });
+    const apiKey = await env.API_KEY.get()
+    return fetch('https://api.example.com', {
+      headers: { Authorization: `Bearer ${apiKey}` }
+    })
   }
 }
 ```
@@ -24,28 +24,25 @@ export default {
 ### Multiple Secrets
 
 ```typescript
-const [stripeKey, sendgridKey] = await Promise.all([
-  env.STRIPE_KEY.get(),
-  env.SENDGRID_KEY.get()
-]);
+const [stripeKey, sendgridKey] = await Promise.all([env.STRIPE_KEY.get(), env.SENDGRID_KEY.get()])
 ```
 
 ### Anti-Patterns
 
 ```typescript
 // [ ] Missing .get()
-const key = env.API_KEY;
+const key = env.API_KEY
 
 // [ ] Module-level cache
-const CACHED_KEY = await env.API_KEY.get(); // Fails
+const CACHED_KEY = await env.API_KEY.get() // Fails
 
 // [x] Request-scope cache
 export default {
   async fetch(request: Request, env: Env) {
-    const key = await env.API_KEY.get(); // OK - reuse in request
-    const r1 = await fetchWithAuth(key, "/ep1");
-    const r2 = await fetchWithAuth(key, "/ep2");
-    return Response.json({ r1, r2 });
+    const key = await env.API_KEY.get() // OK - reuse in request
+    const r1 = await fetchWithAuth(key, '/ep1')
+    const r2 = await fetchWithAuth(key, '/ep2')
+    return Response.json({ r1, r2 })
   }
 }
 ```
@@ -122,6 +119,7 @@ GET /accounts/{account_id}/secrets_store/quota
 ### Responses
 
 Success:
+
 ```json
 {
   "success": true,
@@ -135,10 +133,11 @@ Success:
 ```
 
 Error:
+
 ```json
 {
   "success": false,
-  "errors": [{"code": 10000, "message": "Name exists"}]
+  "errors": [{ "code": 10000, "message": "Name exists" }]
 }
 ```
 
@@ -146,36 +145,29 @@ Error:
 
 ```typescript
 interface SecretsStoreBinding {
-  get(): Promise<string>;
+  get(): Promise<string>
 }
 
 interface Env {
-  STRIPE_API_KEY: SecretsStoreBinding;
-  DATABASE_URL: SecretsStoreBinding;
-  WORKER_SECRET: string; // Regular Worker secret (direct access)
+  STRIPE_API_KEY: SecretsStoreBinding
+  DATABASE_URL: SecretsStoreBinding
+  WORKER_SECRET: string // Regular Worker secret (direct access)
 }
 
 // Fallback helper
-async function getSecretWithFallback(
-  primary: SecretsStoreBinding,
-  fallback?: SecretsStoreBinding
-): Promise<string> {
+async function getSecretWithFallback(primary: SecretsStoreBinding, fallback?: SecretsStoreBinding): Promise<string> {
   try {
-    return await primary.get();
+    return await primary.get()
   } catch (error) {
-    if (fallback) return await fallback.get();
-    throw error;
+    if (fallback) return await fallback.get()
+    throw error
   }
 }
 
 // Batch helper
-async function getAllSecrets(
-  secrets: Record<string, SecretsStoreBinding>
-): Promise<Record<string, string>> {
-  const entries = await Promise.all(
-    Object.entries(secrets).map(async ([k, v]) => [k, await v.get()])
-  );
-  return Object.fromEntries(entries);
+async function getAllSecrets(secrets: Record<string, SecretsStoreBinding>): Promise<Record<string, string>> {
+  const entries = await Promise.all(Object.entries(secrets).map(async ([k, v]) => [k, await v.get()]))
+  return Object.fromEntries(entries)
 }
 ```
 

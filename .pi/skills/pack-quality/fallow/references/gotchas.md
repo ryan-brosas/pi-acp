@@ -36,6 +36,7 @@ fallow dead-code --format json --quiet
 ```
 
 Only create a config when you need to:
+
 - Change rule severity levels for incremental adoption
 - Add custom ignore patterns or ignore dependencies
 - Specify additional entry points not auto-detected
@@ -106,20 +107,20 @@ Fallow uses Oxc for pure syntactic analysis. It does not run the TypeScript comp
 
 ```typescript
 // RESOLVED: static pattern with prefix
-import(`./locales/${lang}.json`);
+import(`./locales/${lang}.json`)
 
 // RESOLVED: import.meta.glob
-const modules = import.meta.glob('./modules/*.ts');
+const modules = import.meta.glob('./modules/*.ts')
 
 // NOT RESOLVED: fully dynamic
-const mod = import(someVariable);
+const mod = import(someVariable)
 ```
 
 If fallow falsely flags something due to dynamic patterns, use inline suppression:
 
 ```typescript
 // fallow-ignore-next-line unused-export
-export const dynamicallyUsed = createHandler();
+export const dynamicallyUsed = createHandler()
 ```
 
 ---
@@ -130,13 +131,13 @@ Fallow fully resolves `export *` and named re-export chains through barrel files
 
 ```typescript
 // src/utils.ts
-export const helper = () => {};  // NOT flagged, used via barrel chain
+export const helper = () => {} // NOT flagged, used via barrel chain
 
 // src/index.ts (barrel)
-export * from './utils';
+export * from './utils'
 
 // src/app.ts
-import { helper } from './index';  // Resolves through the chain
+import { helper } from './index' // Resolves through the chain
 ```
 
 If an export IS flagged as unused despite being in a barrel file, it means no downstream consumer actually imports it. The barrel file re-exports it, but nobody uses it from there.
@@ -145,11 +146,11 @@ If an export IS flagged as unused despite being in a barrel file, it means no do
 
 ## Exit Code 1 vs 2
 
-| Code | Meaning | Action |
-|------|---------|--------|
-| 0 | No error-severity issues | Success |
-| 1 | Error-severity issues found | Review findings |
-| 2 | Runtime error (`fix` without `--yes` in non-TTY, invalid config) | Fix config or add `--yes` |
+| Code | Meaning                                                          | Action                    |
+| ---- | ---------------------------------------------------------------- | ------------------------- |
+| 0    | No error-severity issues                                         | Success                   |
+| 1    | Error-severity issues found                                      | Review findings           |
+| 2    | Runtime error (`fix` without `--yes` in non-TTY, invalid config) | Fix config or add `--yes` |
 
 Exit code 1 is triggered by issues with `"error"` severity in the rules config. Without a rules section, all issue types default to `"error"`. Use the rules system to control which issues fail CI:
 
@@ -287,7 +288,7 @@ Code duplication has its own suppression token: `code-duplication`. Use it for i
 
 // CORRECT: suppress duplication for a specific line
 // fallow-ignore-next-line code-duplication
-const handler = createStandardHandler(config);
+const handler = createStandardHandler(config)
 
 // CORRECT: suppress all duplication in a file
 // fallow-ignore-file code-duplication
@@ -332,19 +333,19 @@ Exports annotated with `/** @public */`, `/** @internal */`, `/** @beta */`, `/*
 ```typescript
 // NOT flagged: @public annotation
 /** @public */
-export const createWidget = () => {};
+export const createWidget = () => {}
 
 // NOT flagged: @internal annotation
 /** @internal */
-export const resetState = () => {};
+export const resetState = () => {}
 
 // NOT flagged: @beta annotation
 /** @beta */
-export const experimentalFeature = () => {};
+export const experimentalFeature = () => {}
 
 // NOT flagged: @alpha annotation
 /** @alpha */
-export const unstableApi = () => {};
+export const unstableApi = () => {}
 
 // NOT flagged: @api public variant
 /** @api public */
@@ -352,7 +353,7 @@ export interface WidgetConfig {}
 
 // STILL flagged: line comments don't count
 // @public
-export const notProtected = () => {};
+export const notProtected = () => {}
 ```
 
 Only `/** */` JSDoc block comments are recognized. Line comments (`// @public`) are ignored.
@@ -366,7 +367,7 @@ Exports annotated with `/** @expected-unused */` are treated as intentionally un
 ```typescript
 // NOT flagged as unused: @expected-unused annotation
 /** @expected-unused */
-export const deprecatedHelper = () => {};
+export const deprecatedHelper = () => {}
 
 // If something starts importing deprecatedHelper,
 // fallow reports the @expected-unused tag as stale
@@ -385,7 +386,7 @@ Fallow detects `// fallow-ignore` comments and `@expected-unused` JSDoc tags tha
 ```typescript
 // STALE: the export below is actually used now
 // fallow-ignore-next-line unused-export
-export const helper = () => {};  // imported in app.ts
+export const helper = () => {} // imported in app.ts
 ```
 
 Use `--stale-suppressions` to filter for only stale suppression findings. The `stale-suppressions` rule defaults to `warn`. Set to `error` in CI to enforce suppression hygiene:
@@ -412,7 +413,7 @@ Types referenced only from JSDoc `import()` annotations are tracked as type-only
  * @returns {import('./types.ts').Result}
  */
 function boot(cfg) {
-  return { ok: true };
+  return { ok: true }
 }
 ```
 
@@ -430,12 +431,17 @@ Inside JSX/TSX files, lowercase intrinsic `<script src="...">` and `<link rel="s
 export const Layout = () => (
   <html>
     <head>
-      <link rel="stylesheet" href="/static/style.css" />
+      <link
+        rel="stylesheet"
+        href="/static/style.css"
+      />
       <script src="/static/app.js"></script>
     </head>
-    <body><h1>Hello</h1></body>
+    <body>
+      <h1>Hello</h1>
+    </body>
   </html>
-);
+)
 ```
 
 Fallow marks `static/style.css` and `static/app.js` as reachable. Root-relative paths (starting with `/`) resolve from the source file's parent directory first, then the project root, matching how Vite/Parcel/Hono serve static assets. Only `StringLiteral` attribute values are captured: expression containers (`href={someVar}`) and capitalized React-style components (`<Script>`, `<Link>`) are intentionally ignored because they have component-specific semantics.
@@ -504,12 +510,16 @@ Fallow tracks class member usage through instance variables. If you instantiate 
 
 ```typescript
 class MyService {
-  greet() { return 'hello'; }   // NOT flagged: used via instance
-  unused() { return 'bye'; }    // Flagged: never called
+  greet() {
+    return 'hello'
+  } // NOT flagged: used via instance
+  unused() {
+    return 'bye'
+  } // Flagged: never called
 }
 
-const svc = new MyService();
-svc.greet();
+const svc = new MyService()
+svc.greet()
 ```
 
 This also handles whole-object instance patterns (`Object.values(svc)`, `{ ...svc }`, `for..in`) conservatively (all members marked as used). The tracking is scope-unaware, so same-named variables in different scopes may produce false negatives (not false positives).
@@ -522,10 +532,10 @@ In `--production` mode, fallow detects production dependencies that are only imp
 
 ```typescript
 // If "zod" is in dependencies (not devDependencies):
-import type { ZodSchema } from 'zod';  // Flagged as type-only dependency
+import type { ZodSchema } from 'zod' // Flagged as type-only dependency
 
 // This is a real import, not type-only:
-import { z } from 'zod';  // NOT flagged
+import { z } from 'zod' // NOT flagged
 ```
 
 ```bash
@@ -547,7 +557,7 @@ Fallow detects production dependencies that are only imported from test files (`
 ```typescript
 // If "msw" is in dependencies (not devDependencies):
 // src/handlers.test.ts
-import { setupServer } from 'msw/node';  // Flagged as test-only dependency
+import { setupServer } from 'msw/node' // Flagged as test-only dependency
 
 // src/app.ts — no imports of "msw" here
 ```
@@ -601,12 +611,12 @@ fallow license refresh: your stored license is too stale to refresh. Reactivate 
 
 Stable codes the CLI surfaces today:
 
-| Code | Operation | Meaning |
-|------|-----------|---------|
-| `token_stale` | `refresh` | Stored JWT is more than 45 days past its `exp`. Reactivate. |
-| `invalid_token` | `refresh` | Stored JWT is missing required claims (e.g. `sub`). Reactivate. |
-| `unauthorized` | `refresh` or `trial` | Auth failed. Reactivate. |
-| `rate_limit_exceeded` | `trial` | Trial endpoint is capped at 5 per hour per IP. Wait or use a different network. |
+| Code                  | Operation            | Meaning                                                                         |
+| --------------------- | -------------------- | ------------------------------------------------------------------------------- |
+| `token_stale`         | `refresh`            | Stored JWT is more than 45 days past its `exp`. Reactivate.                     |
+| `invalid_token`       | `refresh`            | Stored JWT is missing required claims (e.g. `sub`). Reactivate.                 |
+| `unauthorized`        | `refresh` or `trial` | Auth failed. Reactivate.                                                        |
+| `rate_limit_exceeded` | `trial`              | Trial endpoint is capped at 5 per hour per IP. Wait or use a different network. |
 
 To detect a rate-limited trial signup in CI:
 
@@ -627,7 +637,7 @@ The official GitLab CI template automatically sets `--changed-since origin/$CI_M
 ```yaml
 # UNNECESSARY: changed-since is auto-detected in MR pipelines
 variables:
-  FALLOW_CHANGED_SINCE: "origin/main"
+  FALLOW_CHANGED_SINCE: 'origin/main'
 
 # CORRECT: let the template auto-detect
 # (no FALLOW_CHANGED_SINCE needed — it reads the MR target branch)
