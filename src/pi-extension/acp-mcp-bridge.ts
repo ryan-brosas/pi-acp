@@ -1104,11 +1104,13 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
   }
   const cleanHeaderPath = (value: string): string => {
     let p = value.trim()
+    const tab = p.indexOf('\t')
+    if (tab >= 0) p = p.slice(0, tab)
     if (p.startsWith('"') && p.endsWith('"')) {
       p = p.slice(1, -1)
       p = p.replace(/\\t/g, '\t').replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\')
     }
-    return p.split('\t')[0].trim()
+    return p.trim()
   }
   const lines = patch.split(/\r?\n/)
   if (lines[0]?.trim() === '*** Begin Patch') {
