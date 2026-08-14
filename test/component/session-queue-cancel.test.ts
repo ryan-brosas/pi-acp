@@ -41,3 +41,28 @@ test('PiAcpSession: cancel clears queued prompts', async () => {
   // queue should have been cleared, so no further prompt started
   assert.equal(proc.prompts.length, 1)
 })
+
+test('PiAcpSession: cancel cancels the bridge before awaiting the pi abort (P1-2 audit)', async () => {
+  const conn = new FakeAgentSideConnection()
+  const proc = new FakePiRpcProcess()
+  const order: string[] = []
+  const bridge = { cancelAll: () => order.push('bridge') }
+  ;(proc as any).abort = async () => {
+    order.push('proc')
+  }
+
+  const session = new PiAcpSession({
+    sessionId: 's2',
+    cwd: process.cwd(),
+    mcpServers: [],
+    proc: proc as any,
+    conn: asAgentConn(conn),
+    bridge: bridge as any,
+    fileCommands: []
+  })
+
+  const first = session.prompt('one')
+  await session.cancel()
+  assert.equal(order.join(','), 'bridge,proc')
+  assert.equal(await first, 'cancelled')
+})
