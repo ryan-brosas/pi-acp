@@ -168,6 +168,33 @@ A development profile with a conservative tool subset:
 | `PI_ACP_SESSION_MAP`                  | Override the session map path. Default: `~/.pi/pi-acp/session-map.json`.                               |
 | `PI_ACP_IDE_EXTRA_TOOLS`              | Re-allow deny-listed IDE tools. Comma separated remote names.                                          |
 
+## IntelliJ-first coding mode
+
+Set `PI_ACP_IDE_MODE` to control how the session uses IntelliJ for normal coding work. Pi still generates every implementation; IntelliJ opens, reads, searches, applies, renames, reformats, and validates.
+
+- `off` (default) keeps the current behavior: IDE tools are exposed alongside native tools, nothing is removed, no extra prompt guidance.
+- `prefer` removes the native `read`, `edit`, `write`, `grep`, `find`, and `ls` tools from the active set when the required IDE capabilities register. If the IDE bridge degrades, those tools come back and the session gets an explicit fallback notice.
+- `required` removes the same native tools immediately and keeps them removed if the IDE bridge is missing or loses connection. The session reports that the task is blocked until a new healthy chat starts.
+
+Required capabilities: `read_file`, `open_file_in_editor`, `apply_patch`, `create_new_file`, one search tool, and one inspection tool. Tool names are discovered from the live catalog, never guessed.
+
+In active modes, mutations run through IntelliJ and open the affected files: existing files open before `apply_patch`, created and moved files open after. Patch targets and path arguments are confined to the ACP project root; paths outside it are rejected, including symlink escapes. Search results that name files outside the root are annotated in `prefer` and rejected in `required`.
+
+Bash stays available in `prefer` for Git, tests, builds, and diagnostics. Unrestricted bash can still mutate files, so this mode is policy enforcement for normal coding tools, not a filesystem sandbox. Do not rely on it as a security boundary.
+
+Set the variable for the adapter process, for example in `~/.jetbrains/acp.json`:
+
+```json
+{
+  "agent_servers": {
+    "pi-acp-jetbrain": {
+      "command": "/path/to/pi-acp/dist/index.js",
+      "env": { "PI_ACP_IDE_MODE": "prefer", "PI_ACP_PI_COMMAND": "/path/to/pi" }
+    }
+  }
+}
+```
+
 ## Authentication
 
 The adapter advertises terminal auth metadata. Run this command for interactive provider login:
