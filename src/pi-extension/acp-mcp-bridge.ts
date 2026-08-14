@@ -1132,7 +1132,25 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
         .replace(/\\"/g, '"')
         .replace(/\\\\/g, '\\')
         .replace(/\\([0-7]{1,3})/g, (_m, oct) => String.fromCharCode(parseInt(oct, 8)))
-      p = Buffer.from(p, 'latin1').toString('utf8')
+      const bytes: number[] = []
+      const octalRe = /\\([0-7]{1,3})/g
+      let match: RegExpExecArray | null
+      let last = 0
+      while ((match = octalRe.exec(p)) !== null) {
+        for (let j = last; j < match.index; j++) {
+          const code = p.charCodeAt(j)
+          if (code < 128) bytes.push(code)
+          else for (const byte of Buffer.from(p[j], 'utf8')) bytes.push(byte)
+        }
+        bytes.push(parseInt(match[1], 8))
+        last = match.index + match[0].length
+      }
+      for (let j = last; j < p.length; j++) {
+        const code = p.charCodeAt(j)
+        if (code < 128) bytes.push(code)
+        else for (const byte of Buffer.from(p[j], 'utf8')) bytes.push(byte)
+      }
+      p = Buffer.from(bytes).toString('utf8')
     }
     return p.trim()
   }

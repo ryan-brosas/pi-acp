@@ -1029,4 +1029,9 @@ describe('IntelliJ-first coding mode policy', () => {
     const result = await read.execute('t33a', { filePath: 'src/a.ts' })
     assert.equal(result.content[0].text, 'ok')
   })
+  it('preserves literal non-ASCII characters in quoted headers', () => {
+    const patch = ['--- "a/caf\u00e9.ts"', '+++ "b/caf\u00e9.ts"'].join('\n')
+    const targets = parsePatchTargets(patch)
+    assert.deepEqual(targets.map(t => t.kind + ':' + t.destination), ['update:caf\u00e9.ts'])
+  })
 })
