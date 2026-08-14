@@ -760,7 +760,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     } else {
       if (removedByPolicy.length === 0) return
       const known = new Set(pi.getAllTools().map(tool => tool.name))
-      const restore = removedByPolicy.filter(name => known.has(name))
+      const restore = removedByPolicy.filter(name => known.has(name) && !current.includes(name))
       if (restore.length === 0) return
       pi.setActiveTools([...current, ...restore])
       removedByPolicy = removedByPolicy.filter(name => !restore.includes(name))
