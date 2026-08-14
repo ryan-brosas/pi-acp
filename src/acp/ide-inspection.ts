@@ -5,7 +5,7 @@ import { join } from 'node:path'
 const REPORT_SCHEMA = 'pi-acp.ide-inspection.v1'
 const DEFAULT_MAX_FILES = 200
 const DEFAULT_TIMEOUT_MS = 30_000
-const EXCLUDED_PREFIXES = ['node_modules/', 'dist/', '.git/', '.pi/'] as const
+const EXCLUDED_PREFIXES = ['node_modules/', 'dist/', '.git/', '.pi/', 'inspections/'] as const
 const KTS_SCRIPT_DIR = 'inspections'
 const KTS_SCRIPT_SUFFIX = '.inspection.kts'
 const DEFAULT_MAX_KTS_SCRIPTS = 8
@@ -238,7 +238,7 @@ function normalizeKtsResult(raw: unknown): IdeKtsRunOutcome {
   }
 
   const problems = record.foundProblems
-    .map(item => {
+    .map((item): IdeInspectionProblem | null => {
       if (!item || typeof item !== 'object') return null
       const entry = item as Record<string, unknown>
       const message = typeof entry.message === 'string' ? entry.message : undefined
@@ -248,7 +248,7 @@ function normalizeKtsResult(raw: unknown): IdeKtsRunOutcome {
         description: message,
         line: typeof entry.lineNumber === 'number' ? entry.lineNumber : undefined,
         lineContent: typeof entry.elementText === 'string' ? entry.elementText : undefined
-      } satisfies IdeInspectionProblem
+      }
     })
     .filter((p): p is IdeInspectionProblem => p !== null)
 
