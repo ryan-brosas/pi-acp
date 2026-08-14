@@ -999,10 +999,14 @@ export class PiAcpAgent implements ACPAgent {
 
     // ACP StopReason does not include "error"; if pi fails we map to end_turn for now,
     // unless we know this was a cancellation.
-    const stopReason: StopReason =
-      result === 'error' ? (session.wasCancelRequested() ? 'cancelled' : 'end_turn') : result
-
-    return { stopReason }
+    if (result === 'error') {
+      if (session.wasCancelRequested()) return { stopReason: 'cancelled' }
+      return {
+        stopReason: 'end_turn',
+        _meta: { piAcp: { error: session.lastError ?? 'pi prompt failed (no diagnostic retained)' } }
+      }
+    }
+    return { stopReason: result }
   }
 
   async cancel(params: CancelNotification): Promise<void> {
@@ -1594,7 +1598,7 @@ function buildUpdateNotice(): string | null {
   // Best-effort update check against npm registry.
   // Important: keep it fast to not slow down session/new.
   try {
-    const piVersion = spawnSync('pi', ['--version'], { encoding: 'utf-8' })
+    const piVersion = spawnSync(getPiCommand(process.env.PI_ACP_PI_COMMAND), ['--version'], { encoding: 'utf-8' })
     const installed = (String(piVersion.stdout ?? '').trim() || String(piVersion.stderr ?? '').trim()).replace(
       /^v/i,
       ''
@@ -1729,7 +1733,7 @@ export function buildStartupInfo(opts: {
 
   // pi version header
   try {
-    const piVersion = spawnSync('pi', ['--version'], { encoding: 'utf-8' })
+    const piVersion = spawnSync(getPiCommand(process.env.PI_ACP_PI_COMMAND), ['--version'], { encoding: 'utf-8' })
     const installed = (String(piVersion.stdout ?? '').trim() || String(piVersion.stderr ?? '').trim()).replace(
       /^v/i,
       ''
@@ -1873,7 +1877,7 @@ export function buildStartupInfo(opts: {
 
   // Prompts
   const promptsItems: string[] = []
-  const promptsDir = join(process.env.HOME ?? '', '.pi', 'agent', 'prompts')
+  const promptsDir = join(getAgentDir(), 'prompts')
   try {
     const prompts = readdirSync(promptsDir).filter(f => f.endsWith('.md'))
     for (const f of prompts) promptsItems.push(`/${basename(f, '.md')}`)
@@ -1884,7 +1888,7 @@ export function buildStartupInfo(opts: {
 
   // Extensions
   const extItems: string[] = []
-  const extDir = join(process.env.HOME ?? '', '.pi', 'agent', 'extensions')
+  const extDir = join(getAgentDir(), 'extensions')
   try {
     const exts = readdirSync(extDir).filter(f => f.endsWith('.ts') || f.endsWith('.js'))
     for (const f of exts) extItems.push(displayPath(join(extDir, f)))
