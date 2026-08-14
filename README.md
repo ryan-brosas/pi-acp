@@ -6,6 +6,12 @@ The adapter runs as an ACP server over stdio. Each ACP session starts one `pi --
 
 npm package: `pi-acp-jetbrain` at 0.0.35. GitHub Actions publishes each release with signed provenance.
 
+## In action
+
+![pi-acp-jetbrain serving a live session in IntelliJ](assets/pi-acp-jetbrain-demo.gif)
+
+![pi-acp-jetbrain session in IntelliJ](assets/pi-acp-jetbrain-ide.png)
+
 ## Coverage
 
 The adapter covers the session surface: `session/new`, `session/prompt`, `session/cancel`, `session/list`, `session/load`, `session/fork`, `session/resume`, `session/close`, `session/delete`. Pi keeps its own session files. The adapter keeps a small map at `~/.pi/pi-acp/session-map.json` so a load can reattach to the stored session.
