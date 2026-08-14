@@ -46,7 +46,7 @@ test('PiAcpAgent: prompt auto-restores a missing session from SessionStore', asy
   }))
 
   const originalSpawn = PiRpcProcess.spawn
-  ;(PiRpcProcess as Record<string, unknown>).spawn = async (params: Record<string, unknown>) => {
+  ;(PiRpcProcess as unknown as Record<string, unknown>).spawn = async (params: Record<string, unknown>) => {
     spawnCalls.push(params)
     return {
       onEvent: () => () => {}
@@ -136,7 +136,7 @@ test('PiAcpAgent: setSessionConfigOption auto-restores via pi session discovery 
   }))
 
   const originalSpawn = PiRpcProcess.spawn
-  ;(PiRpcProcess as Record<string, unknown>).spawn = async (params: Record<string, unknown>) => {
+  ;(PiRpcProcess as unknown as Record<string, unknown>).spawn = async (params: Record<string, unknown>) => {
     spawnCalls.push(params)
     return {
       onEvent: () => () => {},
@@ -216,7 +216,7 @@ test('PiAcpAgent: cancel ignores stale session IDs without spawning a restore pr
   const spawnCalls: Array<Record<string, unknown>> = []
 
   const originalSpawn = PiRpcProcess.spawn
-  ;(PiRpcProcess as Record<string, unknown>).spawn = async (params: Record<string, unknown>) => {
+  ;(PiRpcProcess as unknown as Record<string, unknown>).spawn = async (params: Record<string, unknown>) => {
     spawnCalls.push(params)
     return {
       onEvent: () => () => {}

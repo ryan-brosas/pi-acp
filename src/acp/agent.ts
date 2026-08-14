@@ -445,7 +445,8 @@ export class PiAcpAgent implements ACPAgent {
     }
 
     // If pi has no models available after spawning, it's effectively unauthenticated.
-    const rawModelsCount = Array.isArray(availableModels?.models) ? availableModels?.models.length : 0
+    const availableModelList = availableModels?.models
+    const rawModelsCount = Array.isArray(availableModelList) ? availableModelList.length : 0
 
     if (rawModelsCount === 0) {
       await this.cleanupFailedNewSession(session.sessionId, state)
