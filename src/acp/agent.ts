@@ -570,7 +570,8 @@ export class PiAcpAgent implements ACPAgent {
         const customInstructions = args.join(' ').trim() || undefined
         const res = await session.proc.compact(customInstructions)
 
-        const r: any = res && typeof res === 'object' ? (res as any) : null
+        const r: Record<string, unknown> | null =
+          res && typeof res === 'object' ? (res as Record<string, unknown>) : null
         const tokensBefore = typeof r?.tokensBefore === 'number' ? r.tokensBefore : null
         const summary = typeof r?.summary === 'string' ? r.summary : null
 
