@@ -1,5 +1,6 @@
 import { AgentSideConnection, ndJsonStream } from '@agentclientprotocol/sdk'
 import { PiAcpAgent } from './acp/agent.js'
+import { exitOnCrash } from './exit-on-crash.js'
 import { getPiCommand, shouldUseShellForPiCommand } from './pi-rpc/command.js'
 // Terminal Auth entrypoint. The ACP client launches the agent with `--terminal-login`.
 if (process.argv.includes('--terminal-login')) {
@@ -96,22 +97,13 @@ process.stdout.on('error', () => {
 // Last-resort crash handlers: log, dispose owned children best-effort, then exit
 // nonzero so the client can surface the failure (a dead-but-zero adapter would
 // look like an idle session).
-function exitOnCrash(kind: string, detail: unknown): void {
-  try {
-    const stack = (detail as { stack?: string } | null)?.stack
-    process.stderr.write(`pi-acp-jetbrain: ${kind}: ${stack ?? String(detail)}
-`)
-  } catch {
-    // ignore
-  }
+process.on('uncaughtException', error => {
   const a = activeAgent
   activeAgent = null
-  const timer = setTimeout(() => process.exit(1), 2_000)
-  timer.unref?.()
-  if (!a) return process.exit(1)
-  void Promise.resolve(a.dispose())
-    .catch(() => undefined)
-    .finally(() => process.exit(1))
-}
-process.on('uncaughtException', error => exitOnCrash('uncaught exception', error))
-process.on('unhandledRejection', reason => exitOnCrash('unhandled rejection', reason))
+  exitOnCrash('uncaught exception', error, a ? () => a.dispose() : null)
+})
+process.on('unhandledRejection', reason => {
+  const a = activeAgent
+  activeAgent = null
+  exitOnCrash('unhandled rejection', reason, a ? () => a.dispose() : null)
+})
