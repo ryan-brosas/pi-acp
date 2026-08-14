@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { PiAcpAgent } from '../../src/acp/agent.js'
@@ -15,6 +15,7 @@ function buildAgent(opts: {
 }) {
   const conn = opts.conn ?? new FakeAgentSideConnection()
   const agent = new PiAcpAgent(asAgentConn(conn), {} as any)
+  void conn
   ;(agent as any).sessions = opts.sessions ?? {
     maybeGet: () => undefined,
     getOrCreate: () => ({ sessionId: 'new', touchedFilePaths: new Set() }),
@@ -66,7 +67,9 @@ test('PiAcpAgent: unstable_forkSession copies the source file, forks at the leaf
     maybeGet: () => undefined,
     getOrCreate: (sessionId: string) => ({ sessionId, touchedFilePaths: new Set() }),
     closeSession: async () => {},
-    closeAllExcept: async (keep: string) => { closed.push(keep) }
+    closeAllExcept: async (keep: string) => {
+      closed.push(keep)
+    }
   }
 
   try {
@@ -101,11 +104,11 @@ test('PiAcpAgent: unstable_forkSession rejects unknown sessions and relative cwd
   const { agent } = buildAgent({ stored: null })
   await assert.rejects(
     agent.unstable_forkSession({ sessionId: 'nope', cwd: '/tmp/x' } as any),
-    /Unknown sessionId: nope/
+    err => (err as any).data === 'Unknown sessionId: nope'
   )
   await assert.rejects(
     agent.unstable_forkSession({ sessionId: 'x', cwd: 'relative' } as any),
-    /cwd must be an absolute path/
+    err => (err as any).data === 'cwd must be an absolute path: relative'
   )
 })
 
@@ -159,17 +162,24 @@ test('PiAcpAgent: resumeSession rejects unknown session ids', async () => {
   const { agent } = buildAgent({ stored: null })
   await assert.rejects(
     agent.resumeSession({ sessionId: 'nope', cwd: '/tmp/x' } as any),
-    /Unknown sessionId: nope/
+    err => (err as any).data === 'Unknown sessionId: nope'
   )
 })
 
 test('PiAcpAgent: closeSession cancels and disposes a live session and is idempotent otherwise', async () => {
   let cancelled = 0
   const closed: string[] = []
-  const live = { sessionId: 'live-1', cancel: async () => { cancelled += 1 } }
+  const live = {
+    sessionId: 'live-1',
+    cancel: async () => {
+      cancelled += 1
+    }
+  }
   const sessions = {
     maybeGet: (id: string) => (id === 'live-1' ? live : undefined),
-    closeSession: async (id: string) => { closed.push(id) }
+    closeSession: async (id: string) => {
+      closed.push(id)
+    }
   }
 
   const { agent } = buildAgent({ sessions: sessions as any })
@@ -213,7 +223,10 @@ test('PiAcpAgent: prompt includes cumulative usage when pi reports session stats
       get: () => ({ cwd: '/tmp/p', sessionFile: '/tmp/p/s.jsonl' }),
       upsert: () => {}
     }
-    ;(agent as any).startBridge = async () => ({ bridge: { dispose: async () => {} }, settings: { extensionPaths: [], env: {} } })
+    ;(agent as any).startBridge = async () => ({
+      bridge: { dispose: async () => {} },
+      settings: { extensionPaths: [], env: {} }
+    })
     ;(agent as any).waitForBridgeReady = async () => {}
 
     const res = await agent.prompt({ sessionId: 's-1', prompt: [{ type: 'text', text: 'hi' }] } as any)

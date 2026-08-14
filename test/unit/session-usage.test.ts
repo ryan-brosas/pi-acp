@@ -42,10 +42,7 @@ test('withTimeout: resolves with the promise value before the deadline', async (
 })
 
 test('withTimeout: rejects when the promise hangs past the deadline', async () => {
-  await assert.rejects(
-    withTimeout(new Promise(() => {}), 30),
-    /timed out after 30ms/
-  )
+  await assert.rejects(withTimeout(new Promise(() => {}), 30), /timed out after 30ms/)
 })
 
 test('withTimeout: propagates promise rejection', async () => {
