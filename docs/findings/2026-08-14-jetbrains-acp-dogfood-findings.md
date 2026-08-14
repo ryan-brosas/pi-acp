@@ -3,9 +3,9 @@
 **Date:** 2026-08-14
 **Repository:** `pi-acp-jetbrain`
 **Branch:** `main`
-**Audited revision:** `b7e5ae9e05752bff097b381b8eca6ed639822477`
+**Audited revision:** `b7e5ae9e05752bff097b381b8eca6ed639822477` (Phase 2 audit: `4af9792e9f31` → HEAD, see §17)
 **Audience:** implementation and release handoff
-**Status:** findings resolved or evidence-recorded; host acceptance pending (see §16)
+**Status:** findings resolved or evidence-recorded; host acceptance pending (see §16, §17)
 
 > Direct headless results, historical live-host evidence, and unavailable fresh-host checks are separated below.
 
@@ -1232,6 +1232,48 @@ Resolution recorded 2026-08-14 after the F-008–F-033 campaign (work record `.p
 
 - Fresh IntelliJ chat for F-033 acceptance and the real-IDE halves of F-008/F-009/F-021: new PID after the dist rebuild, `_meta.piAcp.build.revision` match, an IDE tool call, inspection ids, cancel/restore/shutdown.
 - Close stale chats (PID 7810 inspo checkout; PIDs 305xxx published-package launches) once the local entry is confirmed.
+
+## 17. Phase 2 UX audit (2026-08-14)
+
+Second dogfood pass over revision `4af9792e9f31` with live IntelliJ MCP tools, fresh dogfood journeys, and an independent gpt-5.6-sol product/UX review. Verdict: no P0; 6 P1, 10 P2, 3 P3.
+
+### Evidence gathered
+
+- Live IntelliJ tools (routed through the then-running inspo bridge): git status clean, IDE build success, 94-file inspection sweep (24 src + 27 scripts + 43 tests). The tools' `source` path exposed the provenance gap itself — the chat was served from the inspo checkout, not this one.
+- `dogfood:report`: 13/13 probes OK (dist `af385bed40d1`, build `4af9792e9f31`).
+- `dogfood:ide`: `~/.jetbrains/acp.json` now points at this checkout; PID 7810 still runs the inspo checkout; several stale-bundle PIDs; one fresh PID after the rebuild.
+
+### P1 fixes landed in this phase
+
+| # | Finding | Fix |
+| --- | --- | --- |
+| P1-2 | `cancel()` awaited the slow pi abort before bridge cancellation | `bridge.cancelAll()` runs first; ordering test added |
+| P1-3 | pi stderr was discarded; a failed turn looked like a normal completion | bounded stderr tail retained (`PiRpcProcess.stderrTailLines`) and surfaced via `_meta.piAcp.error` in the prompt result; unit tests |
+| P1-4 | onboarding examples omitted `idea_mcp_allowed_tools` (AllowAll) | README primary example ships a deny-by-default read/build profile |
+| P1-5 | probe oracles could be satisfied by the startup chunk; queue probe sent `/queue` | `smoke-cancel`/`smoke-acp` baseline chunk counts after `session/new`; `smoke-queue` now fires two concurrent prompts through the adapter queue |
+| P1-6 | dogfood exited 0 without a fresh build or host acceptance | `dogfood-report` builds first and fails on build failure; `dogfood-ide` exits 1 on warn findings |
+
+### P1-1 open (deliberately deferred)
+
+An accepted prompt can stay unresolved forever if pi exits mid-generation or the session is disposed: `pendingTurn` settles only on `agent_settled`, and `dispose()` rejects queued turns but not the running turn. Recommended fix: propagate process exit into sessions, settle `pendingTurn` on dispose, add a turn watchdog. Deferred because it is a turn-lifecycle redesign needing dedicated cancel/queue interplay tests.
+
+### P2/P3 addressed
+
+- P2-13 consistency: version/update checks honor `PI_ACP_PI_COMMAND`; prompts/extensions inventory uses `getAgentDir()` (PI_CODING_AGENT_DIR-aware); README Node claim aligned to engines (`>=20`, CI 20/24).
+- P2-16 export file URI: raw interpolation replaced with `pathToFileURL()`.
+- P2-14 pinned-npx note added; P3-17 env JSON example fixed; P3-19 thinking-stream wording aligned (`agent_thought_chunk`); P3-18 this doc refreshed.
+
+### Remaining recommendations (not yet implemented)
+
+- P2-7 session-map atomicity (write temp + rename); P2-8 deletion should report unlink failures; P2-9 paginated/size-bounded session restore; P2-10 parallel MCP discovery; P2-11 surface `tools/list_changed` after startup; P2-12 bounded inventory traversal; P2-15 revision identity for dirty source.
+- P1-1 turn-lifecycle watchdog (see above).
+- Real-IDE allowlist verification against a fresh chat (the profile's tool names come from the observed catalog).
+
+### Reviewer's three highest-value next changes
+
+1. Deterministic turn lifecycle (P1-1).
+2. Secure copy-paste onboarding — implemented in README; verify tool names on a fresh chat.
+3. Dogfood as a real gate — implemented: build-first report + nonzero on warn.
 
 ---
 
