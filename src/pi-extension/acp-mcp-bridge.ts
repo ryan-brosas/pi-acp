@@ -1125,28 +1125,30 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     const tab = p.indexOf('\t')
     if (tab >= 0) p = p.slice(0, tab)
     if (p.startsWith('"') && p.endsWith('"')) {
-      p = p.slice(1, -1)
-      p = p.replace(/\\t/g, '\t').replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\')
-      const bytes: number[] = []
-      const octalRe = /\\([0-7]{1,3})/g
-      let match: RegExpExecArray | null
-      let last = 0
-      while ((match = octalRe.exec(p)) !== null) {
-        for (let j = last; j < match.index; j++) {
-          const code = p.charCodeAt(j)
-          if (code < 128) bytes.push(code)
-          else for (const byte of Buffer.from(p[j], 'utf8')) bytes.push(byte)
+      let decoded = ''
+      for (let i = 0; i < p.length; i++) {
+        const c = p[i]
+        if (c !== '\') {
+          const code = p.charCodeAt(i)
+          if (code < 128) decoded += c
+          else for (const byte of Buffer.from(c, 'utf8')) decoded += String.fromCharCode(byte)
+          continue
         }
-        bytes.push(parseInt(match[1], 8))
-        last = match.index + match[0].length
+        const next = p[i + 1]
+        if (next === 't') { decoded += '	'; i++; continue }
+        if (next === 'n') { decoded += '
+'; i++; continue }
+        if (next === '"') { decoded += '"'; i++; continue }
+        if (next === '\') { decoded += '\'; i++; continue }
+        const octal = /^[0-7]{1,3}/.exec(p.slice(i + 1))
+        if (octal) {
+          decoded += String.fromCharCode(parseInt(octal[0], 8))
+          i += octal[0].length
+          continue
+        }
+        decoded += '\'
       }
-      for (let j = last; j < p.length; j++) {
-        const code = p.charCodeAt(j)
-        if (code < 128) bytes.push(code)
-        else for (const byte of Buffer.from(p[j], 'utf8')) bytes.push(byte)
-      }
-      p = Buffer.from(bytes).toString('utf8')
-    }
+      p = Buffer.from(decoded, 'latin1').toString('utf8')
     return p.trim()
   }
   const lines = patch.split(/\r?\n/)
