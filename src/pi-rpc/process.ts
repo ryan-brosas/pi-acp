@@ -150,6 +150,13 @@ export class PiRpcProcess {
       for (const [, p] of this.pending) p.reject(err)
       this.pending.clear()
     })
+
+    child.stderr.on('data', chunk => {
+      // Retain a bounded tail for diagnostics; the raw stream stays untouched so ACP
+      // clients (which capture stderr) still receive the original output (P1-3 audit).
+      for (const line of String(chunk).split('\n')) this.stderrTail.push(line)
+      if (this.stderrTail.length > 200) this.stderrTail.splice(0, this.stderrTail.length - 200)
+    })
   }
 
   static async spawn(params: SpawnParams): Promise<PiRpcProcess> {
@@ -208,13 +215,6 @@ export class PiRpcProcess {
 
       throw new PiRpcSpawnError(`Could not start pi (command: ${cmd}).`, { code, cause: e })
     }
-
-    child.stderr.on('data', chunk => {
-      // Retain a bounded tail for diagnostics; the raw stream stays untouched so ACP
-      // clients (which capture stderr) still receive the original output (P1-3 audit).
-      for (const line of String(chunk).split('\n')) this.stderrTail.push(line)
-      if (this.stderrTail.length > 200) this.stderrTail.splice(0, this.stderrTail.length - 200)
-    })
 
     const proc = new PiRpcProcess(child, params.requestTimeoutMs ?? 30_000)
 

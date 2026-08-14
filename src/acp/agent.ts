@@ -19,7 +19,6 @@ import {
   type SetSessionConfigOptionResponse,
   type SetSessionModeRequest,
   type SetSessionModeResponse,
-  type StopReason,
   type DeleteSessionRequest,
   type DeleteSessionResponse
 } from '@agentclientprotocol/sdk'
