@@ -59,8 +59,7 @@ interface IdeKtsRunOutcome {
 }
 
 export type IdeInspectionOutcome =
-  | { status: 'inspected'; report: IdeInspectionReport; reportPath?: string }
-  | { status: 'skipped'; reason: string }
+  { status: 'inspected'; report: IdeInspectionReport; reportPath?: string } | { status: 'skipped'; reason: string }
 
 /** Structural bridge surface the gate needs; AcpMcpBridge satisfies it. */
 export interface InspectionBridge {
@@ -385,7 +384,7 @@ export async function runKtsInspections(opts: {
       try {
         const raw = await bridge.callRemoteTool(
           'run_inspection_kts',
-          { inspectionKtsCode: script.code, contextPath: file },
+          { inspectionKtsCode: script.code, contextPath: file, projectPath: cwd },
           timeoutMs
         )
         outcome = normalizeKtsResult(raw)
@@ -401,7 +400,7 @@ export async function runKtsInspections(opts: {
             await new Promise(resolve => setTimeout(resolve, KTS_RETRY_DELAY_MS))
             const retryRaw = await bridge.callRemoteTool(
               'run_inspection_kts',
-              { inspectionKtsCode: script.code, contextPath: file },
+              { inspectionKtsCode: script.code, contextPath: file, projectPath: cwd },
               timeoutMs
             )
             outcome = normalizeKtsResult(retryRaw)
@@ -517,11 +516,21 @@ export async function runEnforcedInspection(opts: RunEnforcedInspectionOptions):
   let items: IdeInspectionFile[]
   try {
     if (hasLint) {
-      const raw = await bridge.callRemoteTool('lint_files', { files, min_severity: 'warning' }, timeoutMs)
+      const raw = await bridge.callRemoteTool(
+        'lint_files',
+        { files, min_severity: 'warning', projectPath: opts.cwd },
+        timeoutMs
+      )
       items = normalizeInspectionResult(raw)
     } else {
       const results = await Promise.all(
-        files.map(file => bridge.callRemoteTool('get_file_problems', { filePath: file, errorsOnly: false }, timeoutMs))
+        files.map(file =>
+          bridge.callRemoteTool(
+            'get_file_problems',
+            { filePath: file, errorsOnly: false, projectPath: opts.cwd },
+            timeoutMs
+          )
+        )
       )
       items = results.map(normalizeInspectionResult).flat()
     }
