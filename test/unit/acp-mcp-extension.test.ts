@@ -203,7 +203,6 @@ describe('ACP MCP Pi extension lifecycle', () => {
   })
 })
 
-
 // ---------- IntelliJ-first coding mode ----------
 
 import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from 'node:fs'
@@ -211,7 +210,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { parsePatchTargets } from '../../src/pi-extension/acp-mcp-bridge.js'
 
-function makeFakeRuntime(initialActive: string[] = ['read', 'edit', 'write', 'grep', 'find', 'ls', 'bash', 'my_ext_tool']) {
+function makeFakeRuntime(
+  initialActive: string[] = ['read', 'edit', 'write', 'grep', 'find', 'ls', 'bash', 'my_ext_tool']
+) {
   const handlers = new Map<string, Array<(event: any, ctx: any) => unknown>>()
   const all = new Set<string>(initialActive)
   let active = [...initialActive]
@@ -295,7 +296,10 @@ const FULL_CATALOG = [
   ideTool('create_new_file', 'ide_idea_create_new_file', { filePath: { type: 'string' } }),
   ideTool('skill_search', 'ide_idea_skill_search', { query: { type: 'string' } }),
   ideTool('lint_files', 'ide_idea_lint_files', { files: { type: 'array', items: { type: 'string' } } }),
-  ideTool('rename_refactoring', 'ide_idea_rename_refactoring', { pathInProject: { type: 'string' }, newName: { type: 'string' } }),
+  ideTool('rename_refactoring', 'ide_idea_rename_refactoring', {
+    pathInProject: { type: 'string' },
+    newName: { type: 'string' }
+  }),
   ideTool('reformat_file', 'ide_idea_reformat_file', { files: { type: 'array', items: { type: 'string' } } })
 ]
 
@@ -362,7 +366,10 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.ok(rt.active.includes('read'))
     emitCatalog()
     const natives = ['read', 'edit', 'write', 'grep', 'find', 'ls']
-    assert.deepEqual(rt.active.filter(n => natives.includes(n)), [])
+    assert.deepEqual(
+      rt.active.filter(n => natives.includes(n)),
+      []
+    )
     assert.ok(rt.active.includes('bash'))
     assert.ok(rt.active.includes('my_ext_tool'))
     assert.ok(rt.active.includes('ide_idea_read_file'))
@@ -373,7 +380,10 @@ describe('IntelliJ-first coding mode policy', () => {
   it('required removes native file tools before the catalog arrives', () => {
     const { rt } = wireExtension('required', FULL_CATALOG)
     const natives = ['read', 'edit', 'write', 'grep', 'find', 'ls']
-    assert.deepEqual(rt.active.filter(n => natives.includes(n)), [])
+    assert.deepEqual(
+      rt.active.filter(n => natives.includes(n)),
+      []
+    )
   })
 
   it('prefer restores native tools when required capabilities are missing', async () => {
@@ -596,7 +606,10 @@ describe('IntelliJ-first coding mode policy', () => {
 
   it('annotates out-of-root semantic results in prefer', async () => {
     const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
-    socket.replyValue = { content: [{ type: 'text', text: 'tree' }], structuredContent: { files: ['/other/repo/x.ts'] } }
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'tree' }],
+      structuredContent: { files: ['/other/repo/x.ts'] }
+    }
     emitCatalog()
     const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
     const result = await read.execute('t24', { filePath: 'src/a.ts' })
@@ -605,7 +618,10 @@ describe('IntelliJ-first coding mode policy', () => {
 
   it('rejects out-of-root semantic results in required', async () => {
     const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
-    socket.replyValue = { content: [{ type: 'text', text: 'tree' }], structuredContent: { files: ['/other/repo/x.ts'] } }
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'tree' }],
+      structuredContent: { files: ['/other/repo/x.ts'] }
+    }
     emitCatalog()
     const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
     await assert.rejects(() => read.execute('t24b', { filePath: 'src/a.ts' }), /outside|root/i)

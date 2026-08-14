@@ -456,14 +456,11 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
   if (parsedMode.diagnostic !== undefined) policyDiagnostics.push(parsedMode.diagnostic)
 
   if (ideMode !== 'off') {
-    pi.on(
-      'before_agent_start',
-      ((event: { systemPrompt: string }) => {
-        const guidance = renderIdeCodingGuidance(ideMode, ideState, capabilities, projectRoot)
-        if (guidance === '') return undefined
-        return { systemPrompt: `${event.systemPrompt}\n\n${guidance}` }
-      }) as never
-    )
+    pi.on('before_agent_start', ((event: { systemPrompt: string }) => {
+      const guidance = renderIdeCodingGuidance(ideMode, ideState, capabilities, projectRoot)
+      if (guidance === '') return undefined
+      return { systemPrompt: `${event.systemPrompt}\n\n${guidance}` }
+    }) as never)
     if (ideMode === 'required') setPolicyFiltering(true)
     if (!endpoint || !token || !sessionId) {
       if (ideMode === 'prefer') ideState = 'native_fallback'
@@ -650,9 +647,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
       let ok = false
       try {
         if (sock && !sock.destroyed) {
-          ok = sock.write(
-            JSON.stringify({ type: 'call', id: requestId, tool: tool.exposedName, args }) + '\n'
-          )
+          ok = sock.write(JSON.stringify({ type: 'call', id: requestId, tool: tool.exposedName, args }) + '\n')
         }
       } catch {
         ok = false
@@ -693,7 +688,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     }
     result.details.composite = {
       ...(result.details.composite as Record<string, unknown>),
-      outOfRootResult: 'annotated'
+      outOfRootResult: 'path outside project root (annotated)'
     }
     return result
   }
@@ -758,7 +753,8 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     const registeredNames = new Set(registration.registered.map(item => item.exposedName))
     const indexed = indexIdeCapabilities(catalog.tools, registeredNames)
     capabilities = indexed.capabilities
-    for (const duplicate of indexed.duplicates) policyDiagnostics.push(`duplicate IDE capability mappings: ${duplicate}`)
+    for (const duplicate of indexed.duplicates)
+      policyDiagnostics.push(`duplicate IDE capability mappings: ${duplicate}`)
     if (indexed.missing.length > 0) {
       policyDiagnostics.push(`missing required IDE capabilities: ${indexed.missing.join(', ')}`)
     }
@@ -786,13 +782,17 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     signal?: AbortSignal
   ): Promise<PiMcpToolResult> {
     if (projectRoot === undefined) {
-      return Promise.reject(new McpToolError('IntelliJ-first mode requires a project root', { code: 'missing_project_root' }))
+      return Promise.reject(
+        new McpToolError('IntelliJ-first mode requires a project root', { code: 'missing_project_root' })
+      )
     }
     const openName = capabilities.get('open')
     const openTool = openName ? toolByExposedName.get(openName) : undefined
     if (!openTool) {
       return Promise.reject(
-        new McpToolError('IntelliJ-first mode requires open_file_in_editor for mutations', { code: 'missing_open_capability' })
+        new McpToolError('IntelliJ-first mode requires open_file_in_editor for mutations', {
+          code: 'missing_open_capability'
+        })
       )
     }
     let plan: MutationPlan
@@ -873,11 +873,24 @@ const OPTIONAL_CAPABILITIES: Array<{ key: IdeCapabilityKey; remoteNames: string[
   { key: 'reformat', remoteNames: ['reformat_file'] }
 ]
 const MUTATION_REMOTE_NAMES = new Set(['apply_patch', 'rename_refactoring', 'reformat_file', 'create_new_file'])
-const PATH_KEYS = new Set(['filePath', 'file_path', 'pathInProject', 'files', 'paths', 'sourcePath', 'targetPath', 'oldPath', 'newPath', 'directoryPath', 'contextPath'])
+const PATH_KEYS = new Set([
+  'filePath',
+  'file_path',
+  'pathInProject',
+  'files',
+  'paths',
+  'sourcePath',
+  'targetPath',
+  'oldPath',
+  'newPath',
+  'directoryPath',
+  'contextPath'
+])
 const RESULT_PATH_KEYS = new Set(['filePath', 'file_path', 'files', 'paths'])
 
 export type IdeCodingMode = 'off' | 'prefer' | 'required'
-export type IdeCodingState = 'disabled' | 'awaiting_catalog' | 'active' | 'native_fallback' | 'required_unavailable' | 'shutdown'
+export type IdeCodingState =
+  'disabled' | 'awaiting_catalog' | 'active' | 'native_fallback' | 'required_unavailable' | 'shutdown'
 export type IdeCapabilityKey = 'read' | 'open' | 'patch' | 'create' | 'search' | 'inspect' | 'rename' | 'reformat'
 export type IdeCapabilityMap = Map<IdeCapabilityKey, string>
 
@@ -967,11 +980,7 @@ function nearestExistingAncestor(candidate: string): string | undefined {
   }
 }
 
-export function normalizeProjectPath(
-  projectRoot: string,
-  input: string,
-  mutation: boolean
-): { path: string } {
+export function normalizeProjectPath(projectRoot: string, input: string, mutation: boolean): { path: string } {
   if (input === '') throw new Error('IDE path is empty')
   const root = resolve(projectRoot)
   let raw = input
@@ -1036,18 +1045,25 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     if (current) add(current.kind, current.destination, current.source)
     return targets
   }
+  let pendingOld: string | undefined
   for (const line of lines) {
     const trimmed = line.trim()
     const oldHeader = /^---\s+(.+)$/.exec(trimmed)
     const newHeader = /^\+\+\+\s+(.+)$/.exec(trimmed)
-    if (!oldHeader || !newHeader) continue
-    const oldPath = stripPrefix(oldHeader[1].trim())
-    const newPath = stripPrefix(newHeader[1].trim())
-    if (oldPath === '/dev/null' && newPath !== '/dev/null') add('add', newPath)
-    else if (newPath === '/dev/null' && oldPath !== '/dev/null') add('delete', oldPath)
-    else if (oldPath !== '/dev/null' && newPath !== '/dev/null') {
-      if (oldPath === newPath) add('update', newPath)
-      else add('move', newPath, oldPath)
+    if (oldHeader) {
+      pendingOld = oldHeader[1].trim()
+      continue
+    }
+    if (newHeader && pendingOld !== undefined) {
+      const oldPath = stripPrefix(pendingOld)
+      const newPath = stripPrefix(newHeader[1].trim())
+      if (oldPath === '/dev/null' && newPath !== '/dev/null') add('add', newPath)
+      else if (newPath === '/dev/null' && oldPath !== '/dev/null') add('delete', oldPath)
+      else if (oldPath !== '/dev/null' && newPath !== '/dev/null') {
+        if (oldPath === newPath) add('update', newPath)
+        else add('move', newPath, oldPath)
+      }
+      pendingOld = undefined
     }
   }
   return targets
@@ -1108,10 +1124,15 @@ export function buildMutationPlan(tool: BridgeTool, args: Record<string, unknown
       for (const target of targets) {
         if (target.kind === 'move' && target.source) {
           preOpen.push(normalizeProjectPath(projectRoot, target.source, true).path)
+          const dest = normalizeProjectPath(projectRoot, target.destination, true).path
+          postOpen.push(dest)
+          continue
         }
-        const normalized = normalizeProjectPath(projectRoot, target.destination, target.kind !== 'delete')
-        preOpen.push(normalized.path)
-        if (target.kind !== 'delete') postOpen.push(normalized.path)
+        if (target.kind === 'add') {
+          postOpen.push(normalizeProjectPath(projectRoot, target.destination, true).path)
+          continue
+        }
+        preOpen.push(normalizeProjectPath(projectRoot, target.destination, target.kind !== 'delete').path)
       }
       break
     }
@@ -1174,17 +1195,25 @@ export function renderIdeCodingGuidance(
       break
     }
     case 'awaiting_catalog': {
-      if (mode === 'required') parts.push('IntelliJ-first mode is required and waiting for the IDE catalog. Native file tools stay disabled.')
-      else parts.push('IntelliJ-first mode is preferred but the IDE catalog is not ready yet. Native file tools remain available temporarily.')
+      if (mode === 'required')
+        parts.push('IntelliJ-first mode is required and waiting for the IDE catalog. Native file tools stay disabled.')
+      else
+        parts.push(
+          'IntelliJ-first mode is preferred but the IDE catalog is not ready yet. Native file tools remain available temporarily.'
+        )
       break
     }
     case 'native_fallback': {
-      parts.push('IDE IPC is unavailable or incomplete. IDE tools were removed from the active set; only native tools removed by this policy were restored.')
+      parts.push(
+        'IDE IPC is unavailable or incomplete. IDE tools were removed from the active set; only native tools removed by this policy were restored.'
+      )
       parts.push('Do not call stale IDE tool names.')
       break
     }
     case 'required_unavailable': {
-      parts.push('Required IntelliJ capabilities are unavailable. Native filesystem tools remain disabled. The task is blocked until a new healthy ACP/IDE session is started.')
+      parts.push(
+        'Required IntelliJ capabilities are unavailable. Native filesystem tools remain disabled. The task is blocked until a new healthy ACP/IDE session is started.'
+      )
       break
     }
     default:
