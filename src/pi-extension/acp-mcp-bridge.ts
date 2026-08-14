@@ -940,7 +940,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
   // filters native file tools; fabric_exec is the remaining bypass vector.
   if (ideMode !== 'off') {
     pi.on('tool_call', async event => {
-      if (ideState !== 'active') return undefined
+      if (ideState === 'disabled' || ideState === 'native_fallback' || ideState === 'shutdown') return undefined
       if (event?.toolName !== 'fabric_exec') return undefined
       const code = typeof event?.input?.code === 'string' ? event.input.code : ''
       if (!/\b(?:schema\.commit|pi\.(?:write|edit))\s*\(/.test(code)) return undefined

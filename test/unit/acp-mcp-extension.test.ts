@@ -421,6 +421,17 @@ describe('IntelliJ-first coding mode policy', () => {
     }
   })
 
+  it('blocks direct Fabric mutations before the catalog arrives in required', async () => {
+    const { rt } = wireExtension('required', FULL_CATALOG)
+    const gate = rt.handlers.get('tool_call')?.[0]
+    assert.ok(gate, 'tool_call gate registered pre-catalog')
+    const blocked = await gate(
+      { toolName: 'fabric_exec', input: { code: "await pi.write({ path: 'x.ts', text: 'x' })" } },
+      { hasUI: false }
+    )
+    assert.equal(blocked?.block, true)
+  })
+
   it('does not register the mutation gate when IntelliJ-first mode is off', async () => {
     const { rt, emitCatalog } = wireExtension('off', FULL_CATALOG)
     emitCatalog()
