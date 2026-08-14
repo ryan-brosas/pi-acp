@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { isAbsolute, join, relative } from 'node:path'
 
 const REPORT_SCHEMA = 'pi-acp.ide-inspection.v1'
 const DEFAULT_MAX_FILES = 200
@@ -109,11 +109,22 @@ export function collectChangedFiles(cwd: string, maxFiles = DEFAULT_MAX_FILES): 
   return files
 }
 
+function normalizeInspectPath(cwd: string, raw: string): string | null {
+  const cleaned = raw.replace(/\\/g, '/').trim()
+  if (!cleaned) return null
+  const rel = isAbsolute(cleaned) ? relative(cwd, cleaned) : cleaned.replace(/^\.\//, '')
+  if (!rel || rel.startsWith('..') || isAbsolute(rel)) return null
+  if (rel.split('/').includes('..')) return null
+  return rel
+}
+
 /**
  * Merge git-status files with turn-touched tool-call paths so the gate still
  * inspects a turn's edits after the auto-commit watcher swept the tree.
- * Dedupes, applies the same exclusion prefixes as collectChangedFiles, and
- * drops paths that no longer exist.
+ * Normalizes ./ and absolute paths to repo-relative form, rejects traversal
+ * and out-of-repo paths, dedupes, applies the same exclusion prefixes as
+ * collectChangedFiles, and drops paths that no longer exist. Turn-touched
+ * paths take precedence over unrelated git-status files at the cap.
  */
 export function mergeInspectFiles(
   cwd: string,
@@ -123,12 +134,14 @@ export function mergeInspectFiles(
 ): string[] {
   const seen = new Set<string>()
   const files: string[] = []
-  for (const file of [...gitFiles, ...extraFiles]) {
-    if (!file || seen.has(file)) continue
-    if (EXCLUDED_PREFIXES.some(prefix => file.startsWith(prefix))) continue
-    if (!existsSync(join(cwd, file))) continue
-    seen.add(file)
-    files.push(file)
+  for (const file of [...extraFiles, ...gitFiles]) {
+    if (!file) continue
+    const norm = normalizeInspectPath(cwd, file)
+    if (!norm || seen.has(norm)) continue
+    if (EXCLUDED_PREFIXES.some(prefix => norm.startsWith(prefix))) continue
+    if (!existsSync(join(cwd, norm))) continue
+    seen.add(norm)
+    files.push(norm)
     if (files.length >= maxFiles) break
   }
   return files
@@ -336,7 +349,7 @@ interface KtsPassResult {
  * bridge's run_inspection_kts tool. Never throws: an unavailable tool yields
  * null; call failures and compile errors degrade to per-script summaries.
  */
-async function runKtsInspections(opts: {
+export async function runKtsInspections(opts: {
   bridge: InspectionBridge
   cwd: string
   files: string[]
@@ -377,15 +390,24 @@ async function runKtsInspections(opts: {
         )
         outcome = normalizeKtsResult(raw)
         if (outcome.status === 'malformed') {
-          await new Promise(resolve => setTimeout(resolve, KTS_RETRY_DELAY_MS))
-          const retryRaw = await bridge.callRemoteTool(
-            'run_inspection_kts',
-            { inspectionKtsCode: script.code, contextPath: file },
-            timeoutMs
-          )
-          outcome = normalizeKtsResult(retryRaw)
-          if (outcome.status === 'malformed') {
-            outcome.message = `malformed result after retry — raw: ${summarizeMalformedRaw(retryRaw)}`
+          if (calls >= maxCalls) {
+            outcome = {
+              status: 'malformed',
+              problems: [],
+              message: `malformed result, no retry budget — raw: ${summarizeMalformedRaw(raw)}`
+            }
+          } else {
+            calls += 1
+            await new Promise(resolve => setTimeout(resolve, KTS_RETRY_DELAY_MS))
+            const retryRaw = await bridge.callRemoteTool(
+              'run_inspection_kts',
+              { inspectionKtsCode: script.code, contextPath: file },
+              timeoutMs
+            )
+            outcome = normalizeKtsResult(retryRaw)
+            if (outcome.status === 'malformed') {
+              outcome.message = `malformed result after retry — raw: ${summarizeMalformedRaw(retryRaw)}`
+            }
           }
         }
       } catch (error) {

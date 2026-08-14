@@ -556,6 +556,7 @@ export class PiAcpAgent implements ACPAgent {
 
   async prompt(params: PromptRequest): Promise<PromptResponse> {
     const session = await this.restoreSession(params.sessionId)
+    session.touchedFilePaths.clear()
 
     const { message, images } = promptToPiMessage(params.prompt)
 
