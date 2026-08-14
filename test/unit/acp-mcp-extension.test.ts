@@ -736,4 +736,68 @@ describe('IntelliJ-first coding mode policy', () => {
     const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
     await assert.rejects(() => read.execute('t24c', { filePath: 'src/a.ts' }), /outside|root/i)
   })
+  it('ignores reversed hunk content that mimics headers', () => {
+    const patch = [
+      '--- a/src/real.ts',
+      '+++ b/src/real.ts',
+      '@@ -1,1 +1,1 @@',
+      '--- bogus-old',
+      '+++ bogus-new',
+      '--- a/src/real2.ts',
+      '+++ b/src/real2.ts'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    assert.deepEqual(
+      targets.map(t => t.kind + ':' + t.destination),
+      ['update:src/real.ts', 'update:src/real2.ts']
+    )
+  })
+
+  it('rejects relative traversal in result paths', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'hits' }],
+      structuredContent: { files: ['../../outside.ts'] }
+    }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t24d', { filePath: 'src/a.ts' }), /outside|root/i)
+  })
+
+  it('rejects symlink-escaping result paths', async () => {
+    const proj = mkdtempSync(join(tmpdir(), 'piap-'))
+    const outside = mkdtempSync(join(tmpdir(), 'piap-out-'))
+    symlinkSync(outside, join(proj, 'link'), 'dir')
+    try {
+      const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG, undefined, proj)
+      socket.replyValue = {
+        content: [{ type: 'text', text: 'hits' }],
+        structuredContent: { filePath: join(proj, 'link', 'x.ts') }
+      }
+      emitCatalog()
+      const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+      await assert.rejects(() => read.execute('t24e', { filePath: 'src/a.ts' }), /outside|escape|root/i)
+    } finally {
+      rmSync(proj, { recursive: true, force: true })
+      rmSync(outside, { recursive: true, force: true })
+    }
+  })
+
+  it('confinement applies to create_new_file path arguments', async () => {
+    const catalog = FULL_CATALOG.map(t =>
+      t.remoteName === 'create_new_file'
+        ? ideTool('create_new_file', 'ide_idea_create_path_file', { path: { type: 'string' } })
+        : t
+    )
+    const { rt, socket, emitCatalog } = wireExtension('prefer', catalog)
+    emitCatalog()
+    const create = rt.registered.find((t: any) => t.name === 'ide_idea_create_path_file')
+    await assert.rejects(() => create.execute('t22b', { path: '../../x.ts' }), /outside|escape|root/i)
+    assert.equal(socket.calls.length, 0)
+    const result = await create.execute('t22c', { path: 'src/new.ts' })
+    assert.equal(result.content[0].text, 'ok')
+    assert.equal(socket.calls[0].tool, 'ide_idea_create_path_file')
+    assert.equal(socket.calls[1].tool, 'ide_idea_open_file')
+    assert.equal(socket.calls[1].args.filePath, 'src/new.ts')
+  })
 })

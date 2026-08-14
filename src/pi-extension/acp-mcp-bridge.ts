@@ -687,12 +687,25 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
       }
     }
     collect(structured, 0)
+    const rootResolved = resolve(root)
+    const realRoot = tryRealpath(rootResolved)
     let hit = false
     for (const entry of candidates) {
-      if (!isAbsolute(entry)) continue
-      if (!isInside(resolve(root), resolve(entry))) {
+      if (entry === '') continue
+      const candidate = isAbsolute(entry) ? resolve(entry) : resolve(rootResolved, entry)
+      if (!isInside(rootResolved, candidate)) {
         hit = true
         break
+      }
+      if (realRoot !== undefined) {
+        const existingAncestor = nearestExistingAncestor(candidate)
+        if (existingAncestor !== undefined) {
+          const real = tryRealpath(existingAncestor)
+          if (real !== undefined && !isInside(realRoot, real)) {
+            hit = true
+            break
+          }
+        }
       }
     }
     if (!hit) return result
@@ -897,9 +910,11 @@ const PATH_KEYS = new Set([
   'oldPath',
   'newPath',
   'directoryPath',
-  'contextPath'
+  'contextPath',
+  'path',
+  'file'
 ])
-const RESULT_PATH_KEYS = new Set(['filePath', 'file_path', 'files', 'paths'])
+const RESULT_PATH_KEYS = new Set(['filePath', 'file_path', 'files', 'paths', 'path'])
 
 export type IdeCodingMode = 'off' | 'prefer' | 'required'
 export type IdeCodingState =
@@ -1059,21 +1074,24 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     return targets
   }
   let pendingOld: string | undefined
-  let inHunk = false
+  let remainingHunkLines = 0
   for (const line of lines) {
     const trimmed = line.trim()
-    if (/^@@\s/.test(trimmed)) {
-      inHunk = true
+    const hunk = /^@@\s+-\d+(?:,(\d+))?\s+\+\d+(?:,(\d+))?/.exec(trimmed)
+    if (hunk) {
+      remainingHunkLines = (hunk[1] === undefined ? 1 : Number(hunk[1])) + (hunk[2] === undefined ? 1 : Number(hunk[2]))
+      continue
+    }
+    if (remainingHunkLines > 0) {
+      remainingHunkLines--
       continue
     }
     const oldHeader = /^---\s+(.+)$/.exec(trimmed)
     const newHeader = /^\+\+\+\s+(.+)$/.exec(trimmed)
     if (oldHeader) {
       pendingOld = oldHeader[1].trim()
-      inHunk = false
       continue
     }
-    if (inHunk) continue
     if (newHeader && pendingOld !== undefined) {
       const oldPath = stripPrefix(pendingOld)
       const newPath = stripPrefix(newHeader[1].trim())
