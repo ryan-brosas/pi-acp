@@ -952,4 +952,33 @@ describe('IntelliJ-first coding mode policy', () => {
       ['update:src/a.ts']
     )
   })
+  it('parses quoted timestamped diff headers with escapes', () => {
+    const patch = [
+      '--- "a/my file.ts"\t2026-01-01 10:00:00.000000000 +0000',
+      '+++ "b/my file.ts"\t2026-01-01 10:05:00.000000000 +0000',
+      '--- "a/weird\\\"name.ts"\t2026-01-01 10:00:00.000000000 +0000',
+      '+++ "b/weird\\\"name.ts"\t2026-01-01 10:05:00.000000000 +0000'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    const byPath = new Map(targets.map(t => [t.destination, t]))
+    assert.equal(byPath.get('my file.ts')?.kind, 'update')
+    assert.equal(byPath.get('weird"name.ts')?.kind, 'update')
+  })
+
+  it('allows in-root names that begin with two dots', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    const result = await read.execute('t30a', { filePath: '..config' })
+    assert.equal(result.content[0].text, 'ok')
+    assert.equal(socket.calls[0].args.filePath, '..config')
+  })
+
+  it('rejects traversal beyond the root through two dots', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t30b', { filePath: '../x.ts' }), /outside|escape|root/i)
+    assert.equal(socket.calls.length, 0)
+  })
 })

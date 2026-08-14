@@ -1041,7 +1041,8 @@ export function evaluateIdeAvailability(
 function isInside(root: string, candidate: string): boolean {
   if (candidate === root) return true
   const rel = relative(root, candidate)
-  return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel)
+  if (rel === '' || isAbsolute(rel)) return false
+  return rel !== '..' && !rel.startsWith('..' + sep)
 }
 
 function tryRealpath(path: string): string | undefined {
@@ -1103,7 +1104,10 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
   }
   const cleanHeaderPath = (value: string): string => {
     let p = value.trim()
-    if (p.startsWith('"') && p.endsWith('"')) p = p.slice(1, -1)
+    if (p.startsWith('"') && p.endsWith('"')) {
+      p = p.slice(1, -1)
+      p = p.replace(/\\t/g, '\t').replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\')
+    }
     return p.split('\t')[0].trim()
   }
   const lines = patch.split(/\r?\n/)
@@ -1169,8 +1173,8 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
       continue
     }
     if (newHeader && pendingOld !== undefined) {
-      const oldPath = cleanHeaderPath(stripPrefix(pendingOld))
-      const newPath = cleanHeaderPath(stripPrefix(newHeader[1].trim()))
+      const oldPath = stripPrefix(cleanHeaderPath(pendingOld))
+      const newPath = stripPrefix(cleanHeaderPath(newHeader[1].trim()))
       if (oldPath === '/dev/null' && newPath !== '/dev/null') add('add', newPath)
       else if (newPath === '/dev/null' && oldPath !== '/dev/null') add('delete', oldPath)
       else if (oldPath !== '/dev/null' && newPath !== '/dev/null') {
