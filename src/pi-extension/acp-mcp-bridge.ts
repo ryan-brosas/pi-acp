@@ -671,8 +671,12 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     if (structured && typeof structured === 'object' && !Array.isArray(structured)) {
       const candidates: string[] = []
       const budget = { nodes: 5000 }
+      let truncated = false
       const collect = (value: unknown, depth: number): void => {
-        if (depth > 16 || budget.nodes <= 0) return
+        if (depth > 16 || budget.nodes <= 0) {
+          truncated = true
+          return
+        }
         budget.nodes--
         if (typeof value === 'string') {
           candidates.push(value)
@@ -690,6 +694,15 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         }
       }
       collect(structured, 0)
+      if (truncated) {
+        if (mode === 'required') {
+          throw new McpToolError('IDE tool result exceeded confinement depth; rejected as unscoped', { code: 'out_of_root_result' })
+        }
+        result.details.composite = {
+          ...(result.details.composite as Record<string, unknown>),
+          unconfinedResult: 'truncated'
+        }
+      }
       const rootResolved = resolve(root)
       const realRoot = tryRealpath(rootResolved)
       for (const entry of candidates) {

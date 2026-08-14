@@ -907,4 +907,35 @@ describe('IntelliJ-first coding mode policy', () => {
     const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
     await assert.rejects(() => read.execute('t24f', { filePath: 'src/a.ts' }), /outside|root/i)
   })
+  it('rejects results truncated by depth in required mode', async () => {
+    let leaf: Record<string, unknown> = { filePath: 'src/ok.ts' }
+    for (let i = 0; i < 18; i++) leaf = { child: leaf }
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = { content: [{ type: 'text', text: 'x' }], structuredContent: { top: leaf } }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t24g', { filePath: 'src/a.ts' }), /scoped|outside|root|truncated/i)
+  })
+
+  it('annotates results truncated by depth in prefer mode', async () => {
+    let leaf: Record<string, unknown> = { filePath: 'src/ok.ts' }
+    for (let i = 0; i < 18; i++) leaf = { child: leaf }
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    socket.replyValue = { content: [{ type: 'text', text: 'x' }], structuredContent: { top: leaf } }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    const result = await read.execute('t24h', { filePath: 'src/a.ts' })
+    assert.ok(JSON.stringify(result.details).includes('truncated'))
+  })
+
+  it('rejects results exceeding the node budget in required mode', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'x' }],
+      structuredContent: { groups: Array.from({ length: 6000 }, () => ({ meta: { x: 1 } })) }
+    }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t24i', { filePath: 'src/a.ts' }), /scoped|outside|root|truncated/i)
+  })
 })
