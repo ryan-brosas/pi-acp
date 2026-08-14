@@ -1060,4 +1060,14 @@ describe('IntelliJ-first coding mode policy', () => {
       ['update:trailing.ts ']
     )
   })
+  it('confines paths nested inside object-valued path fields', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'x' }],
+      structuredContent: { file: { path: '/outside/root/x.ts' } }
+    }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t34a', { filePath: 'src/a.ts' }), /outside|root/i)
+  })
 })

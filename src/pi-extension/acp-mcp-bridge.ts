@@ -697,9 +697,9 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         }
         if (value && typeof value === 'object') {
           for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
-            if (RESULT_PATH_KEYS.has(key) && (typeof child === 'string' || Array.isArray(child))) {
+            if (RESULT_PATH_KEYS.has(key)) {
               collect(child, depth + 1)
-            } else if (!RESULT_PATH_KEYS.has(key) && child && typeof child === 'object') {
+            } else if (child && typeof child === 'object') {
               collect(child, depth + 1)
             }
           }
