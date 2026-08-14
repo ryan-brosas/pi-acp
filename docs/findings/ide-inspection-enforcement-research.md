@@ -660,3 +660,78 @@ scripts/validate-skill-packs.mjs
 ## One-line conclusion
 
 > Adapter-enforced IDE inspection is a deterministic, per-turn quality gate implemented at the only layer with the authority to run it (authenticated IDE connection + turn boundary). It reuses the IDE's own inspection engine and the existing MCP surface, adds no protocol, no linter, and no runtime fork — so it is **not** reinventing anything; it is finally *closing* what F-021/F-030/F-033 already identified as missing.
+
+---
+
+## 23. Alternative trigger points
+
+The post-turn (`end_turn`) hook is the recommended default, but it is not the only possible trigger. Each has a different cost/coverage trade-off:
+
+| Trigger | Coverage | Cost | Noise | Verdict |
+| --- | --- | --- | --- | --- |
+| Post-edit (per tool write) | immediate, per file | high (many calls) | high | rejected — too chatty |
+| Post-turn (`end_turn`) | per prompt response | medium | medium | **recommended** |
+| On-demand (slash command) | user-invoked | low | low | useful addition |
+| Session close | final sweep | low | low | phase-2 candidate |
+| Periodic (time-based) | drift detection | medium | medium | rejected — arbitrary |
+
+The post-turn trigger is the right default because it aligns exactly with "the agent produced a unit of work" — the moment the user is waiting for.
+
+---
+
+## 24. Security considerations
+
+1. **Token handling:** the enforcement reuses the bridge's existing SSE connection; it never reads or persists `IJ_MCP_AUTH_TOKEN`. The report contains only inspection results and file paths, never descriptor secrets.
+2. **Redaction:** all report content passes through the repo's existing redaction helpers (the same deny-by-default sanitizer used for bridge descriptors), so secret-shaped strings are scrubbed before the report is written.
+3. **Path disclosure:** reports live under `<cwd>/.pi/work/ide-inspections/`, already the repo's work-record convention; file paths are project-relative.
+4. **IPC:** enforcement runs in-process on the adapter; it does not open new sockets or widen the existing single-client IPC surface.
+5. **Failure mode:** if anything throws (git missing, tool error, timeout), the turn is unaffected — the error is caught, a diagnostic is emitted, and `end_turn` is returned as usual.
+6. **No new network surface:** enforcement only talks to the already-authorized IDE endpoint through the already-open connection.
+
+---
+
+## 25. Performance and latency budget
+
+- `git status --porcelain`: ~10–50 ms on a normal repo.
+- `lint_files` over ≤200 changed files: typically 0.5–3 s against the IDE.
+- Total added latency per turn: ~1–3 s worst case, well under the existing per-request deadlines (discovery 10 s, runtime 120 s).
+- Bound the budget: `PI_ACP_IDE_INSPECT_TIMEOUT_MS=30000` (default) caps the whole inspection; the hook never blocks cancel.
+- If latency matters more than coverage, the flag can be set to `0` or the file cap reduced.
+
+---
+
+## 26. Decision log
+
+| Decision | Choice | Rationale |
+| --- | --- | --- |
+| Where enforcement lives | adapter (`src/acp/`) | only layer with the IDE connection + turn boundary |
+| Trigger | post-`end_turn` | exactly the "unit of work" boundary |
+| Check | `lint_files` (batched) + optional `get_file_problems` | reuses the IDE engine; single call per turn |
+| Default | ON | the user's explicit requirement ("enforce") |
+| Opt-out | `PI_ACP_ENFORCE_IDE_INSPECT=0` | escape hatch / rollout safety |
+| Delivery | persisted report + `session/update` + `_meta` | durable + visible |
+| Fork? | no | zero runtime changes |
+| Skill? | supplementary only | skills are advisory by design |
+
+---
+
+## 27. Non-goals
+
+- Making the IDE run inspections it does not already run (that is IntelliJ's own feature set).
+- Blocking turns on inspection failures (the gate records and surfaces; it does not veto).
+- Replacing CI (eslint/tsc/prettier stay as merge-time gates).
+- Implementing a diagnostics channel in ACP (out of our control, not needed).
+- Enforcing in non-ACP contexts (plain pi sessions without a host bridge remain unenforced by design).
+
+---
+
+## 28. Follow-up work (tracked separately)
+
+- Phase 2: `session/close` final sweep; configurable file patterns; report pruning.
+- Phase 3: inject ERROR findings into the next prompt (strong enforcement).
+- Optional: per-repo policy via `PI_ACP_ENFORCE_IDE_INSPECT` in repo-local config.
+- Optional: surface inspection summary in the host UI (requires IntelliJ-side support; out of scope here).
+
+---
+
+_End of research document._
