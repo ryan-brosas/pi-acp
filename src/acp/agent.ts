@@ -406,8 +406,8 @@ export class PiAcpAgent implements ACPAgent {
     await this.waitForBridgeReady(bridge, bridgeSettings)
 
     // Fetch state + models once (parallel) to reduce startup latency.
-    let state: any = null
-    let availableModels: any = null
+    let state: Record<string, unknown> | null = null
+    let availableModels: { models?: unknown } | null = null
     let stateErr: unknown = null
     let availableModelsErr: unknown = null
 
@@ -445,7 +445,7 @@ export class PiAcpAgent implements ACPAgent {
     }
 
     // If pi has no models available after spawning, it's effectively unauthenticated.
-    const rawModelsCount = Array.isArray(availableModels?.models) ? availableModels.models.length : 0
+    const rawModelsCount = Array.isArray(availableModels?.models) ? availableModels?.models.length : 0
 
     if (rawModelsCount === 0) {
       await this.cleanupFailedNewSession(session.sessionId, state)
@@ -1439,7 +1439,7 @@ async function getThinkingState(
 
 async function getSessionConfiguration(
   proc: PiRpcProcess,
-  pre?: { state?: any | null; availableModels?: any | null }
+  pre?: { state?: Record<string, unknown> | null; availableModels?: { models?: unknown } | null }
 ): Promise<{
   configOptions: SessionConfigOption[]
   models: {
@@ -1515,7 +1515,7 @@ function buildConfigOptions(state: {
 
 async function getModelState(
   proc: PiRpcProcess,
-  pre?: { state?: any | null; availableModels?: any | null }
+  pre?: { state?: Record<string, unknown> | null; availableModels?: { models?: unknown } | null }
 ): Promise<{
   availableModels: AdvertisedModel[]
   currentModelId: string
@@ -1533,7 +1533,7 @@ async function getModelState(
       }
     })())
 
-  const models: any[] = Array.isArray(data?.models) ? data.models : []
+  const models: Array<Record<string, unknown>> = Array.isArray(data?.models) ? data.models : []
   availableModels = models
     .map(m => {
       const provider = String(m?.provider ?? '').trim()
@@ -1564,8 +1564,8 @@ async function getModelState(
 
   const model = state?.model
   if (model && typeof model === 'object') {
-    const provider = String((model as any).provider ?? '').trim()
-    const id = String((model as any).id ?? '').trim()
+    const provider = String((model as Record<string, unknown>).provider ?? '').trim()
+    const id = String((model as Record<string, unknown>).id ?? '').trim()
     if (provider && id) currentModelId = `${provider}/${id}`
   }
 
@@ -1615,7 +1615,7 @@ async function setSessionModel(proc: PiRpcProcess, requestedModelId: string): Pr
 
   if (!provider) {
     const data = (await proc.getAvailableModels()) as any
-    const models: any[] = Array.isArray(data?.models) ? data.models : []
+    const models: Array<Record<string, unknown>> = Array.isArray(data?.models) ? data.models : []
     const found = models.find(m => String(m?.id) === modelId)
     if (found) {
       provider = String(found.provider)
