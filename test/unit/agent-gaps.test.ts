@@ -104,7 +104,9 @@ test('PiAcpAgent: unstable_forkSession loads the source session and forks at the
     assert.deepEqual(forkCalls, ['u2'])
     // The new ACP session adopts pi's fresh branched session id/file.
     assert.equal(res.sessionId, 'forked-pi-id')
-    assert.deepEqual(upserts, [{ sessionId: 'forked-pi-id', cwd: root, sessionFile: '/tmp/pi-acp-fork/branched.jsonl' }])
+    assert.deepEqual(upserts, [
+      { sessionId: 'forked-pi-id', cwd: root, sessionFile: '/tmp/pi-acp-fork/branched.jsonl' }
+    ])
     assert.deepEqual((res._meta as any).piAcp.fork, {
       fromSessionId: 'src-1',
       entryId: 'u2',
@@ -145,7 +147,10 @@ test('PiAcpAgent: unstable_forkSession rejects a source without user messages an
       get: () => ({ cwd: root, sessionFile: srcFile }),
       upsert: () => {}
     }
-    ;(agent as any).startBridge = async () => ({ bridge: { dispose: async () => {} }, settings: { extensionPaths: [], env: {} } })
+    ;(agent as any).startBridge = async () => ({
+      bridge: { dispose: async () => {} },
+      settings: { extensionPaths: [], env: {} }
+    })
 
     await assert.rejects(
       agent.unstable_forkSession({ sessionId: 'src-1', cwd: root, mcpServers: [] } as any),

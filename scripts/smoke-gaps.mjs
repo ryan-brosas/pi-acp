@@ -45,12 +45,7 @@ try {
   assert(typeof seeded.usage.inputTokens === 'number', 'usage.inputTokens not a number')
 
   // session/fork: pi branches the source into a fresh session file + id.
-  const forked = await h.expectResult(
-    4,
-    'session/fork',
-    { sessionId, cwd, mcpServers: [] },
-    { timeoutMs: 60_000 }
-  )
+  const forked = await h.expectResult(4, 'session/fork', { sessionId, cwd, mcpServers: [] }, { timeoutMs: 60_000 })
   const forkedId = forked?.sessionId
   assert(typeof forkedId === 'string' && forkedId.length > 0, 'fork missing sessionId')
   assert(forkedId !== sessionId, `fork returned the source sessionId ${forkedId}`)
@@ -68,12 +63,7 @@ try {
   assert(forkedPrompt?.stopReason === 'end_turn', `forked prompt stopReason=${forkedPrompt?.stopReason}`)
 
   // session/resume: reattach the source session (its subprocess was released by fork).
-  const resumed = await h.expectResult(
-    6,
-    'session/resume',
-    { sessionId, cwd, mcpServers: [] },
-    { timeoutMs: 60_000 }
-  )
+  const resumed = await h.expectResult(6, 'session/resume', { sessionId, cwd, mcpServers: [] }, { timeoutMs: 60_000 })
   assert(Array.isArray(resumed?.configOptions), 'resume missing configOptions array')
   assert(typeof resumed?.modes === 'object' && resumed?.modes !== null, 'resume missing modes')
 
