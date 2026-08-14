@@ -9,7 +9,7 @@ An Agent Client Protocol (ACP) adapter for the pi coding agent. JetBrains Intell
 
 The adapter runs as an ACP server over stdio. Each ACP session starts one `pi --mode rpc` subprocess. The adapter translates messages between the client and pi.
 
-npm package: `pi-acp-jetbrain` at 0.0.35. GitHub Actions publishes each release with signed provenance.
+npm package: `pi-acp-jetbrain` at 0.0.36. GitHub Actions publishes each release with signed provenance.
 
 ## In action
 
