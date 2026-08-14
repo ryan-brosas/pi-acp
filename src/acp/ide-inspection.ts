@@ -348,6 +348,7 @@ async function runKtsInspections(opts: {
         if (existing) existing.push(...outcome.problems)
         else fileProblems.set(file, [...outcome.problems])
       }
+      entry.problems.push(...outcome.problems)
       if (outcome.status !== 'ok' && !entry.message) entry.message = outcome.message
       if (statusRank[outcome.status] > statusRank[entry.status]) entry.status = outcome.status
     }
