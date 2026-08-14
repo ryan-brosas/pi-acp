@@ -15,8 +15,14 @@ dist
 .veda/
 
 # IntelliJ user-local workspace state
-.idea/workspace.xml
+.idea/
 
 # Half-finished pnpm conversion experiment (repo publishes via npm)
 pnpm-lock.yaml
 pnpm-workspace.yaml
+
+# Local agent/IDE state — not part of the project
+AGENTS.md
+CLAUDE.md
+.cgcignore
+docs/
