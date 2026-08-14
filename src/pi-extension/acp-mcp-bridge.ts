@@ -1125,6 +1125,7 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     const tab = p.indexOf('\t')
     if (tab >= 0) p = p.slice(0, tab)
     if (p.startsWith('"') && p.endsWith('"')) {
+      p = p.slice(1, -1)
       let decoded = ''
       for (let i = 0; i < p.length; i++) {
         const code = p.charCodeAt(i)
@@ -1134,10 +1135,26 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
           continue
         }
         const nextCode = p.charCodeAt(i + 1)
-        if (nextCode === 116) { decoded += String.fromCharCode(9); i++; continue }
-        if (nextCode === 110) { decoded += String.fromCharCode(10); i++; continue }
-        if (nextCode === 34) { decoded += String.fromCharCode(34); i++; continue }
-        if (nextCode === 92) { decoded += String.fromCharCode(92); i++; continue }
+        if (nextCode === 116) {
+          decoded += String.fromCharCode(9)
+          i++
+          continue
+        }
+        if (nextCode === 110) {
+          decoded += String.fromCharCode(10)
+          i++
+          continue
+        }
+        if (nextCode === 34) {
+          decoded += String.fromCharCode(34)
+          i++
+          continue
+        }
+        if (nextCode === 92) {
+          decoded += String.fromCharCode(92)
+          i++
+          continue
+        }
         const octal = /^[0-7]{1,3}/.exec(p.slice(i + 1))
         if (octal) {
           decoded += String.fromCharCode(parseInt(octal[0], 8))
