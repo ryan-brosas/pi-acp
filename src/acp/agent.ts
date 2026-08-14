@@ -1521,7 +1521,7 @@ async function getModelState(
   currentModelId: string
 } | null> {
   // Ask pi for available models.
-  let availableModels: AdvertisedModel[] = []
+  let availableModels: AdvertisedModel[]
 
   const data =
     pre?.availableModels ??

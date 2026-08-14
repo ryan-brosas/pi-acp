@@ -241,8 +241,8 @@ export class SessionManager {
       state = null
     }
 
-    const sessionId = typeof state?.sessionId === 'string' ? state.sessionId : crypto.randomUUID()
-    const sessionFile = typeof state?.sessionFile === 'string' ? state.sessionFile : null
+    const sessionId = typeof state?.sessionId === 'string' ? state?.sessionId : crypto.randomUUID()
+    const sessionFile = typeof state?.sessionFile === 'string' ? state?.sessionFile : null
 
     if (sessionFile) {
       this.store.upsert({ sessionId, cwd: params.cwd, sessionFile })
