@@ -852,6 +852,25 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     })()
   }
 
+  function confineToolArgs(tool: BridgeTool, args: Record<string, unknown>): Record<string, unknown> {
+    if (ideMode === 'off' || projectRoot === undefined) return args
+    const schema = tool.inputSchema as { properties?: Record<string, unknown> }
+    const properties = schema.properties ?? {}
+    const next = { ...args }
+    for (const key of Object.keys(properties)) {
+      if (!PATH_KEYS.has(key)) continue
+      const value = args[key]
+      if (typeof value === 'string') {
+        next[key] = normalizeProjectPath(projectRoot, value, true).path
+      } else if (Array.isArray(value)) {
+        next[key] = value.map(item =>
+          typeof item === 'string' ? normalizeProjectPath(projectRoot, item, true).path : item
+        )
+      }
+    }
+    return next
+  }
+
   function runtimeExecute(
     tool: BridgeTool,
     toolCallId: string,
@@ -862,7 +881,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     const prepared = prepareToolArguments(tool, args, projectRoot)
     if (ideMode === 'off') return callRemoteTool(tool, prepared, toolCallId, signal)
     if (MUTATION_REMOTE_NAMES.has(tool.remoteName)) return executeMutationComposite(tool, prepared, toolCallId, signal)
-    return callRemoteTool(tool, prepared, toolCallId, signal)
+    return callRemoteTool(tool, confineToolArgs(tool, prepared), toolCallId, signal)
   }
 
   pi.on('session_shutdown', () => {
@@ -1052,6 +1071,7 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     let current: { kind: PatchTargetKind; destination: string; source?: string } | undefined
     for (const line of lines) {
       const trimmed = line.trim()
+      if (!line.startsWith('*** ')) continue
       const update = /^\*\*\* Update File:\s*(.+)$/.exec(trimmed)
       const addFile = /^\*\*\* Add File:\s*(.+)$/.exec(trimmed)
       const del = /^\*\*\* Delete File:\s*(.+)$/.exec(trimmed)
@@ -1074,16 +1094,32 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     return targets
   }
   let pendingOld: string | undefined
-  let remainingHunkLines = 0
+  let remainingOld = 0
+  let remainingNew = 0
   for (const line of lines) {
     const trimmed = line.trim()
     const hunk = /^@@\s+-\d+(?:,(\d+))?\s+\+\d+(?:,(\d+))?/.exec(trimmed)
     if (hunk) {
-      remainingHunkLines = (hunk[1] === undefined ? 1 : Number(hunk[1])) + (hunk[2] === undefined ? 1 : Number(hunk[2]))
+      remainingOld = hunk[1] === undefined ? 1 : Number(hunk[1])
+      remainingNew = hunk[2] === undefined ? 1 : Number(hunk[2])
       continue
     }
-    if (remainingHunkLines > 0) {
-      remainingHunkLines--
+    if (remainingOld > 0 || remainingNew > 0) {
+      if (line.startsWith(' ')) {
+        if (remainingOld > 0) remainingOld--
+        if (remainingNew > 0) remainingNew--
+        continue
+      }
+      if (line.startsWith('-')) {
+        if (remainingOld > 0) remainingOld--
+        continue
+      }
+      if (line.startsWith('+')) {
+        if (remainingNew > 0) remainingNew--
+        continue
+      }
+      remainingOld = 0
+      remainingNew = 0
       continue
     }
     const oldHeader = /^---\s+(.+)$/.exec(trimmed)

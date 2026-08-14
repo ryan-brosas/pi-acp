@@ -800,4 +800,69 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.equal(socket.calls[1].tool, 'ide_idea_open_file')
     assert.equal(socket.calls[1].args.filePath, 'src/new.ts')
   })
+  it('context-bearing hunks do not swallow following headers', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const apply = rt.registered.find((t: any) => t.name === 'ide_idea_apply_patch')
+    const patch = [
+      '--- a/src/keep.ts',
+      '+++ b/src/keep.ts',
+      '@@ -1,3 +1,3 @@',
+      ' context1',
+      ' context2',
+      '-old',
+      '+new',
+      '--- a/../../outside.ts',
+      '+++ b/../../outside.ts'
+    ].join('\n')
+    await assert.rejects(() => apply.execute('t25h', { patch }), /outside|escape|root/i)
+    assert.equal(socket.calls.length, 0)
+  })
+
+  it('confinement applies to read_file path arguments', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t25a', { filePath: '../../x.ts' }), /outside|escape|root/i)
+    assert.equal(socket.calls.length, 0)
+  })
+
+  it('confinement applies to array path arguments on inspection tools', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    emitCatalog()
+    const lint = rt.registered.find((t: any) => t.name === 'ide_idea_lint_files')
+    await assert.rejects(() => lint.execute('t25c', { files: ['src/a.ts', '../x.ts'] }), /outside|escape|root/i)
+    assert.equal(socket.calls.length, 0)
+  })
+
+  it('rejects symlink escapes on read calls', async () => {
+    const proj = mkdtempSync(join(tmpdir(), 'piap-'))
+    const outside = mkdtempSync(join(tmpdir(), 'piap-out-'))
+    symlinkSync(outside, join(proj, 'link'), 'dir')
+    try {
+      const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG, undefined, proj)
+      emitCatalog()
+      const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+      await assert.rejects(() => read.execute('t25b', { filePath: join(proj, 'link', 'x.ts') }), /outside|escape|root/i)
+      assert.equal(socket.calls.length, 0)
+    } finally {
+      rmSync(proj, { recursive: true, force: true })
+      rmSync(outside, { recursive: true, force: true })
+    }
+  })
+
+  it('codex content resembling directives is ignored', () => {
+    const patch = [
+      '*** Begin Patch',
+      '*** Update File: src/a.ts',
+      'this is the content',
+      ' *** Add File: documentation text inside content',
+      '*** End Patch'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    assert.deepEqual(
+      targets.map(t => t.kind + ':' + t.destination),
+      ['update:src/a.ts']
+    )
+  })
 })
