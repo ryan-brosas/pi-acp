@@ -1032,6 +1032,9 @@ describe('IntelliJ-first coding mode policy', () => {
   it('preserves literal non-ASCII characters in quoted headers', () => {
     const patch = ['--- "a/caf\u00e9.ts"', '+++ "b/caf\u00e9.ts"'].join('\n')
     const targets = parsePatchTargets(patch)
-    assert.deepEqual(targets.map(t => t.kind + ':' + t.destination), ['update:caf\u00e9.ts'])
+    assert.deepEqual(
+      targets.map(t => t.kind + ':' + t.destination),
+      ['update:caf\u00e9.ts']
+    )
   })
 })

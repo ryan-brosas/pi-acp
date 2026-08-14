@@ -1126,11 +1126,7 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     if (tab >= 0) p = p.slice(0, tab)
     if (p.startsWith('"') && p.endsWith('"')) {
       p = p.slice(1, -1)
-      p = p
-        .replace(/\\t/g, '\t')
-        .replace(/\\n/g, '\n')
-        .replace(/\\"/g, '"')
-        .replace(/\\\\/g, '\\')
+      p = p.replace(/\\t/g, '\t').replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\')
       const bytes: number[] = []
       const octalRe = /\\([0-7]{1,3})/g
       let match: RegExpExecArray | null
