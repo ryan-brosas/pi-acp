@@ -158,16 +158,16 @@ A development profile with a conservative tool subset:
 
 ## Environment variables
 
-| Variable                              | Effect                                                                                                 |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `PI_ACP_PI_COMMAND`                   | Path to the pi executable. Default: `pi`.                                                              |
-| `PI_ACP_DEBUG_BRIDGE=1`               | Log the sanitized `session/new` MCP descriptor to stderr. IntelliJ writes that stderr into `idea.log`. |
-| `PI_ACP_ENABLE_EMBEDDED_CONTEXT=true` | Advertise `embeddedContext` support.                                                                   |
-| `PI_ACP_ENFORCE_IDE_INSPECT=0`        | Disable the inspection gate that runs after each turn.
-| `PI_ACP_IDE_MODE=off\|prefer\|required` | IntelliJ-first coding mode for the session. Default: `off`. See the IntelliJ-first coding mode section.                                                 |
-| `PI_ACP_IDE_INSPECT_DIR`              | Move inspection reports out of the project tree.                                                       |
-| `PI_ACP_SESSION_MAP`                  | Override the session map path. Default: `~/.pi/pi-acp/session-map.json`.                               |
-| `PI_ACP_IDE_EXTRA_TOOLS`              | Re-allow deny-listed IDE tools. Comma separated remote names.                                          |
+| Variable                                | Effect                                                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `PI_ACP_PI_COMMAND`                     | Path to the pi executable. Default: `pi`.                                                               |
+| `PI_ACP_DEBUG_BRIDGE=1`                 | Log the sanitized `session/new` MCP descriptor to stderr. IntelliJ writes that stderr into `idea.log`.  |
+| `PI_ACP_ENABLE_EMBEDDED_CONTEXT=true`   | Advertise `embeddedContext` support.                                                                    |
+| `PI_ACP_ENFORCE_IDE_INSPECT=0`          | Disable the inspection gate that runs after each turn.                                                  |
+| `PI_ACP_IDE_MODE=off\|prefer\|required` | IntelliJ-first coding mode for the session. Default: `off`. See the IntelliJ-first coding mode section. |
+| `PI_ACP_IDE_INSPECT_DIR`                | Move inspection reports out of the project tree.                                                        |
+| `PI_ACP_SESSION_MAP`                    | Override the session map path. Default: `~/.pi/pi-acp/session-map.json`.                                |
+| `PI_ACP_IDE_EXTRA_TOOLS`                | Re-allow deny-listed IDE tools. Comma separated remote names.                                           |
 
 ## IntelliJ-first coding mode
 
