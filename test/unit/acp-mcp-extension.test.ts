@@ -643,7 +643,7 @@ describe('IntelliJ-first coding mode policy', () => {
     const again = await read.execute('t27b', { filePath: 'src/a.ts' })
     assert.equal(again.content[0].text, 'ok')
   })
-}
+
   it('rejects symlink escapes for delete targets', async () => {
     const proj = mkdtempSync(join(tmpdir(), 'piap-'))
     const outside = mkdtempSync(join(tmpdir(), 'piap-out-'))
@@ -683,7 +683,10 @@ describe('IntelliJ-first coding mode policy', () => {
       else process.env.PI_ACP_IDE_MODE = prevMode
     }
     const natives = ['read', 'edit', 'write', 'grep', 'find', 'ls']
-    assert.deepEqual(rt.active.filter(n => natives.includes(n)), [])
+    assert.deepEqual(
+      rt.active.filter(n => natives.includes(n)),
+      []
+    )
     for (const handler of rt.handlers.get('session_shutdown') ?? []) {
       assert.doesNotThrow(() => handler({}, null))
     }
