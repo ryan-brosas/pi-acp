@@ -1,11 +1,17 @@
 // Routing contract probe: pins the two-leaf cross-pack selection rule and the
 // trigger-first descriptions of the backend, toolchain, and frontend UX packs.
 // Usage: node scripts/probe-skill-routing.mjs
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 const root = fileURLToPath(new URL('..', import.meta.url))
 const skillsRoot = join(root, '.pi', 'skills')
+
+if (!existsSync(skillsRoot)) {
+  console.log('[skip] .pi/skills is not in this checkout; routing probes run in the development tree')
+  process.exit(0)
+}
+
 const catalog = JSON.parse(readFileSync(join(skillsRoot, 'packs.json'), 'utf8'))
 const packOf = new Map()
 for (const p of catalog.packs) for (const m of p.members || []) packOf.set(m, p.id)

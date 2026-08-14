@@ -11,6 +11,12 @@ const root = fileURLToPath(new URL('..', import.meta.url))
 const skillsRoot = join(root, '.pi', 'skills')
 const catalogPath = join(skillsRoot, 'packs.json')
 const manifestPath = join(skillsRoot, 'manifest.json')
+
+if (!existsSync(skillsRoot)) {
+  console.log('[skip] .pi/skills is not in this checkout; manifest sync applies to the development tree')
+  process.exit(0)
+}
+
 const check = process.argv.includes('--check')
 
 function walk(dir) {

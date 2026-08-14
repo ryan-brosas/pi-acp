@@ -4,13 +4,18 @@
 // no source-of-truth boundary, no surgical-edit rule, no duplicate
 // prevention, no flexible hub sections, no router listing, no catalog
 // membership.
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
 const root = new URL('..', import.meta.url).pathname
 const skillPath = join(root, '.pi', 'skills', 'pack-authoring', 'notion-workspace', 'SKILL.md')
 const routerPath = join(root, '.pi', 'skills', 'pack-authoring', 'SKILL.md')
 const catalogPath = join(root, '.pi', 'skills', 'packs.json')
+
+if (!existsSync(skillPath)) {
+  console.log('[skip] .pi/skills is not in this checkout; notion-workspace checks run in the development tree')
+  process.exit(0)
+}
 
 let failures = 0
 const check = (condition, message) => {

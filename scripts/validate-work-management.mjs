@@ -7,6 +7,10 @@ import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = process.argv[2] ? resolve(process.argv[2]) : fileURLToPath(new URL('..', import.meta.url))
+if (!existsSync(join(root, '.pi'))) {
+  console.log('[skip] .pi is not in this checkout; work-management checks run in the development tree')
+  process.exit(0)
+}
 let failures = 0
 const ok = m => console.log('[ok] ' + m)
 const fail = m => {

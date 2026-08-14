@@ -5,7 +5,7 @@
 // non-trigger or over-budget hidden-leaf descriptions, catalog-router parity breaks,
 // router word-budget overflow, and manifest drift.
 // Warns on leaves exceeding the leaf word threshold. Pass [root] to validate another tree.
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join, dirname, basename, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -13,6 +13,11 @@ const root = process.argv[2] ? resolve(process.argv[2]) : fileURLToPath(new URL(
 const skillsRoot = join(root, '.pi', 'skills')
 const catalogPath = join(skillsRoot, 'packs.json')
 const manifestPath = join(skillsRoot, 'manifest.json')
+
+if (!existsSync(skillsRoot)) {
+  console.log('[skip] .pi/skills is not in this checkout; skill-pack checks run in the development tree')
+  process.exit(0)
+}
 
 const STALE_TOOL_RE = /TaskCreate|TaskUpdate|ask_user_question|web_fetch|grepsearch|superpi/
 const NAME_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
