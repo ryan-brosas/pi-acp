@@ -871,12 +871,22 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     const openKey = openPathKey(openTool)
     return (async () => {
       for (let i = 0; i < plan.preOpen.length; i++) {
-        await callRemoteTool(openTool, { [openKey]: plan.preOpen[i] }, `${toolCallId}:open:${i}`, signal)
+        await callRemoteTool(
+          openTool,
+          prepareToolArguments(openTool, { [openKey]: plan.preOpen[i] }, projectRoot),
+          `${toolCallId}:open:${i}`,
+          signal
+        )
       }
       const result = await callRemoteTool(tool, plan.mutationArgs, `${toolCallId}:mutate`, signal)
       for (let i = 0; i < plan.postOpen.length; i++) {
         try {
-          await callRemoteTool(openTool, { [openKey]: plan.postOpen[i] }, `${toolCallId}:open-created:${i}`, signal)
+          await callRemoteTool(
+            openTool,
+            prepareToolArguments(openTool, { [openKey]: plan.postOpen[i] }, projectRoot),
+            `${toolCallId}:open-created:${i}`,
+            signal
+          )
         } catch (error) {
           result.details.composite = {
             ...(result.details.composite as Record<string, unknown>),

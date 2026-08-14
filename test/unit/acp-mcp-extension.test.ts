@@ -291,16 +291,25 @@ function ideTool(remoteName: string, exposedName: string, properties: Record<str
 
 const FULL_CATALOG = [
   ideTool('read_file', 'ide_idea_read_file', { filePath: { type: 'string' } }),
-  ideTool('open_file_in_editor', 'ide_idea_open_file', { filePath: { type: 'string' } }),
-  ideTool('apply_patch', 'ide_idea_apply_patch', { patch: { type: 'string' } }),
-  ideTool('create_new_file', 'ide_idea_create_new_file', { filePath: { type: 'string' } }),
+  ideTool('open_file_in_editor', 'ide_idea_open_file', {
+    filePath: { type: 'string' },
+    projectPath: { type: 'string' }
+  }),
+  ideTool('apply_patch', 'ide_idea_apply_patch', { patch: { type: 'string' }, projectPath: { type: 'string' } }),
+  ideTool('create_new_file', 'ide_idea_create_new_file', {
+    filePath: { type: 'string' },
+    projectPath: { type: 'string' }
+  }),
   ideTool('skill_search', 'ide_idea_skill_search', { query: { type: 'string' } }),
   ideTool('lint_files', 'ide_idea_lint_files', { files: { type: 'array', items: { type: 'string' } } }),
   ideTool('rename_refactoring', 'ide_idea_rename_refactoring', {
     pathInProject: { type: 'string' },
     newName: { type: 'string' }
   }),
-  ideTool('reformat_file', 'ide_idea_reformat_file', { files: { type: 'array', items: { type: 'string' } } })
+  ideTool('reformat_file', 'ide_idea_reformat_file', {
+    files: { type: 'array', items: { type: 'string' } },
+    projectPath: { type: 'string' }
+  })
 ]
 
 function wireExtension(
@@ -515,9 +524,12 @@ describe('IntelliJ-first coding mode policy', () => {
     await apply.execute('t9', { patch })
     assert.equal(socket.calls[0].tool, 'ide_idea_open_file')
     assert.equal(socket.calls[0].args.filePath, 'src/a.ts')
+    assert.equal(socket.calls[0].args.projectPath, '/workspace/project')
     assert.equal(socket.calls[1].tool, 'ide_idea_apply_patch')
+    assert.equal(socket.calls[1].args.projectPath, '/workspace/project')
     assert.equal(socket.calls[2].tool, 'ide_idea_open_file')
     assert.equal(socket.calls[2].args.filePath, 'src/b.ts')
+    assert.equal(socket.calls[2].args.projectPath, '/workspace/project')
     assert.match(socket.calls[0].id, /:open:0$/)
     assert.match(socket.calls[1].id, /:mutate$/)
     assert.match(socket.calls[2].id, /:open-created:0$/)
@@ -556,6 +568,7 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.equal(socket.calls[0].tool, 'ide_idea_create_new_file')
     assert.equal(socket.calls[1].tool, 'ide_idea_open_file')
     assert.equal(socket.calls[1].args.filePath, 'src/new.ts')
+    assert.equal(socket.calls[1].args.projectPath, '/workspace/project')
   })
 
   it('reformat opens all target files first', async () => {
