@@ -178,7 +178,7 @@ Set `PI_ACP_IDE_MODE` to control how the session uses IntelliJ for normal coding
 
 Required capabilities: `read_file`, `open_file_in_editor`, `apply_patch`, `create_new_file`, one search tool, and one inspection tool. Tool names are discovered from the live catalog, never guessed.
 
-In active modes, mutations run through IntelliJ and open the affected files: existing files open before `apply_patch`, created and moved files open after. Patch targets and path arguments are confined to the ACP project root; paths outside it are rejected, including symlink escapes. Search results that name files outside the root are annotated in `prefer` and rejected in `required`.
+In active modes, mutations run through IntelliJ and open the affected files: existing files open before `apply_patch`, created and moved files open after. Patch targets and path arguments are confined to the ACP project root; paths outside it are rejected, including symlink escapes. Structured path fields in search and inspection results are confined to the project root. Unstructured result text is passed through unchanged: generic text scanning is not a safe discriminator, so per-tool structured adapters remain the boundary (an upstream limitation).
 
 Bash stays available in `prefer` for Git, tests, builds, and diagnostics. Unrestricted bash can still mutate files, so this mode is policy enforcement for normal coding tools, not a filesystem sandbox. Do not rely on it as a security boundary.
 
