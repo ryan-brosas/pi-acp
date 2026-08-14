@@ -992,4 +992,17 @@ describe('IntelliJ-first coding mode policy', () => {
     await assert.rejects(() => reformat.execute('t31c', {}), /file arguments/i)
     assert.equal(socket.calls.length, 0)
   })
+  it('confines results using the full path-key set', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = { content: [{ type: 'text', text: 'x' }], structuredContent: { pathInProject: '/other/repo/x.ts' } }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t32a', { filePath: 'src/a.ts' }), /outside|root/i)
+  })
+
+  it('surfaces invalid-mode diagnostics in guidance', async () => {
+    const { guidance } = await guidanceFor('garbage', FULL_CATALOG, false)
+    assert.ok(guidance)
+    assert.match(guidance.systemPrompt, /invalid PI_ACP_IDE_MODE/)
+  })
 })
