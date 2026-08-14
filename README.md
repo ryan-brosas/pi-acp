@@ -33,7 +33,7 @@ The local IntelliJ integration is experimental: IntelliJ's installed ACP impleme
 
 ## Operating layer
 
-The repository ships an operating layer for pi: **9 prompt commands**, **100 skill files** (10 pack routers + 86 leaves across 10 packs, plus 4 standalone skills), and **12 format templates** (in `.pi/templates/`).
+The repository ships an operating layer for pi: **9 prompt commands**, **100 skill files** (90 leaves in 10 packs — 86 pack members plus 4 core skills), and **12 format templates** (in `.pi/templates/`).
 
 ## CI & enforcement
 
