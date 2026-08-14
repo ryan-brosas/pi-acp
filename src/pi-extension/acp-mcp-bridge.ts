@@ -404,8 +404,45 @@ export function mcpResultToPiResult(value: unknown): PiMcpToolResult {
   return { content, details }
 }
 
+const BRIDGE_INSTANCE_KEY = Symbol.for('pi-acp-jetbrain.acp-mcp-bridge.instance')
+
+export function claimBridgeInstance(scope: object, owner: symbol): boolean {
+  const registry = scope as Record<PropertyKey, unknown>
+  if (registry[BRIDGE_INSTANCE_KEY] !== undefined) return false
+  registry[BRIDGE_INSTANCE_KEY] = owner
+  return true
+}
+
+export function releaseBridgeInstance(scope: object, owner: symbol): void {
+  const registry = scope as Record<PropertyKey, unknown>
+  if (registry[BRIDGE_INSTANCE_KEY] === owner) delete registry[BRIDGE_INSTANCE_KEY]
+}
+
+export interface AcpMcpBridgeRuntime {
+  endpoint?: string
+  token?: string
+  sessionId?: string
+  instanceScope?: object
+  connect?: (endpoint: string) => Socket
+}
+
+export function createAcpMcpBridgeExtension(runtime: AcpMcpBridgeRuntime = {}): (pi: ExtensionAPI) => void {
+  return pi => activateAcpMcpBridgeExtension(pi, runtime)
+}
+
 export default function acpMcpBridgeExtension(pi: ExtensionAPI): void {
-  if (!ENDPOINT || !TOKEN || !SESSION_ID) return
+  activateAcpMcpBridgeExtension(pi)
+}
+
+function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRuntime = {}): void {
+  const endpoint = runtime.endpoint ?? ENDPOINT
+  const token = runtime.token ?? TOKEN
+  const sessionId = runtime.sessionId ?? SESSION_ID
+  if (!endpoint || !token || !sessionId) return
+
+  const instanceScope = runtime.instanceScope ?? globalThis
+  const owner = Symbol('acp-mcp-bridge-owner')
+  if (!claimBridgeInstance(instanceScope, owner)) return
 
   let sock: Socket | undefined
   let buffer = ''
@@ -535,10 +572,10 @@ export default function acpMcpBridgeExtension(pi: ExtensionAPI): void {
 
   function connect(): void {
     if (sock) return
-    sock = createConnection(ENDPOINT!)
+    sock = (runtime.connect ?? createConnection)(endpoint!)
     sock.setEncoding('utf8')
     sock.on('connect', () => {
-      send({ type: 'hello', version: BRIDGE_IPC_VERSION, token: TOKEN!, sessionId: SESSION_ID! })
+      send({ type: 'hello', version: BRIDGE_IPC_VERSION, token: token!, sessionId: sessionId! })
     })
     sock.on('data', (chunk: Buffer) => {
       buffer += chunk.toString('utf8')
@@ -566,11 +603,17 @@ export default function acpMcpBridgeExtension(pi: ExtensionAPI): void {
     sock.on('error', () => sock?.destroy())
   }
 
-  connect()
-
   pi.on('session_shutdown', () => {
     send({ type: 'shutdown', reason: 'session_shutdown' })
     sock?.destroy()
     sock = undefined
+    releaseBridgeInstance(instanceScope, owner)
   })
+
+  try {
+    connect()
+  } catch (error) {
+    releaseBridgeInstance(instanceScope, owner)
+    throw error
+  }
 }

@@ -51,7 +51,15 @@ The session catalog never changes. After you edit IntelliJ MCP settings or the a
 
 Node.js 20 or newer. The pi executable on your PATH.
 
-Global install:
+Install it as a Pi package to activate the bundled bridge extension:
+
+```bash
+pi install npm:pi-acp-jetbrain
+```
+
+Pi records the package in `~/.pi/agent/settings.json` and enables its declared extension automatically. Installing only with `npm install -g` provides the executable but does not activate Pi package resources.
+
+Install the `pi-acp` command globally when you want it directly on your PATH:
 
 ```bash
 npm install -g pi-acp-jetbrain

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ryan-brosas/pi-acp-jetbrain#readme",
   "keywords": [
+    "pi-package",
     "acp",
     "agent-client-protocol",
     "pi-coding-agent",
@@ -26,6 +27,11 @@
     "intellij",
     "mcp"
   ],
+  "pi": {
+    "extensions": [
+      "./dist/pi-extension/acp-mcp-bridge.js"
+    ]
+  },
   "engines": {
     "node": ">=20"
   },

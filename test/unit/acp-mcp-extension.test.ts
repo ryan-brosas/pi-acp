@@ -1,11 +1,16 @@
 import { describe, it } from 'node:test'
+import { EventEmitter } from 'node:events'
+import type { Socket } from 'node:net'
 import assert from 'node:assert/strict'
 import { Check } from 'typebox/value'
 import {
   schemaToTypeBox,
   mcpResultToPiResult,
   McpToolError,
-  prepareToolArguments
+  prepareToolArguments,
+  claimBridgeInstance,
+  releaseBridgeInstance,
+  createAcpMcpBridgeExtension
 } from '../../src/pi-extension/acp-mcp-bridge.js'
 
 describe('ACP MCP Pi extension conversion', () => {
@@ -99,5 +104,101 @@ describe('ACP MCP Pi extension conversion', () => {
   it('rejects MCP isError results and malformed results', () => {
     assert.throws(() => mcpResultToPiResult({ isError: true, content: [{ type: 'text', text: 'bad' }] }), McpToolError)
     assert.throws(() => mcpResultToPiResult('bad'), McpToolError)
+  })
+})
+
+it('dedupes factory activation and permits reactivation after session shutdown', () => {
+  class FakeSocket extends EventEmitter {
+    destroyed = false
+    readonly writes: string[] = []
+
+    setEncoding(): this {
+      return this
+    }
+
+    write(data: string): boolean {
+      this.writes.push(data)
+      return true
+    }
+
+    destroy(): this {
+      if (this.destroyed) return this
+      this.destroyed = true
+      this.emit('close')
+      return this
+    }
+  }
+
+  const scope = {}
+  const sockets: FakeSocket[] = []
+  const registeredTools: string[] = []
+  const shutdownHandlers: Array<() => void> = []
+  const pi = {
+    on(event: string, handler: () => void) {
+      if (event === 'session_shutdown') shutdownHandlers.push(handler)
+    },
+    registerTool(tool: { name: string }) {
+      registeredTools.push(tool.name)
+    }
+  }
+  const makeExtension = () =>
+    createAcpMcpBridgeExtension({
+      endpoint: '/tmp/pi-acp-test.sock',
+      token: 'test-token',
+      sessionId: 'test-session',
+      instanceScope: scope,
+      connect: () => {
+        const socket = new FakeSocket()
+        sockets.push(socket)
+        return socket as unknown as Socket
+      }
+    })
+
+  makeExtension()(pi as never)
+  makeExtension()(pi as never)
+  assert.equal(sockets.length, 1)
+
+  sockets[0].emit('connect')
+  sockets[0].emit(
+    'data',
+    Buffer.from(
+      `${JSON.stringify({
+        type: 'hello_ack',
+        catalog: {
+          catalogId: 'test-catalog',
+          tools: [
+            {
+              exposedName: 'ide_fixture_echo',
+              connectionId: 'fixture',
+              remoteName: 'echo',
+              inputSchema: { type: 'object', properties: {} }
+            }
+          ]
+        }
+      })}\n`
+    )
+  )
+  assert.deepEqual(registeredTools, ['ide_fixture_echo'])
+
+  shutdownHandlers[0]()
+  makeExtension()(pi as never)
+  assert.equal(sockets.length, 2)
+})
+
+describe('ACP MCP Pi extension lifecycle', () => {
+  it('allows one bridge instance and releases only the current owner', () => {
+    const scope = {}
+    const first = Symbol('first')
+    const second = Symbol('second')
+
+    assert.equal(claimBridgeInstance(scope, first), true)
+    assert.equal(claimBridgeInstance(scope, second), false)
+
+    releaseBridgeInstance(scope, second)
+    assert.equal(claimBridgeInstance(scope, second), false)
+
+    releaseBridgeInstance(scope, first)
+    assert.equal(claimBridgeInstance(scope, second), true)
+    releaseBridgeInstance(scope, second)
   })
 })
