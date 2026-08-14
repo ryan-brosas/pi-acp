@@ -202,3 +202,429 @@ describe('ACP MCP Pi extension lifecycle', () => {
     releaseBridgeInstance(scope, second)
   })
 })
+
+
+// ---------- IntelliJ-first coding mode ----------
+
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { parsePatchTargets } from '../../src/pi-extension/acp-mcp-bridge.js'
+
+function makeFakeRuntime(initialActive: string[] = ['read', 'edit', 'write', 'grep', 'find', 'ls', 'bash', 'my_ext_tool']) {
+  const handlers = new Map<string, Array<(event: any, ctx: any) => unknown>>()
+  const all = new Set<string>(initialActive)
+  let active = [...initialActive]
+  const registered: any[] = []
+  const pi = {
+    on(event: string, handler: (event: any, ctx: any) => unknown) {
+      const list = handlers.get(event) ?? []
+      list.push(handler)
+      handlers.set(event, list)
+    },
+    registerTool(def: { name: string }) {
+      all.add(def.name)
+      registered.push(def)
+    },
+    getActiveTools: () => [...active],
+    getAllTools: () => [...all].map(name => ({ name })),
+    setActiveTools(names: string[]) {
+      active = [...names]
+    }
+  }
+  return {
+    pi: pi as never,
+    handlers,
+    registered,
+    get active() {
+      return [...active]
+    }
+  }
+}
+
+class FakeIdeSocket extends EventEmitter {
+  destroyed = false
+  readonly writes: string[] = []
+  calls: Array<{ id: string; tool: string; args: Record<string, unknown> }> = []
+  replyValue: unknown = { content: [{ type: 'text', text: 'ok' }] }
+  noReplyTools = new Set<string>()
+
+  setEncoding(): this {
+    return this
+  }
+
+  write(data: string): boolean {
+    this.writes.push(data)
+    let msg: any
+    try {
+      msg = JSON.parse(data)
+    } catch {
+      return true
+    }
+    if (msg.type === 'call') {
+      this.calls.push({ id: msg.id, tool: msg.tool, args: msg.args })
+      if (!this.noReplyTools.has(msg.tool)) {
+        this.emit('data', Buffer.from(JSON.stringify({ type: 'result', id: msg.id, result: this.replyValue }) + '\n'))
+      }
+    }
+    return true
+  }
+
+  destroy(): this {
+    if (this.destroyed) return this
+    this.destroyed = true
+    this.emit('close')
+    return this
+  }
+}
+
+function ideTool(remoteName: string, exposedName: string, properties: Record<string, unknown> = {}): any {
+  return {
+    exposedName,
+    connectionId: 'idea',
+    remoteName,
+    inputSchema: { type: 'object', properties },
+    schemaHash: 'h:' + remoteName
+  }
+}
+
+const FULL_CATALOG = [
+  ideTool('read_file', 'ide_idea_read_file', { filePath: { type: 'string' } }),
+  ideTool('open_file_in_editor', 'ide_idea_open_file', { filePath: { type: 'string' } }),
+  ideTool('apply_patch', 'ide_idea_apply_patch', { patch: { type: 'string' } }),
+  ideTool('create_new_file', 'ide_idea_create_new_file', { filePath: { type: 'string' } }),
+  ideTool('skill_search', 'ide_idea_skill_search', { query: { type: 'string' } }),
+  ideTool('lint_files', 'ide_idea_lint_files', { files: { type: 'array', items: { type: 'string' } } }),
+  ideTool('rename_refactoring', 'ide_idea_rename_refactoring', { pathInProject: { type: 'string' }, newName: { type: 'string' } }),
+  ideTool('reformat_file', 'ide_idea_reformat_file', { files: { type: 'array', items: { type: 'string' } } })
+]
+
+function wireExtension(
+  mode: string | undefined,
+  catalogTools: any[],
+  initialActive?: string[],
+  projectPath = '/workspace/project'
+) {
+  const rt = makeFakeRuntime(initialActive)
+  const socket = new FakeIdeSocket()
+  const prevMode = process.env.PI_ACP_IDE_MODE
+  if (mode === undefined) delete process.env.PI_ACP_IDE_MODE
+  else process.env.PI_ACP_IDE_MODE = mode
+  const ext = createAcpMcpBridgeExtension({
+    endpoint: '/tmp/test.sock',
+    token: 't',
+    sessionId: 's',
+    instanceScope: {},
+    connect: () => socket as unknown as Socket
+  })
+  ext(rt.pi)
+  if (prevMode === undefined) delete process.env.PI_ACP_IDE_MODE
+  else process.env.PI_ACP_IDE_MODE = prevMode
+  socket.emit('connect')
+  const emitCatalog = () =>
+    socket.emit(
+      'data',
+      Buffer.from(
+        JSON.stringify({
+          type: 'hello_ack',
+          catalog: { catalogId: 'c', projectPath, tools: catalogTools }
+        }) + '\n'
+      )
+    )
+  return { rt, socket, emitCatalog }
+}
+
+async function guidanceFor(mode: string, catalog: any[], afterCatalog = true) {
+  const { rt, socket, emitCatalog } = wireExtension(mode, catalog)
+  if (afterCatalog) emitCatalog()
+  let result: unknown
+  for (const handler of rt.handlers.get('before_agent_start') ?? []) {
+    const r = await handler({ systemPrompt: 'base' }, null)
+    if (r !== undefined) result = r
+  }
+  return { guidance: result as { systemPrompt: string } | undefined, socket }
+}
+
+describe('IntelliJ-first coding mode policy', () => {
+  it('off mode preserves active tools and raw execution', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('off', FULL_CATALOG)
+    emitCatalog()
+    assert.deepEqual(rt.active, ['read', 'edit', 'write', 'grep', 'find', 'ls', 'bash', 'my_ext_tool'])
+    const apply = rt.registered.find((t: any) => t.name === 'ide_idea_apply_patch')
+    const result = await apply.execute('t1', { patch: '--- a/src/a.ts\n+++ b/src/a.ts\n' })
+    assert.equal(socket.calls.length, 1)
+    assert.equal(socket.calls[0].tool, 'ide_idea_apply_patch')
+    assert.equal(result.content[0].text, 'ok')
+  })
+
+  it('prefer removes native file tools only when the catalog is complete', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    assert.ok(rt.active.includes('read'))
+    emitCatalog()
+    const natives = ['read', 'edit', 'write', 'grep', 'find', 'ls']
+    assert.deepEqual(rt.active.filter(n => natives.includes(n)), [])
+    assert.ok(rt.active.includes('bash'))
+    assert.ok(rt.active.includes('my_ext_tool'))
+    assert.ok(rt.active.includes('ide_idea_read_file'))
+    const regMsg = socket.writes.map(w => JSON.parse(w)).find((m: any) => m.type === 'catalog_registered')
+    assert.ok((regMsg.registration.diagnostics as string[]).some(d => d.includes('IDE coding mode')))
+  })
+
+  it('required removes native file tools before the catalog arrives', () => {
+    const { rt } = wireExtension('required', FULL_CATALOG)
+    const natives = ['read', 'edit', 'write', 'grep', 'find', 'ls']
+    assert.deepEqual(rt.active.filter(n => natives.includes(n)), [])
+  })
+
+  it('prefer restores native tools when required capabilities are missing', async () => {
+    const partial = FULL_CATALOG.filter(t => t.remoteName !== 'apply_patch')
+    const { rt, emitCatalog } = wireExtension('prefer', partial)
+    emitCatalog()
+    assert.ok(rt.active.includes('read'))
+  })
+
+  it('required stays fail closed when required capabilities are missing', async () => {
+    const partial = FULL_CATALOG.filter(t => t.remoteName !== 'apply_patch')
+    const { rt, emitCatalog } = wireExtension('required', partial)
+    emitCatalog()
+    assert.ok(!rt.active.includes('read'))
+  })
+
+  it('activation preserves unrelated extension tools', async () => {
+    const { rt, emitCatalog } = wireExtension('prefer', FULL_CATALOG, ['read', 'edit', 'bash', 'my_ext_tool'])
+    emitCatalog()
+    assert.ok(rt.active.includes('my_ext_tool'))
+    assert.ok(rt.active.includes('bash'))
+  })
+
+  it('fallback restores only tools removed by this policy', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG, ['read', 'edit', 'bash', 'my_ext_tool'])
+    emitCatalog()
+    assert.ok(!rt.active.includes('read'))
+    socket.emit('close')
+    assert.ok(rt.active.includes('read'))
+    assert.ok(rt.active.includes('edit'))
+    assert.ok(rt.active.includes('bash'))
+    assert.ok(rt.active.includes('my_ext_tool'))
+  })
+
+  it('disconnect removes IDE tools from the active set', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    assert.ok(rt.active.includes('ide_idea_read_file'))
+    socket.emit('close')
+    assert.ok(!rt.active.includes('ide_idea_read_file'))
+  })
+
+  it('new IDE calls after disconnect fail immediately without pending entries', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('off', FULL_CATALOG)
+    emitCatalog()
+    socket.emit('close')
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('x1', { filePath: 'src/a.ts' }), /disconnected/)
+    assert.equal(socket.calls.length, 0)
+  })
+
+  it('repeated disconnect is idempotent', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    socket.emit('close')
+    const snapshot = [...rt.active].sort()
+    socket.emit('close')
+    assert.deepEqual([...rt.active].sort(), snapshot)
+  })
+
+  it('guidance matches active state and uses exposed names', async () => {
+    const { guidance } = await guidanceFor('prefer', FULL_CATALOG)
+    assert.ok(guidance, 'guidance returned')
+    assert.ok(guidance.systemPrompt.startsWith('base'))
+    assert.match(guidance.systemPrompt, /IntelliJ-first mode is active/)
+    assert.match(guidance.systemPrompt, /ide_idea_read_file/)
+    assert.match(guidance.systemPrompt, /ide_idea_apply_patch/)
+    assert.match(guidance.systemPrompt, /ide_idea_lint_files/)
+    assert.ok(!guidance.systemPrompt.includes('ide_idea_nonexistent'))
+  })
+
+  it('guidance reflects fallback state', async () => {
+    const partial = FULL_CATALOG.filter(t => t.remoteName !== 'apply_patch')
+    const { guidance } = await guidanceFor('prefer', partial)
+    assert.ok(guidance)
+    assert.match(guidance.systemPrompt, /IDE IPC|bridge.*unavailable|unavailable/i)
+  })
+
+  it('guidance reflects required-unavailable state', async () => {
+    const partial = FULL_CATALOG.filter(t => t.remoteName !== 'apply_patch')
+    const { guidance } = await guidanceFor('required', partial)
+    assert.ok(guidance)
+    assert.match(guidance.systemPrompt, /blocked|unavailable/i)
+  })
+
+  it('parses unified diff headers for update, add, delete, and spaces', () => {
+    const patch = [
+      '--- a/src/a.ts',
+      '+++ b/src/a.ts',
+      '--- /dev/null',
+      '+++ b/src/new.ts',
+      '--- a/src/old.ts',
+      '+++ /dev/null',
+      '--- a/my file.ts',
+      '+++ b/my file.ts'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    const byPath = new Map(targets.map(t => [t.destination, t]))
+    assert.equal(byPath.get('src/a.ts')?.kind, 'update')
+    assert.equal(byPath.get('src/new.ts')?.kind, 'add')
+    assert.equal(byPath.get('src/old.ts')?.kind, 'delete')
+    assert.equal(byPath.get('my file.ts')?.kind, 'update')
+  })
+
+  it('parses codex patch directives for add, update, delete, and move', () => {
+    const patch = [
+      '*** Begin Patch',
+      '*** Update File: src/a.ts',
+      '*** Add File: src/b.ts',
+      '*** Delete File: src/c.ts',
+      '*** Update File: src/d.ts',
+      '*** Move to: src/d2.ts',
+      '*** End Patch'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    const byPath = new Map(targets.map(t => [t.destination, t]))
+    assert.equal(byPath.get('src/a.ts')?.kind, 'update')
+    assert.equal(byPath.get('src/b.ts')?.kind, 'add')
+    assert.equal(byPath.get('src/c.ts')?.kind, 'delete')
+    assert.equal(byPath.get('src/d2.ts')?.kind, 'move')
+    assert.equal(byPath.get('src/d2.ts')?.source, 'src/d.ts')
+  })
+
+  it('apply_patch opens existing targets before mutation and added files after', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const apply = rt.registered.find((t: any) => t.name === 'ide_idea_apply_patch')
+    const patch = ['--- a/src/a.ts', '+++ b/src/a.ts', '--- /dev/null', '+++ b/src/b.ts'].join('\n')
+    await apply.execute('t9', { patch })
+    assert.equal(socket.calls[0].tool, 'ide_idea_open_file')
+    assert.equal(socket.calls[0].args.filePath, 'src/a.ts')
+    assert.equal(socket.calls[1].tool, 'ide_idea_apply_patch')
+    assert.equal(socket.calls[2].tool, 'ide_idea_open_file')
+    assert.equal(socket.calls[2].args.filePath, 'src/b.ts')
+    assert.match(socket.calls[0].id, /:open:0$/)
+    assert.match(socket.calls[1].id, /:mutate$/)
+    assert.match(socket.calls[2].id, /:open-created:0$/)
+    const ids = socket.calls.map(c => c.id)
+    assert.equal(new Set(ids).size, ids.length)
+  })
+
+  it('deleted files are opened before but not after mutation', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const apply = rt.registered.find((t: any) => t.name === 'ide_idea_apply_patch')
+    const patch = ['--- a/src/del.ts', '+++ /dev/null'].join('\n')
+    await apply.execute('t16', { patch })
+    assert.equal(socket.calls.length, 2)
+    assert.equal(socket.calls[0].tool, 'ide_idea_open_file')
+    assert.equal(socket.calls[0].args.filePath, 'src/del.ts')
+    assert.equal(socket.calls[1].tool, 'ide_idea_apply_patch')
+  })
+
+  it('rename opens the source file before refactoring', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const rename = rt.registered.find((t: any) => t.name === 'ide_idea_rename_refactoring')
+    await rename.execute('t17', { pathInProject: 'src/sym.ts', newName: 'newName' })
+    assert.equal(socket.calls[0].tool, 'ide_idea_open_file')
+    assert.equal(socket.calls[0].args.filePath, 'src/sym.ts')
+    assert.equal(socket.calls[1].tool, 'ide_idea_rename_refactoring')
+    assert.equal(socket.calls.length, 2)
+  })
+
+  it('create opens the file after creation only', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const create = rt.registered.find((t: any) => t.name === 'ide_idea_create_new_file')
+    await create.execute('t18', { filePath: 'src/new.ts' })
+    assert.equal(socket.calls[0].tool, 'ide_idea_create_new_file')
+    assert.equal(socket.calls[1].tool, 'ide_idea_open_file')
+    assert.equal(socket.calls[1].args.filePath, 'src/new.ts')
+  })
+
+  it('reformat opens all target files first', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const reformat = rt.registered.find((t: any) => t.name === 'ide_idea_reformat_file')
+    await reformat.execute('t19', { files: ['src/a.ts', 'src/b.ts'] })
+    assert.equal(socket.calls[0].tool, 'ide_idea_open_file')
+    assert.equal(socket.calls[1].tool, 'ide_idea_open_file')
+    assert.equal(socket.calls[2].tool, 'ide_idea_reformat_file')
+  })
+
+  it('rejects outside-root mutation paths before any call', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const apply = rt.registered.find((t: any) => t.name === 'ide_idea_apply_patch')
+    const patch = ['--- a/../../etc/passwd', '+++ b/../../etc/passwd'].join('\n')
+    await assert.rejects(() => apply.execute('t21', { patch }), /outside|escape|root/i)
+    assert.equal(socket.calls.length, 0)
+  })
+
+  it('rejects traversal in create paths', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const create = rt.registered.find((t: any) => t.name === 'ide_idea_create_new_file')
+    await assert.rejects(() => create.execute('t22', { filePath: '../../x.ts' }), /outside|escape|root/i)
+    assert.equal(socket.calls.length, 0)
+  })
+
+  it('rejects symlink escapes for existing mutation targets', async () => {
+    const proj = mkdtempSync(join(tmpdir(), 'piap-'))
+    const outside = mkdtempSync(join(tmpdir(), 'piap-out-'))
+    mkdirSync(join(proj, 'src'))
+    writeFileSync(join(proj, 'src', 'a.ts'), 'x')
+    symlinkSync(outside, join(proj, 'link'), 'dir')
+    try {
+      const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG, undefined, proj)
+      emitCatalog()
+      const apply = rt.registered.find((t: any) => t.name === 'ide_idea_apply_patch')
+      const patch = ['--- a/link/evil.ts', '+++ b/link/evil.ts'].join('\n')
+      await assert.rejects(() => apply.execute('t23', { patch }), /outside|escape|root/i)
+      assert.equal(socket.calls.length, 0)
+    } finally {
+      rmSync(proj, { recursive: true, force: true })
+      rmSync(outside, { recursive: true, force: true })
+    }
+  })
+
+  it('annotates out-of-root semantic results in prefer', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    socket.replyValue = { content: [{ type: 'text', text: 'tree' }], structuredContent: { files: ['/other/repo/x.ts'] } }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    const result = await read.execute('t24', { filePath: 'src/a.ts' })
+    assert.ok(JSON.stringify(result.details).toLowerCase().includes('outside'))
+  })
+
+  it('rejects out-of-root semantic results in required', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = { content: [{ type: 'text', text: 'tree' }], structuredContent: { files: ['/other/repo/x.ts'] } }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t24b', { filePath: 'src/a.ts' }), /outside|root/i)
+  })
+
+  it('cancellation during a pending call cleans pending state', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    socket.noReplyTools.add('ide_idea_read_file')
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    const ac = new AbortController()
+    const p = read.execute('t27', { filePath: 'src/a.ts' }, ac.signal)
+    await new Promise(resolve => setTimeout(resolve, 10))
+    ac.abort()
+    await assert.rejects(() => p, /cancelled/)
+    const cancelMsg = socket.writes.map(w => JSON.parse(w)).find((m: any) => m.type === 'cancel' && m.id === 't27')
+    assert.ok(cancelMsg)
+    socket.noReplyTools.delete('ide_idea_read_file')
+    const again = await read.execute('t27b', { filePath: 'src/a.ts' })
+    assert.equal(again.content[0].text, 'ok')
+  })
+})

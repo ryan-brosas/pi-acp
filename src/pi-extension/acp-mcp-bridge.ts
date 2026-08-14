@@ -617,3 +617,27 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     throw error
   }
 }
+
+// ---------- IntelliJ-first coding mode (RED scaffolding) ----------
+
+const NATIVE_FILE_TOOLS = new Set(['read', 'edit', 'write', 'grep', 'find', 'ls'])
+
+export type PatchTargetKind = 'add' | 'update' | 'delete' | 'move'
+
+export interface PatchTarget {
+  kind: PatchTargetKind
+  source?: string
+  destination: string
+}
+
+export function parsePatchTargets(patch: string): PatchTarget[] {
+  return []
+}
+
+export function normalizeProjectPath(
+  projectRoot: string,
+  input: string,
+  mutation: boolean
+): { path: string } {
+  throw new Error('not implemented')
+}
