@@ -490,7 +490,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     }
   }
 
-  function registerTools(tools: BridgeTool[], projectPath?: string): CatalogRegistration {
+  function registerTools(tools: BridgeTool[]): CatalogRegistration {
     const registration: CatalogRegistration = { catalogId: undefined, registered: [], failed: [] }
     const names = new Set<string>()
     for (const tool of tools) {
@@ -538,7 +538,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     if (msg.type === 'hello_ack' && !registered) {
       registered = true
       projectRoot = msg.catalog.projectPath
-      const registration = registerTools(msg.catalog.tools, msg.catalog.projectPath)
+      const registration = registerTools(msg.catalog.tools)
       registration.catalogId = msg.catalog.catalogId
       applyIdePolicy(msg.catalog, registration)
       send({ type: 'catalog_registered', registration })
