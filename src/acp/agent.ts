@@ -1400,7 +1400,7 @@ function isThinkingLevel(x: string): x is ThinkingLevel {
 
 async function getThinkingState(
   proc: PiRpcProcess,
-  pre?: { state?: any | null }
+  pre?: { state?: Record<string, unknown> | null }
 ): Promise<{
   availableModes: Array<{
     id: string
