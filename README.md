@@ -6,7 +6,7 @@ ACP ([Agent Client Protocol](https://agentclientprotocol.com/overview/introducti
 
 ## Status
 
-This is an MVP-style adapter intended to be useful today and easy to iterate on. Some ACP features may be not implemented or are not supported (see [Limitations](#limitations)). Development is centered around JetBrains IntelliJ support (the adapter's primary ACP host); other ACP clients may have varying levels of compatibility.
+Published on npm as `pi-acp-jetbrain` (0.0.34+). The adapter is centered around JetBrains IntelliJ support (the adapter's primary ACP host); other ACP clients may have varying levels of compatibility. Session features (`session/list`, `session/load`, `session/fork`, `session/resume`, `session/close`, `session/delete`), per-turn `usage`, `providers/list`, and elicitation-based text input are implemented on top of pi's RPC protocol. Anything the pi RPC protocol does not expose is documented under [Limitations](#limitations) instead of being silently dropped.
 
 Expect some minor breaking changes.
 
@@ -30,6 +30,10 @@ The local IntelliJ integration is experimental: IntelliJ's installed ACP impleme
 - Skills are loaded by pi directly and are available in ACP sessions
 - `pi-acp-jetbrain` emits a “startup info” block into the session (pi version, context, skills, prompts, extensions, and IDE bridge status - similar to `pi` in the terminal). You can disable it by setting `quietStartup: true` in pi settings (`~/.pi/agent/settings.json` or `<project>/.pi/settings.json`). When `quietStartup` is enabled, `pi-acp-jetbrain` will still emit a 'New version available' message if the installed pi version is outdated.
 - Session history: `session/load` maps to pi's session files, so sessions can be resumed both in `pi` and in the ACP client.
+- Session lifecycle: `session/fork` copies the source pi session file and forks at its leaf entry (the new session gets its own file and can be listed/resumed independently); `session/resume` reattaches a stored pi session; `session/close` cancels any running turn and releases the pi subprocess while keeping the session resumable.
+- Providers: `providers/list` maps pi's available models to ACP provider info (best-effort routing data, since pi does not expose provider base URLs or credentials through RPC).
+- Usage: the UNSTABLE `PromptResponse.usage` field reports cumulative session tokens (input/output/cache + cost) after each settled turn, sourced from pi's `get_session_stats`.
+- Elicitation: pi `input` UI requests are bridged to the UNSTABLE ACP elicitation form API (`unstable_createElicitation`) when the client supports it, and degrade to a visible cancellation otherwise. pi `select`/`confirm` UI requests are bridged through ACP permission requests.
 
 ## Operating layer
 
@@ -251,7 +255,6 @@ Project layout:
 
 ## Limitations
 
-- No ACP filesystem delegation (`fs/*`) and no ACP terminal delegation (`terminal/*`). pi reads/writes and executes locally.
 - MCP servers are accepted in ACP params and bridged into the Pi subprocess as deterministic `ide_<server>_<tool>` extension tools.
   - IntelliJ's primary path is stdio MCP (`command`, `args`, `env`); draft ACP MCP remains supported.
   - IntelliJ's launcher-based stdio descriptor forwards to the running IDE and exits 0. When the descriptor carries `IJ_MCP_SERVER_PORT`, the bridge prefers a direct MCP-over-SSE client (`/sse` + `/message`) against the IDE's in-process server (so healthy sessions never spawn the launcher) and falls back to the stdio child only when that endpoint is unreachable — the same bounded discovery, runtime deadlines, cancellation, and diagnostics apply to both transports.
@@ -271,7 +274,11 @@ Project layout:
 
 - Assistant streaming is sent as `agent_message_chunk`; model reasoning arrives as `agent_thought_chunk` when the provider emits it.
 - Queue is implemented client-side and should work like pi's `one-at-a-time`
-- ~~ACP clients don't yet suport session history, but ACP sessions from `pi-acp-jetbrain` can be `/resume`d in pi directly~~
+- ACP session history is supported via `session/list` + `session/load`; sessions also remain `/resume`-able directly in `pi`.
+- `providers/set` and `providers/disable` are not implemented: pi configures providers out-of-band (env/settings), and RPC exposes no credential mutation surface. Clients calling them receive a method-not-found error.
+- pi `editor` UI requests (multiline text editor) are cancelled with a visible fallback: ACP elicitation forms only support primitive fields, not a free-form editor.
+- The ACP plan/tree surface (session plan) is not wired because the installed ACP SDK (0.26) does not define a plan method; pi's `get_tree` remains available to pi itself.
+- No ACP filesystem delegation (`fs/*`) and no ACP terminal delegation (`terminal/*`). pi reads/writes and executes locally.
 
 ### IDE log noise
 
