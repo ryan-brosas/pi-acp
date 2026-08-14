@@ -10,6 +10,10 @@ export class FakeAgentSideConnection {
     outcome: { outcome: 'selected', optionId: 'allow' }
   }
 
+  readonly elicitationRequests: unknown[] = []
+  nextElicitationResponse: unknown = { action: 'cancel' }
+  elicitationError: unknown = null
+
   async sessionUpdate(msg: SessionUpdateMsg): Promise<void> {
     this.updates.push(msg)
   }
@@ -19,6 +23,12 @@ export class FakeAgentSideConnection {
   ): Promise<{ outcome: { outcome: 'selected'; optionId: string } | { outcome: 'cancelled' } }> {
     this.permissionRequests.push(params)
     return this.nextPermissionResponse
+  }
+
+  async unstable_createElicitation(params: unknown): Promise<unknown> {
+    this.elicitationRequests.push(params)
+    if (this.elicitationError !== null) throw this.elicitationError
+    return this.nextElicitationResponse
   }
 }
 
@@ -77,6 +87,41 @@ export class FakePiRpcProcess {
 
   async getMessages(): Promise<any> {
     return { messages: [] }
+  }
+
+  nextSessionStats: unknown = null
+  nextEntries: unknown = { entries: [], leafId: 'leaf-1' }
+  readonly forkCalls: string[] = []
+  readonly cloneCalls: number[] = []
+  readonly switchSessionCalls: string[] = []
+
+  async getSessionStats(): Promise<any> {
+    return this.nextSessionStats
+  }
+
+  async fork(entryId: string): Promise<any> {
+    this.forkCalls.push(entryId)
+    return { text: 'Forked', cancelled: false }
+  }
+
+  async clone(): Promise<void> {
+    this.cloneCalls.push(1)
+  }
+
+  async getEntries(): Promise<any> {
+    return this.nextEntries
+  }
+
+  async getForkMessages(): Promise<any> {
+    return { messages: [] }
+  }
+
+  async getTree(): Promise<any> {
+    return { tree: [], leafId: null }
+  }
+
+  async switchSession(sessionPath: string): Promise<void> {
+    this.switchSessionCalls.push(sessionPath)
   }
 }
 

@@ -1148,7 +1148,7 @@ export class PiAcpAgent implements ACPAgent {
       throw e
     }
 
-    const session = this.sessions.getOrCreate(newSessionId, {
+    this.sessions.getOrCreate(newSessionId, {
       cwd: params.cwd,
       mcpServers: params.mcpServers ?? [],
       conn: this.conn,
