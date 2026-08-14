@@ -32,7 +32,10 @@ if (build.status !== 0) {
   process.exit(1)
 }
 console.log(
-  `dogfood-report: fresh build (dist ${createHash('sha256').update(readFileSync(join(root, 'dist', 'index.js'))).digest('hex').slice(0, 12)})`
+  `dogfood-report: fresh build (dist ${createHash('sha256')
+    .update(readFileSync(join(root, 'dist', 'index.js')))
+    .digest('hex')
+    .slice(0, 12)})`
 )
 
 const REDACT_RE =

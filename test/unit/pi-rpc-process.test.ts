@@ -60,4 +60,3 @@ function fakeChild(): any {
   }
   return child
 }
-

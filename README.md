@@ -64,12 +64,24 @@ IntelliJ ships an ACP host; register `pi-acp-jetbrain` as an agent server in Int
         "PI_ACP_DEBUG_BRIDGE": "1"
       },
       "idea_mcp_allowed_tools": [
-        "search_symbol", "get_symbol_info", "analyze_calls",
-        "search_text", "search_regex", "get_file_problems",
-        "lint_files", "build_project", "execute_run_configuration",
-        "git_status", "get_repositories", "get_project_modules",
-        "get_project_dependencies", "list_directory_tree", "read_file",
-        "search_file", "open_file_in_editor", "get_all_open_file_paths",
+        "search_symbol",
+        "get_symbol_info",
+        "analyze_calls",
+        "search_text",
+        "search_regex",
+        "get_file_problems",
+        "lint_files",
+        "build_project",
+        "execute_run_configuration",
+        "git_status",
+        "get_repositories",
+        "get_project_modules",
+        "get_project_dependencies",
+        "list_directory_tree",
+        "read_file",
+        "search_file",
+        "open_file_in_editor",
+        "get_all_open_file_paths",
         "skill_search"
       ]
     }

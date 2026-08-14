@@ -28,10 +28,9 @@ try {
     },
     { timeoutMs: 60_000 }
   )
-  await h.waitForUpdate(
-    () => h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length > baseline,
-    { timeoutMs: 30_000 }
-  )
+  await h.waitForUpdate(() => h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length > baseline, {
+    timeoutMs: 30_000
+  })
   const before = h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length
   assert(before > baseline, 'no model agent_message_chunk observed before cancel')
 
