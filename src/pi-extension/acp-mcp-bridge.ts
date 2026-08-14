@@ -666,27 +666,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     root: string | undefined
   ): PiMcpToolResult {
     if (mode === 'off' || MUTATION_REMOTE_NAMES.has(tool.remoteName) || root === undefined) return result
-    const structured = result.details.structuredContent
-    if (!structured || typeof structured !== 'object' || Array.isArray(structured)) return result
-    const candidates: string[] = []
-    const collect = (value: unknown, depth: number): void => {
-      if (depth > 4) return
-      if (typeof value === 'string') {
-        candidates.push(value)
-        return
-      }
-      if (Array.isArray(value)) {
-        for (const item of value) collect(item, depth + 1)
-        return
-      }
-      if (value && typeof value === 'object') {
-        for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
-          if (RESULT_PATH_KEYS.has(key)) collect(child, depth + 1)
-          else if (child && typeof child === 'object') collect(child, depth + 1)
-        }
-      }
-    }
-    collect(structured, 0)
+    let hit = false
     if (TEXT_SCAN_RESULT_TOOLS.has(tool.remoteName)) {
       for (const block of result.content) {
         if (block.type !== 'text') continue
@@ -703,23 +683,44 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         if (hit) break
       }
     }
-    const rootResolved = resolve(root)
-    const realRoot = tryRealpath(rootResolved)
-    let hit = false
-    for (const entry of candidates) {
-      if (entry === '') continue
-      const candidate = isAbsolute(entry) ? resolve(entry) : resolve(rootResolved, entry)
-      if (!isInside(rootResolved, candidate)) {
-        hit = true
-        break
+    const structured = result.details.structuredContent
+    if (structured && typeof structured === 'object' && !Array.isArray(structured)) {
+      const candidates: string[] = []
+      const collect = (value: unknown, depth: number): void => {
+        if (depth > 4) return
+        if (typeof value === 'string') {
+          candidates.push(value)
+          return
+        }
+        if (Array.isArray(value)) {
+          for (const item of value) collect(item, depth + 1)
+          return
+        }
+        if (value && typeof value === 'object') {
+          for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+            if (RESULT_PATH_KEYS.has(key)) collect(child, depth + 1)
+            else if (child && typeof child === 'object') collect(child, depth + 1)
+          }
+        }
       }
-      if (realRoot !== undefined) {
-        const existingAncestor = nearestExistingAncestor(candidate)
-        if (existingAncestor !== undefined) {
-          const real = tryRealpath(existingAncestor)
-          if (real !== undefined && !isInside(realRoot, real)) {
-            hit = true
-            break
+      collect(structured, 0)
+      const rootResolved = resolve(root)
+      const realRoot = tryRealpath(rootResolved)
+      for (const entry of candidates) {
+        if (entry === '') continue
+        const candidate = isAbsolute(entry) ? resolve(entry) : resolve(rootResolved, entry)
+        if (!isInside(rootResolved, candidate)) {
+          hit = true
+          break
+        }
+        if (realRoot !== undefined) {
+          const existingAncestor = nearestExistingAncestor(candidate)
+          if (existingAncestor !== undefined) {
+            const real = tryRealpath(existingAncestor)
+            if (real !== undefined && !isInside(realRoot, real)) {
+              hit = true
+              break
+            }
           }
         }
       }
