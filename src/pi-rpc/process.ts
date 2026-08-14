@@ -49,10 +49,7 @@ type PiRpcCommand =
   | { type: 'switch_session'; id?: string; sessionPath: string }
   // Session branching
   | { type: 'fork'; id?: string; entryId: string }
-  | { type: 'clone'; id?: string }
-  | { type: 'get_fork_messages'; id?: string }
   | { type: 'get_entries'; id?: string }
-  | { type: 'get_tree'; id?: string }
   // Messages
   | { type: 'get_messages'; id?: string }
   // Commands
@@ -386,27 +383,9 @@ export class PiRpcProcess {
     return { text: String(data?.text ?? ''), cancelled: Boolean(data?.cancelled) }
   }
 
-  async clone(): Promise<void> {
-    const res = await this.request({ type: 'clone' })
-    if (!res.success) throw new Error(`pi clone failed: ${res.error ?? JSON.stringify(res.data)}`)
-  }
-
-  async getForkMessages(): Promise<Array<{ entryId: string; text: string }>> {
-    const res = await this.request({ type: 'get_fork_messages' })
-    if (!res.success) throw new Error(`pi get_fork_messages failed: ${res.error ?? JSON.stringify(res.data)}`)
-    const data = res.data as { messages?: Array<{ entryId: string; text: string }> } | undefined
-    return Array.isArray(data?.messages) ? data.messages : []
-  }
-
   async getEntries(): Promise<unknown> {
     const res = await this.request({ type: 'get_entries' })
     if (!res.success) throw new Error(`pi get_entries failed: ${res.error ?? JSON.stringify(res.data)}`)
-    return res.data
-  }
-
-  async getTree(): Promise<unknown> {
-    const res = await this.request({ type: 'get_tree' })
-    if (!res.success) throw new Error(`pi get_tree failed: ${res.error ?? JSON.stringify(res.data)}`)
     return res.data
   }
 

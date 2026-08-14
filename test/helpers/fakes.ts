@@ -88,41 +88,6 @@ export class FakePiRpcProcess {
   async getMessages(): Promise<any> {
     return { messages: [] }
   }
-
-  nextSessionStats: unknown = null
-  nextEntries: unknown = { entries: [], leafId: 'leaf-1' }
-  readonly forkCalls: string[] = []
-  readonly cloneCalls: number[] = []
-  readonly switchSessionCalls: string[] = []
-
-  async getSessionStats(): Promise<any> {
-    return this.nextSessionStats
-  }
-
-  async fork(entryId: string): Promise<any> {
-    this.forkCalls.push(entryId)
-    return { text: 'Forked', cancelled: false }
-  }
-
-  async clone(): Promise<void> {
-    this.cloneCalls.push(1)
-  }
-
-  async getEntries(): Promise<any> {
-    return this.nextEntries
-  }
-
-  async getForkMessages(): Promise<any> {
-    return { messages: [] }
-  }
-
-  async getTree(): Promise<any> {
-    return { tree: [], leafId: null }
-  }
-
-  async switchSession(sessionPath: string): Promise<void> {
-    this.switchSessionCalls.push(sessionPath)
-  }
 }
 
 export function asAgentConn(conn: FakeAgentSideConnection): AgentSideConnection {
