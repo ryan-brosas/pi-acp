@@ -241,8 +241,9 @@ test('PiAcpSession: sends cancelled response when ACP confirm is cancelled', asy
   assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-5', cancelled: true }])
 })
 
-test('PiAcpSession: cancels unsupported input and editor extension UI requests with visible fallback', async () => {
+test('PiAcpSession: routes input through elicitation and cancels editor with a visible fallback', async () => {
   const conn = new FakeAgentSideConnection()
+  conn.nextElicitationResponse = { action: 'cancel' }
   const proc = new FakePiRpcProcess()
 
   new PiAcpSession({
@@ -259,13 +260,14 @@ test('PiAcpSession: cancels unsupported input and editor extension UI requests w
 
   await new Promise(r => setTimeout(r, 0))
 
+  // input goes through the elicitation form (user cancelled); editor stays cancelled.
+  assert.equal(conn.elicitationRequests.length, 1)
   assert.deepEqual(proc.extensionUiResponses, [
-    { id: 'ui-3', cancelled: true },
-    { id: 'ui-4', cancelled: true }
+    { id: 'ui-4', cancelled: true },
+    { id: 'ui-3', cancelled: true }
   ])
-  assert.equal(conn.updates.length, 2)
-  assert.match((conn.updates[0]!.update as any).content.text, /input UI request is not supported/)
-  assert.match((conn.updates[1]!.update as any).content.text, /editor UI request is not supported/)
+  assert.equal(conn.updates.length, 1)
+  assert.match((conn.updates[0]!.update as any).content.text, /editor UI request is not supported/)
 })
 
 test('PiAcpSession: emits agent_message_chunk for auto_retry_start with attempt/maxAttempts and rounded delay', async () => {
@@ -899,4 +901,106 @@ test('PiAcpSession: defaults notify severity to info when notifyType is absent',
   assert.deepEqual((conn.updates[0]!.update as any)._meta, {
     piAcp: { notify: { level: 'info' } }
   })
+})
+test('PiAcpSession: handles extension input via ACP elicitation form (accept)', async () => {
+  const conn = new FakeAgentSideConnection()
+  conn.nextElicitationResponse = { action: 'accept', content: { value: 'hello from user' } }
+  const proc = new FakePiRpcProcess()
+
+  new PiAcpSession({
+    sessionId: 's1',
+    cwd: process.cwd(),
+    mcpServers: [],
+    proc: proc as any,
+    conn: asAgentConn(conn),
+    fileCommands: []
+  })
+
+  proc.emit({
+    type: 'extension_ui_request',
+    id: 'ui-in-1',
+    method: 'input',
+    title: 'Enter commit message',
+    placeholder: 'e.g. fix: ship it'
+  })
+
+  await new Promise(r => setTimeout(r, 0))
+
+  assert.equal(conn.elicitationRequests.length, 1)
+  assert.deepEqual(conn.elicitationRequests[0], {
+    mode: 'form',
+    sessionId: 's1',
+    message: 'Enter commit message',
+    requestedSchema: {
+      type: 'object',
+      title: 'Enter commit message',
+      properties: { value: { type: 'string', description: 'e.g. fix: ship it' } },
+      required: ['value']
+    }
+  })
+  assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-in-1', value: 'hello from user' }])
+})
+
+test('PiAcpSession: handles extension input declined or cancelled by the user', async () => {
+  const conn = new FakeAgentSideConnection()
+  conn.nextElicitationResponse = { action: 'decline' }
+  const proc = new FakePiRpcProcess()
+
+  new PiAcpSession({
+    sessionId: 's1',
+    cwd: process.cwd(),
+    mcpServers: [],
+    proc: proc as any,
+    conn: asAgentConn(conn),
+    fileCommands: []
+  })
+
+  proc.emit({ type: 'extension_ui_request', id: 'ui-in-2', method: 'input', title: 'Pick a value' })
+  await new Promise(r => setTimeout(r, 0))
+
+  assert.equal(conn.elicitationRequests.length, 1)
+  assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-in-2', cancelled: true }])
+})
+
+test('PiAcpSession: falls back to a visible cancellation when the client lacks elicitation support', async () => {
+  const conn = new FakeAgentSideConnection()
+  conn.elicitationError = new Error('method not found')
+  const proc = new FakePiRpcProcess()
+
+  new PiAcpSession({
+    sessionId: 's1',
+    cwd: process.cwd(),
+    mcpServers: [],
+    proc: proc as any,
+    conn: asAgentConn(conn),
+    fileCommands: []
+  })
+
+  proc.emit({ type: 'extension_ui_request', id: 'ui-in-3', method: 'input', title: 'Input' })
+  await new Promise(r => setTimeout(r, 0))
+
+  assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-in-3', cancelled: true }])
+  assert.equal(conn.updates.length, 1)
+  assert.equal((conn.updates[0]!.update as any).sessionUpdate, 'agent_message_chunk')
+  assert.match(String((conn.updates[0]!.update as any).content.text), /not supported by this ACP client/)
+})
+
+test('PiAcpSession: keeps editor UI requests cancelled with a visible fallback', async () => {
+  const conn = new FakeAgentSideConnection()
+  const proc = new FakePiRpcProcess()
+
+  new PiAcpSession({
+    sessionId: 's1',
+    cwd: process.cwd(),
+    mcpServers: [],
+    proc: proc as any,
+    conn: asAgentConn(conn),
+    fileCommands: []
+  })
+
+  proc.emit({ type: 'extension_ui_request', id: 'ui-ed-1', method: 'editor', title: 'Edit' })
+  await new Promise(r => setTimeout(r, 0))
+
+  assert.equal(conn.elicitationRequests.length, 0)
+  assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-ed-1', cancelled: true }])
 })
