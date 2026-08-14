@@ -362,6 +362,10 @@ src/acp/ide-inspection.ts            (new)
       files := collectChangedFiles(cwd).slice(0, MAX_FILES)
       result := bridge.callRemoteTool('lint_files', { files, min_severity: 'warning' }, TIMEOUT)
       aggregate { filesChecked, errors, warnings, perFile }
+      + repo inspections/*.inspection.kts (shipped): per changed file × script, call
+        bridge.callRemoteTool('run_inspection_kts', { inspectionKtsCode, contextPath }, TIMEOUT);
+        fold foundProblems into perFile, record per-script summaries + compile errors
+        in report.kts — degrade to diagnostics, never throw
       write .pi/work/ide-inspections/<sessionId>/<ts>.json + .md   (redacted)
       return report
 
