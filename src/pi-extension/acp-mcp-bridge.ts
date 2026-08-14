@@ -934,6 +934,22 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     return callRemoteTool(tool, confineToolArgs(tool, prepared), toolCallId, signal)
   }
 
+  // IntelliJ-first enforcement: block direct Fabric/Schema file mutations while
+  // an active IDE coding mode is in effect so writes flow through the IDE tools
+  // (ide_idea_apply_patch / create_new_file). The active-set policy already
+  // filters native file tools; fabric_exec is the remaining bypass vector.
+  pi.on('tool_call', async event => {
+    if (ideMode === 'off' || ideState !== 'active') return undefined
+    if (event?.toolName !== 'fabric_exec') return undefined
+    const code = typeof event?.input?.code === 'string' ? event.input.code : ''
+    if (!/\b(?:schema\.commit|pi\.(?:write|edit))\s*\(/.test(code)) return undefined
+    return {
+      block: true,
+      reason:
+        'IntelliJ-first mode: direct Fabric/Schema file mutations are blocked; apply and validate changes with ide_idea_apply_patch or ide_idea_create_new_file via extensions.ide_*'
+    }
+  })
+
   pi.on('session_shutdown', () => {
     transitionIdeState('shutdown', 'session shutdown')
     send({ type: 'shutdown', reason: 'session_shutdown' })
