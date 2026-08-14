@@ -537,7 +537,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
   function handleMessage(msg: IpcMessage): void {
     if (msg.type === 'hello_ack' && !registered) {
       registered = true
-      projectRoot = msg.catalog.projectPath
+      projectRoot = msg.catalog.projectPath || undefined
       const registration = registerTools(msg.catalog.tools)
       registration.catalogId = msg.catalog.catalogId
       applyIdePolicy(msg.catalog, registration)
@@ -776,6 +776,16 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
 
   function applyIdePolicy(catalog: BridgeCatalog, registration: CatalogRegistration): void {
     if (ideMode === 'off') return
+    if (catalog.projectPath === undefined || catalog.projectPath === '') {
+      policyDiagnostics.push('missing project root; IntelliJ-first mode unavailable')
+      const fallback = ideMode === 'prefer' ? 'native_fallback' : 'required_unavailable'
+      transitionIdeState(fallback, 'missing project root')
+      if (policyDiagnostics.length > 0) {
+        registration.diagnostics = [...(registration.diagnostics ?? []), ...policyDiagnostics]
+        policyDiagnostics.length = 0
+      }
+      return
+    }
     const registeredNames = new Set(registration.registered.map(item => item.exposedName))
     const indexed = indexIdeCapabilities(catalog.tools, registeredNames)
     capabilities = indexed.capabilities
@@ -821,9 +831,10 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         })
       )
     }
+    const confined = confineToolArgs(tool, args)
     let plan: MutationPlan
     try {
-      plan = buildMutationPlan(tool, args, projectRoot)
+      plan = buildMutationPlan(tool, confined, projectRoot)
     } catch (error) {
       return Promise.reject(error instanceof Error ? error : new Error(String(error)))
     }
@@ -854,6 +865,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
 
   function confineToolArgs(tool: BridgeTool, args: Record<string, unknown>): Record<string, unknown> {
     if (ideMode === 'off' || projectRoot === undefined) return args
+    const root = projectRoot
     const schema = tool.inputSchema as { properties?: Record<string, unknown> }
     const properties = schema.properties ?? {}
     const next = { ...args }
@@ -861,11 +873,9 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
       if (!PATH_KEYS.has(key)) continue
       const value = args[key]
       if (typeof value === 'string') {
-        next[key] = normalizeProjectPath(projectRoot, value, true).path
+        next[key] = normalizeProjectPath(root, value, true).path
       } else if (Array.isArray(value)) {
-        next[key] = value.map(item =>
-          typeof item === 'string' ? normalizeProjectPath(projectRoot, item, true).path : item
-        )
+        next[key] = value.map(item => (typeof item === 'string' ? normalizeProjectPath(root, item, true).path : item))
       }
     }
     return next

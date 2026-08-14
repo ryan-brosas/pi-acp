@@ -865,4 +865,34 @@ describe('IntelliJ-first coding mode policy', () => {
       ['update:src/a.ts']
     )
   })
+  it('catalog without a project root keeps prefer in fallback', async () => {
+    const { rt, emitCatalog } = wireExtension('prefer', FULL_CATALOG, undefined, '')
+    emitCatalog()
+    assert.ok(rt.active.includes('read'))
+  })
+
+  it('catalog without a project root keeps required fail closed', async () => {
+    const { rt, emitCatalog } = wireExtension('required', FULL_CATALOG, undefined, '')
+    emitCatalog()
+    assert.ok(!rt.active.includes('read'))
+  })
+
+  it('every mutation path argument is confined', async () => {
+    const catalog = FULL_CATALOG.map(t =>
+      t.remoteName === 'create_new_file'
+        ? ideTool('create_new_file', 'ide_idea_create_two_paths', {
+            filePath: { type: 'string' },
+            path: { type: 'string' }
+          })
+        : t
+    )
+    const { rt, socket, emitCatalog } = wireExtension('prefer', catalog)
+    emitCatalog()
+    const create = rt.registered.find((t: any) => t.name === 'ide_idea_create_two_paths')
+    await assert.rejects(
+      () => create.execute('t25m', { filePath: 'src/ok.ts', path: '../../evil.ts' }),
+      /outside|escape|root/i
+    )
+    assert.equal(socket.calls.length, 0)
+  })
 })
