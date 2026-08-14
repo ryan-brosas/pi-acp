@@ -1127,28 +1127,27 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     if (p.startsWith('"') && p.endsWith('"')) {
       let decoded = ''
       for (let i = 0; i < p.length; i++) {
-        const c = p[i]
-        if (c !== '\') {
-          const code = p.charCodeAt(i)
-          if (code < 128) decoded += c
-          else for (const byte of Buffer.from(c, 'utf8')) decoded += String.fromCharCode(byte)
+        const code = p.charCodeAt(i)
+        if (code !== 92) {
+          if (code < 128) decoded += p[i]
+          else for (const byte of Buffer.from(p[i], 'utf8')) decoded += String.fromCharCode(byte)
           continue
         }
-        const next = p[i + 1]
-        if (next === 't') { decoded += '	'; i++; continue }
-        if (next === 'n') { decoded += '
-'; i++; continue }
-        if (next === '"') { decoded += '"'; i++; continue }
-        if (next === '\') { decoded += '\'; i++; continue }
+        const nextCode = p.charCodeAt(i + 1)
+        if (nextCode === 116) { decoded += String.fromCharCode(9); i++; continue }
+        if (nextCode === 110) { decoded += String.fromCharCode(10); i++; continue }
+        if (nextCode === 34) { decoded += String.fromCharCode(34); i++; continue }
+        if (nextCode === 92) { decoded += String.fromCharCode(92); i++; continue }
         const octal = /^[0-7]{1,3}/.exec(p.slice(i + 1))
         if (octal) {
           decoded += String.fromCharCode(parseInt(octal[0], 8))
           i += octal[0].length
           continue
         }
-        decoded += '\'
+        decoded += String.fromCharCode(92)
       }
       p = Buffer.from(decoded, 'latin1').toString('utf8')
+    }
     return p.trim()
   }
   const lines = patch.split(/\r?\n/)
