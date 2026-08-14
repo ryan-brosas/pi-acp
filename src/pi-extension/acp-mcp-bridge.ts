@@ -971,7 +971,20 @@ const PATH_KEYS = new Set([
   'path',
   'file'
 ])
-const RESULT_PATH_KEYS = new Set(['filePath', 'file_path', 'files', 'paths', 'path', 'pathInProject', 'directoryPath', 'sourcePath', 'targetPath', 'oldPath', 'newPath', 'file'])
+const RESULT_PATH_KEYS = new Set([
+  'filePath',
+  'file_path',
+  'files',
+  'paths',
+  'path',
+  'pathInProject',
+  'directoryPath',
+  'sourcePath',
+  'targetPath',
+  'oldPath',
+  'newPath',
+  'file'
+])
 
 export type IdeCodingMode = 'off' | 'prefer' | 'required'
 export type IdeCodingState =
@@ -1339,5 +1352,12 @@ export function renderIdeCodingGuidance(
     }
     case 'required_unavailable': {
       parts.push(
-
-[Showing lines 1-1338 of 1348 (50.0KB limit). Use offset=1339 to continue.]
+        'Required IntelliJ capabilities are unavailable. Native filesystem tools remain disabled. The task is blocked until a new healthy ACP/IDE session is started.'
+      )
+      break
+    }
+    default:
+      return ''
+  }
+  return `${header}\n${parts.join('\n')}`
+}

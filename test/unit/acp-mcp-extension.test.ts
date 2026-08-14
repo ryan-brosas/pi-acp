@@ -994,7 +994,10 @@ describe('IntelliJ-first coding mode policy', () => {
   })
   it('confines results using the full path-key set', async () => {
     const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
-    socket.replyValue = { content: [{ type: 'text', text: 'x' }], structuredContent: { pathInProject: '/other/repo/x.ts' } }
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'x' }],
+      structuredContent: { pathInProject: '/other/repo/x.ts' }
+    }
     emitCatalog()
     const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
     await assert.rejects(() => read.execute('t32a', { filePath: 'src/a.ts' }), /outside|root/i)
