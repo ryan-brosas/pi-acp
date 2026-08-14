@@ -1123,7 +1123,8 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     if (tab >= 0) p = p.slice(0, tab)
     if (p.startsWith('"') && p.endsWith('"')) {
       p = p.slice(1, -1)
-      p = p.replace(/\\t/g, '\t').replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\')
+      p = p.replace(/\\t/g, '\t').replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\').replace(/\\([0-7]{1,3})/g, (_m, oct) => String.fromCharCode(parseInt(oct, 8)))
+      p = Buffer.from(p, 'latin1').toString('utf8')
     }
     return p.trim()
   }

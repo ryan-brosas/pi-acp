@@ -1008,4 +1008,12 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.ok(guidance)
     assert.match(guidance.systemPrompt, /invalid PI_ACP_IDE_MODE/)
   })
+  it('decodes octal escapes in quoted diff headers', () => {
+    const patch = [
+      '--- "a/caf\\303\\251.ts"',
+      '+++ "b/caf\\303\\251.ts"'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    assert.deepEqual(targets.map(t => t.kind + ':' + t.destination), ['update:caf\u00e9.ts'])
+  })
 })
