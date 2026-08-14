@@ -687,6 +687,22 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
       }
     }
     collect(structured, 0)
+    if (TEXT_SCAN_RESULT_TOOLS.has(tool.remoteName)) {
+      for (const block of result.content) {
+        if (block.type !== 'text') continue
+        const matches = block.text.match(/(?<!\S)\/[^\s"'<>]+/g)
+        if (!matches) continue
+        for (const raw of matches) {
+          const candidate = resolve(raw)
+          if (!existsSync(candidate)) continue
+          if (!isInside(resolve(root), candidate)) {
+            hit = true
+            break
+          }
+        }
+        if (hit) break
+      }
+    }
     const rootResolved = resolve(root)
     const realRoot = tryRealpath(rootResolved)
     let hit = false
@@ -944,6 +960,16 @@ const PATH_KEYS = new Set([
   'file'
 ])
 const RESULT_PATH_KEYS = new Set(['filePath', 'file_path', 'files', 'paths', 'path'])
+const TEXT_SCAN_RESULT_TOOLS = new Set([
+  'search_text',
+  'search_symbol',
+  'search_regex',
+  'skill_search',
+  'get_symbol_info',
+  'analyze_calls',
+  'lint_files',
+  'get_file_problems'
+])
 
 export type IdeCodingMode = 'off' | 'prefer' | 'required'
 export type IdeCodingState =

@@ -895,4 +895,20 @@ describe('IntelliJ-first coding mode policy', () => {
     )
     assert.equal(socket.calls.length, 0)
   })
+  it('annotates out-of-root paths in text-only search results in prefer', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    socket.replyValue = { content: [{ type: 'text', text: 'found at /etc/hostname and src/a.ts' }] }
+    emitCatalog()
+    const search = rt.registered.find((t: any) => t.name === 'ide_idea_skill_search')
+    const result = await search.execute('t26a', { query: 'x' })
+    assert.ok(JSON.stringify(result.details).toLowerCase().includes('outside'))
+  })
+
+  it('rejects out-of-root paths in text-only search results in required', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = { content: [{ type: 'text', text: 'found at /etc/hostname' }] }
+    emitCatalog()
+    const search = rt.registered.find((t: any) => t.name === 'ide_idea_skill_search')
+    await assert.rejects(() => search.execute('t26b', { query: 'x' }), /outside|root/i)
+  })
 })
