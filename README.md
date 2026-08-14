@@ -214,7 +214,7 @@ Loaded from:
 
 Other built-in commands:
 
-- `/model` - not implemented (use the model selector UI in the ACP client)
+- `/model` - not implemented as a slash command; use the model selector in the ACP client (wired to pi via `config_option_update`)
 - `/thinking` - maps to the client's model 'mode' selector
 - `/clear` - not implemented (use ACP client 'new' command)
 
