@@ -459,7 +459,6 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     pi.on('before_agent_start', ((event: { systemPrompt: string }) => {
       const guidance = renderIdeCodingGuidance(ideMode, ideState, capabilities, projectRoot)
       const diagnostics = policyDiagnostics.join('\n')
-      policyDiagnostics.length = 0
       const text = diagnostics === '' ? guidance : guidance === '' ? diagnostics : `${guidance}\n${diagnostics}`
       if (text === '') return undefined
       return { systemPrompt: `${event.systemPrompt}\n\n${text}` }
@@ -1298,7 +1297,8 @@ export function buildMutationPlan(tool: BridgeTool, args: Record<string, unknown
 
 export function renderIdeCodingGuidance(
   mode: IdeCodingMode,
-  state: IdeCodingState,
+
+[64 more lines in file. Use offset=1301 to continue.]  state: IdeCodingState,
   capabilities: IdeCapabilityMap,
   projectRoot: string | undefined
 ): string {
