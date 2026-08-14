@@ -1016,4 +1016,17 @@ describe('IntelliJ-first coding mode policy', () => {
       ['update:caf\u00e9.ts']
     )
   })
+  it('does not treat nested diagnostic text as result paths', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'ok' }],
+      structuredContent: {
+        files: [{ filePath: 'src/a.ts', diagnostics: [{ message: '../ invalid import' }] }]
+      }
+    }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    const result = await read.execute('t33a', { filePath: 'src/a.ts' })
+    assert.equal(result.content[0].text, 'ok')
+  })
 })
