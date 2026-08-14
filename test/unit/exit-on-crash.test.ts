@@ -21,7 +21,9 @@ describe('exitOnCrash', () => {
       code => exits.push(code),
       10
     )
-    await new Promise(resolve => setTimeout(resolve, 0))
+    // Wait past the force-exit deadline: the timer must be cancelled by the
+    // successful-dispose path (a leaked timer would push a second exit(1)).
+    await new Promise(resolve => setTimeout(resolve, 40))
     assert.equal(disposed, 1)
     assert.deepEqual(exits, [1])
   })

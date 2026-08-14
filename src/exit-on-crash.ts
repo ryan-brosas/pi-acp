@@ -26,5 +26,8 @@ export function exitOnCrash(
   }
   void Promise.resolve(dispose())
     .catch(() => undefined)
-    .finally(() => exit(1))
+    .finally(() => {
+      clearTimeout(timer)
+      exit(1)
+    })
 }
