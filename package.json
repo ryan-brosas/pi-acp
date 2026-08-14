@@ -6,7 +6,7 @@
   "author": "Sergii Kozak <svkozak@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ryan-brosas/pi-acp-jetbrain.git"
+    "url": "git+https://github.com/ryan-brosas/pi-acp-jetbrain.git"
   },
   "publishConfig": {
     "access": "public",
