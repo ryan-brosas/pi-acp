@@ -57,6 +57,14 @@ function handle(msg) {
               type: 'object',
               properties: { filePath: { type: 'string' }, errorsOnly: { type: 'boolean' } }
             }
+          },
+          {
+            name: 'run_inspection_kts',
+            description: 'Run an inspection.kts script',
+            inputSchema: {
+              type: 'object',
+              properties: { inspectionKtsCode: { type: 'string' }, contextPath: { type: 'string' } }
+            }
           }
         ]
       }
@@ -77,6 +85,32 @@ function handle(msg) {
           problems: [{ severity: 'WARNING', description: 'Fake warning', line: 1, column: 1 }]
         }
       ]
+    } else if (msg.params?.name === 'run_inspection_kts') {
+      send({
+        jsonrpc: '2.0',
+        id: msg.id,
+        result: {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                compilationSuccess: true,
+                inspectionResultMessage: 'Inspection found 1 problems',
+                foundProblems: [
+                  {
+                    message: "Avoid declaring 'any'",
+                    lineNumber: 1,
+                    highlightType: 'GENERIC_ERROR_OR_WARNING',
+                    elementText: 'any'
+                  }
+                ]
+              })
+            }
+          ],
+          isError: false
+        }
+      })
+      return
     }
     send({
       jsonrpc: '2.0',

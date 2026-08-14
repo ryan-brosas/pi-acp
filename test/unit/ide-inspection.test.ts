@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
   collectChangedFiles,
+  discoverInspectionScripts,
   inspectionSummary,
   runEnforcedInspection,
   type InspectionBridge
@@ -27,7 +28,11 @@ function makeGitRepo(): { dir: string; cleanup: () => void } {
 function fakeBridge(tools: Record<string, unknown>): InspectionBridge {
   return {
     hasRemoteTool: name => name in tools,
-    callRemoteTool: async (name: string) => tools[name]
+    callRemoteTool: async (name: string, args?: Record<string, unknown>) => {
+      const tool = tools[name]
+      if (typeof tool === 'function') return (tool as (toolArgs?: Record<string, unknown>) => unknown)(args)
+      return tool
+    }
   }
 }
 
@@ -252,5 +257,183 @@ describe('AcpMcpBridge adapter-side inspection access', () => {
     await bridge.start()
     await assert.rejects(() => bridge.callRemoteTool('nope', {}), /Unknown IDE tool: nope/)
     await bridge.dispose()
+  })
+})
+
+describe('discoverInspectionScripts', () => {
+  it('returns [] when the inspections directory is missing', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ide-inspect-'))
+    try {
+      assert.deepEqual(discoverInspectionScripts(dir), [])
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('discovers sorted *.inspection.kts scripts and skips other files', () => {
+    const repo = makeGitRepo()
+    try {
+      mkdirSync(join(repo.dir, 'inspections'), { recursive: true })
+      writeFileSync(join(repo.dir, 'inspections', 'b.inspection.kts'), 'b')
+      writeFileSync(join(repo.dir, 'inspections', 'a.inspection.kts'), 'a')
+      writeFileSync(join(repo.dir, 'inspections', 'readme.md'), 'nope')
+      const scripts = discoverInspectionScripts(repo.dir)
+      assert.deepEqual(
+        scripts.map(script => script.path),
+        ['inspections/a.inspection.kts', 'inspections/b.inspection.kts']
+      )
+      assert.deepEqual(
+        scripts.map(script => script.code),
+        ['a', 'b']
+      )
+    } finally {
+      repo.cleanup()
+    }
+  })
+})
+
+describe('runEnforcedInspection — custom inspection.kts', () => {
+  function ktsRepo(scripts: Record<string, string>) {
+    const repo = makeGitRepo()
+    mkdirSync(join(repo.dir, 'inspections'), { recursive: true })
+    for (const [name, code] of Object.entries(scripts)) writeFileSync(join(repo.dir, 'inspections', name), code)
+    return repo
+  }
+
+  it('runs repo inspection.kts scripts over changed files and folds problems into the report', async () => {
+    const repo = ktsRepo({ 'no-any.inspection.kts': 'kotlin rule' })
+    try {
+      writeFileSync(join(repo.dir, 'a.ts'), 'const x: any = 1\n')
+      const bridge = fakeBridge({
+        lint_files: [{ filePath: 'a.ts', problems: [{ severity: 'warning', description: 'built-in', line: 1 }] }],
+        run_inspection_kts: {
+          structuredContent: {
+            compilationSuccess: true,
+            inspectionResultMessage: 'Inspection found 1 problems',
+            foundProblems: [
+              {
+                message: "Avoid declaring 'any'",
+                lineNumber: 1,
+                highlightType: 'GENERIC_ERROR_OR_WARNING',
+                elementText: 'any'
+              }
+            ]
+          }
+        }
+      })
+      const outcome = await runEnforcedInspection({ bridge, cwd: repo.dir, sessionId: 's1' })
+      assert.equal(outcome.status, 'inspected')
+      if (outcome.status !== 'inspected') return
+      const item = outcome.report.items.find(entry => entry.filePath === 'a.ts')
+      assert.ok(item)
+      assert.equal(item.problems.length, 2)
+      const ktsProblem = item.problems.find(problem => problem.description?.includes("Avoid declaring 'any'"))
+      assert.ok(ktsProblem)
+      assert.equal(ktsProblem.severity, 'warning')
+      assert.equal(ktsProblem.line, 1)
+      const ktsSummaries = outcome.report.kts
+      assert.ok(ktsSummaries)
+      if (!ktsSummaries) return
+      assert.equal(ktsSummaries.length, 1)
+      const first = ktsSummaries[0]
+      assert.ok(first)
+      if (!first) return
+      assert.equal(first.status, 'ok')
+      assert.equal(first.filesRun, 1)
+      assert.equal(first.problems, 1)
+    } finally {
+      repo.cleanup()
+    }
+  })
+
+  it('records compile errors as a diagnostic without failing the inspection', async () => {
+    const repo = ktsRepo({ 'broken.inspection.kts': 'not valid kotlin' })
+    try {
+      writeFileSync(join(repo.dir, 'a.ts'), 'x\n')
+      const bridge = fakeBridge({
+        lint_files: [],
+        run_inspection_kts: {
+          structuredContent: {
+            compilationSuccess: false,
+            compilationStatus: 'ScriptException: incomplete code',
+            compilationErrorDetails: 'long stack trace\nsecond line'
+          }
+        }
+      })
+      const outcome = await runEnforcedInspection({ bridge, cwd: repo.dir, sessionId: 's1' })
+      assert.equal(outcome.status, 'inspected')
+      if (outcome.status !== 'inspected') return
+      const entry = outcome.report.kts?.[0]
+      assert.ok(entry)
+      if (!entry) return
+      assert.equal(entry.status, 'compile-error')
+      assert.ok(entry.message?.includes('ScriptException'))
+      assert.ok(!(entry.message ?? '').includes('second line'))
+      assert.ok(inspectionSummary(outcome)?.includes('custom inspections degraded'))
+    } finally {
+      repo.cleanup()
+    }
+  })
+
+  it('skips the KTS pass when run_inspection_kts is unavailable', async () => {
+    const repo = ktsRepo({ 'no-any.inspection.kts': 'rule' })
+    try {
+      writeFileSync(join(repo.dir, 'a.ts'), 'x\n')
+      const bridge = fakeBridge({ lint_files: [] })
+      const outcome = await runEnforcedInspection({ bridge, cwd: repo.dir, sessionId: 's1' })
+      assert.equal(outcome.status, 'inspected')
+      if (outcome.status !== 'inspected') return
+      assert.equal(outcome.report.kts, undefined)
+    } finally {
+      repo.cleanup()
+    }
+  })
+
+  it('degrades when a KTS call throws and keeps built-in findings', async () => {
+    const repo = ktsRepo({ 'no-any.inspection.kts': 'rule' })
+    try {
+      writeFileSync(join(repo.dir, 'a.ts'), 'x\n')
+      const bridge = fakeBridge({
+        lint_files: [{ filePath: 'a.ts', problems: [{ severity: 'error', description: 'kept', line: 2 }] }],
+        run_inspection_kts: () => {
+          throw new Error('transport down')
+        }
+      })
+      const outcome = await runEnforcedInspection({ bridge, cwd: repo.dir, sessionId: 's1' })
+      assert.equal(outcome.status, 'inspected')
+      if (outcome.status !== 'inspected') return
+      const entry = outcome.report.kts?.[0]
+      assert.ok(entry)
+      if (!entry) return
+      assert.equal(entry.status, 'error')
+      assert.ok(entry.message?.includes('transport down'))
+      assert.equal(outcome.report.errors, 1)
+      assert.equal(outcome.report.items[0]?.problems[0]?.description, 'kept')
+    } finally {
+      repo.cleanup()
+    }
+  })
+
+  it('maps KTS highlightType ERROR to error severity in counts', async () => {
+    const repo = ktsRepo({ 'no-any.inspection.kts': 'rule' })
+    try {
+      writeFileSync(join(repo.dir, 'a.ts'), 'x\n')
+      const bridge = fakeBridge({
+        lint_files: [],
+        run_inspection_kts: {
+          structuredContent: {
+            compilationSuccess: true,
+            foundProblems: [{ message: 'boom', lineNumber: 3, highlightType: 'ERROR' }]
+          }
+        }
+      })
+      const outcome = await runEnforcedInspection({ bridge, cwd: repo.dir, sessionId: 's1' })
+      assert.equal(outcome.status, 'inspected')
+      if (outcome.status !== 'inspected') return
+      assert.equal(outcome.report.errors, 1)
+      assert.equal(outcome.report.warnings, 0)
+    } finally {
+      repo.cleanup()
+    }
   })
 })

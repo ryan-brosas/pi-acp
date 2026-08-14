@@ -49,6 +49,9 @@ writeFileSync(join(repo, 'sample.ts'), 'export const sample = 1\n')
 git(['add', 'sample.ts'])
 git(['commit', '-qm', 'init'])
 writeFileSync(join(repo, 'sample.ts'), 'export const sample = 2\n')
+mkdirSync(join(repo, 'inspections'), { recursive: true })
+writeFileSync(join(repo, 'inspections', 'no-any.inspection.kts'), "import com.intellij.psi.*\n\n// Flags declared 'any' types (annotations, parameters, generics) but allows\n// `as any` casts on untyped external data, per AGENTS.md.\nval declaredAnyInspection = localInspection { psiFile, inspection ->\n    psiFile.descendants()\n        .filter { it.text == \"any\" && it.javaClass.simpleName != \"LeafPsiElement\" }\n        .filter { node ->\n            node.parents(withSelf = false).none { p -> p.javaClass.simpleName == \"TypeScriptAsExpressionImpl\" }\n        }\n        .forEach { inspection.registerProblem(it, \"Avoid declaring 'any' — use an explicit type or unknown\") }\n}\n\nlistOf(\n    InspectionKts(\n        id = \"no-declared-any-ts\",\n        localTool = declaredAnyInspection,\n        name = \"No declared any in TypeScript\",\n        htmlDescription = \"Avoid declared 'any' types; 'as any' casts for untyped external data are allowed.\",\n        level = HighlightDisplayLevel.WARNING\n    )\n)\n")
+
 
 const h = new SmokeHarness({ env: { PI_ACP_DEBUG_BRIDGE: '1', FAKE_MCP_LOG: logPath } }).start()
 try {
@@ -98,6 +101,18 @@ try {
     30_000
   )
 
+  // The gate must also run the repo inspection.kts script over the changed file.
+  await waitForLog(
+    m =>
+      m?.type === 'call' &&
+      m.name === 'run_inspection_kts' &&
+      m.args?.contextPath === 'sample.ts' &&
+      typeof m.args?.inspectionKtsCode === 'string' &&
+      m.args.inspectionKtsCode.includes('no-declared-any-ts'),
+    'run_inspection_kts invocation',
+    30_000
+  )
+
   // Outcome recorded in PromptResponse._meta.
   assert(
     r?._meta?.piAcp?.inspection?.status === 'inspected',
@@ -118,10 +133,18 @@ try {
     'no JSON report written'
   )
 
+  // KTS outcome recorded in the report.
+  const reportJson = readdirSync(reportDir).filter(f => f.endsWith('.json'))
+  const report = JSON.parse(readFileSync(join(reportDir, reportJson[0]), 'utf8'))
+  assert(
+    report?.kts?.some(s => s.scriptPath === 'inspections/no-any.inspection.kts' && s.status === 'ok' && s.problems >= 1),
+    `kts summary missing in report: ${JSON.stringify(report?.kts)}`
+  )
+
   await h.close()
   h.assertExited(0)
   console.log(
-    `OK smoke-ide-inspect (dist ${h.distHash()}; lint_files invoked; report persisted; summary surfaced; _meta recorded)`
+    `OK smoke-ide-inspect (dist ${h.distHash()}; lint_files + run_inspection_kts invoked; report persisted; summary surfaced; _meta recorded)`
   )
 } catch (err) {
   await h.close().catch(() => {})
