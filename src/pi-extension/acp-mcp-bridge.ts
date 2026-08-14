@@ -1297,8 +1297,7 @@ export function buildMutationPlan(tool: BridgeTool, args: Record<string, unknown
 
 export function renderIdeCodingGuidance(
   mode: IdeCodingMode,
-
-[64 more lines in file. Use offset=1301 to continue.]  state: IdeCodingState,
+  state: IdeCodingState,
   capabilities: IdeCapabilityMap,
   projectRoot: string | undefined
 ): string {
