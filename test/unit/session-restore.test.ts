@@ -10,7 +10,9 @@ import { FakeAgentSideConnection, asAgentConn } from '../helpers/fakes.js'
 class FakeSessions {
   restoredSession: Record<string, unknown> | null = null
 
-  constructor(private readonly buildSession: (sessionId: string, params: Record<string, unknown>) => Record<string, unknown>) {}
+  constructor(
+    private readonly buildSession: (sessionId: string, params: Record<string, unknown>) => Record<string, unknown>
+  ) {}
 
   maybeGet(sessionId: string) {
     return this.restoredSession?.sessionId === sessionId ? this.restoredSession : undefined

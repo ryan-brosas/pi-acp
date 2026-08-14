@@ -406,31 +406,20 @@ export class PiAcpAgent implements ACPAgent {
     await this.waitForBridgeReady(bridge, bridgeSettings)
 
     // Fetch state + models once (parallel) to reduce startup latency.
-    let state: Record<string, unknown> | null = null
-    let availableModels: { models?: unknown } | null = null
-    let stateErr: unknown = null
-    let availableModelsErr: unknown = null
-
-    await Promise.all([
+    const [stateResult, modelsResult] = await Promise.all([
       session.proc
         .getState()
-        .then(s => {
-          state = s as any
-        })
-        .catch(err => {
-          stateErr = err
-          state = null
-        }),
+        .then(s => ({ ok: true as const, value: s as Record<string, unknown> | null }))
+        .catch(err => ({ ok: false as const, error: err })),
       session.proc
         .getAvailableModels()
-        .then(m => {
-          availableModels = m as any
-        })
-        .catch(err => {
-          availableModelsErr = err
-          availableModels = null
-        })
+        .then(m => ({ ok: true as const, value: m as { models?: unknown } | null }))
+        .catch(err => ({ ok: false as const, error: err }))
     ])
+    const state = stateResult.ok ? stateResult.value : null
+    const stateErr = stateResult.ok ? null : stateResult.error
+    const availableModels = modelsResult.ok ? modelsResult.value : null
+    const availableModelsErr = modelsResult.ok ? null : modelsResult.error
 
     const availableModelsAuthErr = maybeAuthRequiredError(availableModelsErr)
 
@@ -445,9 +434,7 @@ export class PiAcpAgent implements ACPAgent {
     }
 
     // If pi has no models available after spawning, it's effectively unauthenticated.
-    const modelsResponse: { models?: unknown } | null = availableModels
-    const availableModelList = modelsResponse?.models
-    const rawModelsCount = Array.isArray(availableModelList) ? availableModelList.length : 0
+    const rawModelsCount = Array.isArray(availableModels?.models) ? availableModels?.models.length : 0
 
     if (rawModelsCount === 0) {
       await this.cleanupFailedNewSession(session.sessionId, state)
