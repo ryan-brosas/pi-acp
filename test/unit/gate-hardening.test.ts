@@ -23,7 +23,7 @@ describe('mergeInspectFiles', () => {
     const dir = fixture()
     try {
       const files = mergeInspectFiles(dir, ['src/a.ts'], ['src/a.ts', 'src/b.ts'])
-      assert.deepEqual(files, ['src/b.ts', 'src/a.ts'])
+      assert.deepEqual(files, ['src/a.ts', 'src/b.ts'])
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -57,7 +57,7 @@ describe('mergeInspectFiles', () => {
     const dir = fixture()
     try {
       const files = mergeInspectFiles(dir, ['./src/a.ts'], [join(dir, 'src', 'b.ts'), 'src/a.ts'])
-      assert.deepEqual(files, ['src/a.ts', 'src/b.ts'])
+      assert.deepEqual(files, ['src/b.ts', 'src/a.ts'])
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -76,6 +76,7 @@ describe('mergeInspectFiles', () => {
   it('excludes prefixed paths even when ./-prefixed', () => {
     const dir = fixture()
     try {
+      mkdirSync(join(dir, 'node_modules'), { recursive: true })
       writeFileSync(join(dir, 'node_modules', 'y.ts'), 'x')
       const files = mergeInspectFiles(dir, ['./node_modules/y.ts'], ['src/a.ts'])
       assert.deepEqual(files, ['src/a.ts'])

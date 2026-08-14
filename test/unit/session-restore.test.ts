@@ -8,17 +8,18 @@ import { PiRpcProcess } from '../../src/pi-rpc/process.js'
 import { FakeAgentSideConnection, asAgentConn } from '../helpers/fakes.js'
 
 class FakeSessions {
-  restoredSession: any = null
+  restoredSession: Record<string, unknown> | null = null
 
-  constructor(private readonly buildSession: (sessionId: string, params: any) => any) {}
+  constructor(private readonly buildSession: (sessionId: string, params: Record<string, unknown>) => Record<string, unknown>) {}
 
   maybeGet(sessionId: string) {
     return this.restoredSession?.sessionId === sessionId ? this.restoredSession : undefined
   }
 
-  getOrCreate(sessionId: string, params: any) {
+  getOrCreate(sessionId: string, params: Record<string, unknown>) {
     if (!this.restoredSession) {
       this.restoredSession = this.buildSession(sessionId, params)
+      this.restoredSession.touchedFilePaths = new Set()
     }
     return this.restoredSession
   }
@@ -27,8 +28,8 @@ class FakeSessions {
 test('PiAcpAgent: prompt auto-restores a missing session from SessionStore', async () => {
   const conn = new FakeAgentSideConnection()
   const promptCalls: Array<{ message: string; images: unknown[] }> = []
-  const spawnCalls: any[] = []
-  const storeUpserts: any[] = []
+  const spawnCalls: Array<Record<string, unknown>> = []
+  const storeUpserts: Array<Record<string, unknown>> = []
 
   const sessions = new FakeSessions((sessionId, params) => ({
     sessionId,
@@ -65,7 +66,7 @@ test('PiAcpAgent: prompt auto-restores a missing session from SessionStore', asy
           updatedAt: new Date().toISOString()
         }
       },
-      upsert(entry: any) {
+      upsert(entry: Record<string, unknown>) {
         storeUpserts.push(entry)
       }
     }
@@ -120,9 +121,9 @@ test('PiAcpAgent: setSessionConfigOption auto-restores via pi session discovery 
 
   process.env.PI_CODING_AGENT_DIR = root
 
-  const storeUpserts: any[] = []
+  const storeUpserts: Array<Record<string, unknown>> = []
   const setModelCalls: Array<{ provider: string; modelId: string }> = []
-  const spawnCalls: any[] = []
+  const spawnCalls: Array<Record<string, unknown>> = []
   const state = {
     thinkingLevel: 'medium',
     model: { provider: 'test', id: 'alpha' }
@@ -135,7 +136,7 @@ test('PiAcpAgent: setSessionConfigOption auto-restores via pi session discovery 
   }))
 
   const originalSpawn = PiRpcProcess.spawn
-  ;(PiRpcProcess as any).spawn = async (params: any) => {
+  ;(PiRpcProcess as Record<string, unknown>).spawn = async (params: Record<string, unknown>) => {
     spawnCalls.push(params)
     return {
       onEvent: () => () => {},
@@ -160,7 +161,7 @@ test('PiAcpAgent: setSessionConfigOption auto-restores via pi session discovery 
       get() {
         return null
       },
-      upsert(entry: any) {
+      upsert(entry: Record<string, unknown>) {
         storeUpserts.push(entry)
       }
     }

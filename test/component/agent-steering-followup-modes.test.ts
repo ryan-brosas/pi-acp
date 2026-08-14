@@ -4,7 +4,9 @@ import { PiAcpAgent } from '../../src/acp/agent.js'
 import { FakeAgentSideConnection, FakePiRpcProcess, asAgentConn } from '../helpers/fakes.js'
 
 class FakeSessions {
-  constructor(private readonly session: any) {}
+  constructor(private readonly session: Record<string, unknown>) {
+    session.touchedFilePaths = new Set()
+  }
   maybeGet(_id: string) {
     return this.session
   }
