@@ -556,7 +556,6 @@ export class PiAcpAgent implements ACPAgent {
 
   async prompt(params: PromptRequest): Promise<PromptResponse> {
     const session = await this.restoreSession(params.sessionId)
-    session.touchedFilePaths.clear()
 
     const { message, images } = promptToPiMessage(params.prompt)
 
@@ -1020,6 +1019,7 @@ export class PiAcpAgent implements ACPAgent {
 
     if (result === 'end_turn') {
       const inspection = await this.enforceIdeInspection(session)
+      session.touchedFilePaths.clear()
       if (inspection) {
         return { stopReason: 'end_turn', _meta: { piAcp: { inspection } } }
       }
