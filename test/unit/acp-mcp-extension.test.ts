@@ -1037,4 +1037,19 @@ describe('IntelliJ-first coding mode policy', () => {
       ['update:caf\u00e9.ts']
     )
   })
+  it('decodes quoted headers with emoji, trailing space, and CR escapes', () => {
+    const patch = [
+      '--- "a/rocket \\ud83d\\ude80.ts"',
+      '+++ "b/rocket \\ud83d\\ude80.ts"',
+      '--- "a/name .ts"',
+      '+++ "b/name .ts"',
+      '--- "a/line\\rfeed.ts"',
+      '+++ "b/line\\rfeed.ts"'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    const byPath = new Map(targets.map(t => [t.destination, t]))
+    assert.equal(byPath.get('rocket \\ud83d\\ude80.ts')?.kind, 'update')
+    assert.equal(byPath.get('name .ts')?.kind, 'update')
+    assert.equal(byPath.get('line\u000dfeed.ts')?.kind, 'update')
+  })
 })

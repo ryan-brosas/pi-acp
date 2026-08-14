@@ -1126,44 +1126,89 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     if (tab >= 0) p = p.slice(0, tab)
     if (p.startsWith('"') && p.endsWith('"')) {
       p = p.slice(1, -1)
-      let decoded = ''
-      for (let i = 0; i < p.length; i++) {
-        const code = p.charCodeAt(i)
+      const chars = Array.from(p)
+      let result = ''
+      let run: number[] = []
+      const flush = () => {
+        if (run.length > 0) {
+          result += Buffer.from(run).toString('utf8')
+          run = []
+        }
+      }
+      for (let i = 0; i < chars.length; i++) {
+        const code = chars[i].codePointAt(0) as number
         if (code !== 92) {
-          if (code < 128) decoded += p[i]
-          else for (const byte of Buffer.from(p[i], 'utf8')) decoded += String.fromCharCode(byte)
+          flush()
+          result += chars[i]
           continue
         }
-        const nextCode = p.charCodeAt(i + 1)
+        const nextCode = i + 1 < chars.length ? (chars[i + 1].codePointAt(0) as number) : -1
         if (nextCode === 116) {
-          decoded += String.fromCharCode(9)
+          flush()
+          result += String.fromCharCode(9)
           i++
           continue
         }
         if (nextCode === 110) {
-          decoded += String.fromCharCode(10)
+          flush()
+          result += String.fromCharCode(10)
+          i++
+          continue
+        }
+        if (nextCode === 114) {
+          flush()
+          result += String.fromCharCode(13)
+          i++
+          continue
+        }
+        if (nextCode === 98) {
+          flush()
+          result += String.fromCharCode(8)
+          i++
+          continue
+        }
+        if (nextCode === 102) {
+          flush()
+          result += String.fromCharCode(12)
+          i++
+          continue
+        }
+        if (nextCode === 118) {
+          flush()
+          result += String.fromCharCode(11)
+          i++
+          continue
+        }
+        if (nextCode === 97) {
+          flush()
+          result += String.fromCharCode(7)
           i++
           continue
         }
         if (nextCode === 34) {
-          decoded += String.fromCharCode(34)
+          flush()
+          result += String.fromCharCode(34)
           i++
           continue
         }
         if (nextCode === 92) {
-          decoded += String.fromCharCode(92)
+          flush()
+          result += String.fromCharCode(92)
           i++
           continue
         }
-        const octal = /^[0-7]{1,3}/.exec(p.slice(i + 1))
+        const rest = chars.slice(i + 1).join('')
+        const octal = /^[0-7]{1,3}/.exec(rest)
         if (octal) {
-          decoded += String.fromCharCode(parseInt(octal[0], 8))
+          run.push(parseInt(octal[0], 8))
           i += octal[0].length
           continue
         }
-        decoded += String.fromCharCode(92)
+        flush()
+        result += String.fromCharCode(92)
       }
-      p = Buffer.from(decoded, 'latin1').toString('utf8')
+      flush()
+      p = result
     }
     return p.trim()
   }
