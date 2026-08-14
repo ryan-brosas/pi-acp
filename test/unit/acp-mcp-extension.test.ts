@@ -956,8 +956,8 @@ describe('IntelliJ-first coding mode policy', () => {
     const patch = [
       '--- "a/my file.ts"\t2026-01-01 10:00:00.000000000 +0000',
       '+++ "b/my file.ts"\t2026-01-01 10:05:00.000000000 +0000',
-      '--- "a/weird\\\"name.ts"\t2026-01-01 10:00:00.000000000 +0000',
-      '+++ "b/weird\\\"name.ts"\t2026-01-01 10:05:00.000000000 +0000'
+      '--- "a/weird\\"name.ts"\t2026-01-01 10:00:00.000000000 +0000',
+      '+++ "b/weird\\"name.ts"\t2026-01-01 10:05:00.000000000 +0000'
     ].join('\n')
     const targets = parsePatchTargets(patch)
     const byPath = new Map(targets.map(t => [t.destination, t]))
