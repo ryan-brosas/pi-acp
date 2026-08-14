@@ -1101,6 +1101,11 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
     if (value.startsWith('b/')) return value.slice(2)
     return value
   }
+  const cleanHeaderPath = (value: string): string => {
+    let p = value.trim()
+    if (p.startsWith('"') && p.endsWith('"')) p = p.slice(1, -1)
+    return p.split('\t')[0].trim()
+  }
   const lines = patch.split(/\r?\n/)
   if (lines[0]?.trim() === '*** Begin Patch') {
     let current: { kind: PatchTargetKind; destination: string; source?: string } | undefined
@@ -1164,8 +1169,8 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
       continue
     }
     if (newHeader && pendingOld !== undefined) {
-      const oldPath = stripPrefix(pendingOld)
-      const newPath = stripPrefix(newHeader[1].trim())
+      const oldPath = cleanHeaderPath(stripPrefix(pendingOld))
+      const newPath = cleanHeaderPath(stripPrefix(newHeader[1].trim()))
       if (oldPath === '/dev/null' && newPath !== '/dev/null') add('add', newPath)
       else if (newPath === '/dev/null' && oldPath !== '/dev/null') add('delete', oldPath)
       else if (oldPath !== '/dev/null' && newPath !== '/dev/null') {

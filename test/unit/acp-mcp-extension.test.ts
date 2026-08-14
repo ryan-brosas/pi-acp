@@ -938,4 +938,18 @@ describe('IntelliJ-first coding mode policy', () => {
     const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
     await assert.rejects(() => read.execute('t24i', { filePath: 'src/a.ts' }), /scoped|outside|root|truncated/i)
   })
+  it('parses timestamped unified diff headers', () => {
+    const patch = [
+      '--- a/src/a.ts\t2026-01-01 10:00:00.000000000 +0000',
+      '+++ b/src/a.ts\t2026-01-01 10:05:00.000000000 +0000',
+      '@@ -1,1 +1,1 @@',
+      '-old',
+      '+new'
+    ].join('\n')
+    const targets = parsePatchTargets(patch)
+    assert.deepEqual(
+      targets.map(t => t.kind + ':' + t.destination),
+      ['update:src/a.ts']
+    )
+  })
 })
