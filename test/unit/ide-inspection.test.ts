@@ -437,3 +437,18 @@ describe('runEnforcedInspection — custom inspection.kts', () => {
     }
   })
 })
+import { computeMutationViolations } from '../../src/acp/ide-inspection.js'
+
+describe('computeMutationViolations', () => {
+  it('returns changed paths not covered by the IDE-applied ledger', () => {
+    assert.deepEqual(computeMutationViolations(['src/a.ts'], ['src/a.ts']), [])
+    assert.deepEqual(computeMutationViolations(['src/a.ts'], []), ['src/a.ts'])
+    assert.deepEqual(computeMutationViolations(['src/a.ts', 'src/b.ts'], ['src/b.ts']), ['src/a.ts'])
+  })
+
+  it('handles empty inputs and dedupes', () => {
+    assert.deepEqual(computeMutationViolations([], []), [])
+    assert.deepEqual(computeMutationViolations(['src/a.ts', 'src/a.ts'], ['other.ts']), ['src/a.ts'])
+  })
+})
+

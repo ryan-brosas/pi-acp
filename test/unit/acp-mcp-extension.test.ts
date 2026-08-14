@@ -432,6 +432,22 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.equal(blocked?.block, true)
   })
 
+  it('reports applied mutation paths to the adapter after a successful IDE mutation', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
+    emitCatalog()
+    const apply = rt.registered.find((t: any) => t.name === 'ide_idea_apply_patch')
+    assert.ok(apply, 'apply_patch registered')
+    const result = await apply.execute('t35a', {
+      patch: '--- a/src/a.ts\n+++ b/src/a.ts\n',
+      projectPath: '/workspace/project'
+    })
+    assert.equal(result.content[0].text, 'ok')
+    const frames = socket.writes.map(w => JSON.parse(w))
+    const applied = frames.find((m: any) => m.type === 'mutations_applied')
+    assert.ok(applied, 'mutations_applied frame sent to the adapter')
+    assert.deepEqual(applied.paths, ['src/a.ts'])
+  })
+
   it('does not register the mutation gate when IntelliJ-first mode is off', async () => {
     const { rt, emitCatalog } = wireExtension('off', FULL_CATALOG)
     emitCatalog()
