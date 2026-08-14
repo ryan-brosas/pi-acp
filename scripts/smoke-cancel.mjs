@@ -10,6 +10,10 @@ try {
   assert(typeof created?.sessionId === 'string' && created.sessionId.length > 0, 'missing sessionId')
   const sessionId = created.sessionId
 
+  // Baseline: startup info itself is delivered as an agent_message_chunk, so only
+  // chunks arriving after session/new prove the model turn is streaming (P1-5 audit).
+  const baseline = h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length
+
   const slow = h.expectResult(
     3,
     'session/prompt',
@@ -24,9 +28,12 @@ try {
     },
     { timeoutMs: 60_000 }
   )
-  await h.waitForUpdate(u => u?.sessionUpdate === 'agent_message_chunk', { timeoutMs: 30_000 })
+  await h.waitForUpdate(
+    () => h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length > baseline,
+    { timeoutMs: 30_000 }
+  )
   const before = h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length
-  assert(before > 0, 'no agent_message_chunk observed before cancel')
+  assert(before > baseline, 'no model agent_message_chunk observed before cancel')
 
   h.notify('session/cancel', { sessionId })
   const result = await slow

@@ -24,6 +24,17 @@ if (!probes.length) {
   process.exit(1)
 }
 
+// P1-6 audit: dogfood must exercise a fresh build — previously the build step was
+// filtered out and a stale dist could report green. Build once, then probe.
+const build = spawnSync('npm', ['run', 'build'], { cwd: root, encoding: 'utf8', timeout: 300_000 })
+if (build.status !== 0) {
+  console.error(`dogfood-report: build failed (exit ${build.status})\n${(build.stderr ?? '').slice(-2000)}`)
+  process.exit(1)
+}
+console.log(
+  `dogfood-report: fresh build (dist ${createHash('sha256').update(readFileSync(join(root, 'dist', 'index.js'))).digest('hex').slice(0, 12)})`
+)
+
 const REDACT_RE =
   /(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|Bearer\s+\S+|(?:authorization|token|secret|password)[=:]\s*\S+)/gi
 const redact = s =>

@@ -100,3 +100,13 @@ const md = [
 const mdPath = join(outDir, 'fresh-host-checklist.md')
 writeFileSync(mdPath, md)
 console.log(`dogfood-ide: evidence written to ${mdPath.replace(root, '.')}`)
+
+// P1-6 audit: warn findings (missing config, remote/stale adapter PIDs) mean
+// acceptance is incomplete — a green exit would be false confidence. The F-033
+// checklist todo is host-only and does not fail the run.
+const warnCount = findings.filter(f => f.kind === 'warn').length
+if (warnCount > 0) {
+  console.error(`dogfood-ide: ${warnCount} warn finding(s) — fresh-host acceptance incomplete (nonzero exit)`)
+  process.exit(1)
+}
+console.log('dogfood-ide: no warn findings; complete the fresh-chat checklist for F-033')

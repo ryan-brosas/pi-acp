@@ -13,6 +13,10 @@ try {
   const payloadBytes = JSON.stringify(created).length
   assert(payloadBytes <= PAYLOAD_BUDGET, `session/new payload ${payloadBytes} bytes exceeds ${PAYLOAD_BUDGET}`)
 
+  // Startup info is delivered as an agent_message_chunk; count only chunks arriving
+  // after session/new as model-turn evidence (P1-5 audit).
+  const baseline = h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length
+
   const promptResult = await h.expectResult(
     3,
     'session/prompt',
@@ -21,7 +25,7 @@ try {
   )
   assert(promptResult?.stopReason === 'end_turn', `stopReason=${promptResult?.stopReason}`)
   const chunks = h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk')
-  assert(chunks.length > 0, 'no agent_message_chunk updates observed')
+  assert(chunks.length > baseline, 'no model agent_message_chunk updates observed')
 
   await h.close()
   h.assertExited(0)
