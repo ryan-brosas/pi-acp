@@ -11,6 +11,8 @@ const KTS_SCRIPT_SUFFIX = '.inspection.kts'
 const DEFAULT_MAX_KTS_SCRIPTS = 8
 const DEFAULT_MAX_KTS_CALLS = 120
 const MAX_KTS_SCRIPT_BYTES = 64 * 1024
+const KTS_RETRY_DELAY_MS = 1000
+const RAW_DIAGNOSTIC_MAX_CHARS = 400
 
 export interface IdeInspectionProblem {
   severity: string
@@ -74,6 +76,8 @@ export interface RunEnforcedInspectionOptions {
   maxFiles?: number
   maxKtsCalls?: number
   timeoutMs?: number
+  /** Files touched by this turn's tool calls; merged with git status so the gate still fires after an auto-commit sweep. */
+  extraFiles?: string[]
 }
 
 /**
@@ -103,6 +107,42 @@ export function collectChangedFiles(cwd: string, maxFiles = DEFAULT_MAX_FILES): 
     if (files.length >= maxFiles) break
   }
   return files
+}
+
+/**
+ * Merge git-status files with turn-touched tool-call paths so the gate still
+ * inspects a turn's edits after the auto-commit watcher swept the tree.
+ * Dedupes, applies the same exclusion prefixes as collectChangedFiles, and
+ * drops paths that no longer exist.
+ */
+export function mergeInspectFiles(
+  cwd: string,
+  gitFiles: string[],
+  extraFiles: string[],
+  maxFiles = DEFAULT_MAX_FILES
+): string[] {
+  const seen = new Set<string>()
+  const files: string[] = []
+  for (const file of [...gitFiles, ...extraFiles]) {
+    if (!file || seen.has(file)) continue
+    if (EXCLUDED_PREFIXES.some(prefix => file.startsWith(prefix))) continue
+    if (!existsSync(join(cwd, file))) continue
+    seen.add(file)
+    files.push(file)
+    if (files.length >= maxFiles) break
+  }
+  return files
+}
+
+/** Compact diagnostic for an unexpected run_inspection_kts payload (bounded). */
+export function summarizeMalformedRaw(raw: unknown, maxChars = RAW_DIAGNOSTIC_MAX_CHARS): string {
+  let text: string
+  try {
+    text = JSON.stringify(raw)
+  } catch {
+    text = String(raw)
+  }
+  return text.slice(0, maxChars)
 }
 
 function isErrorSeverity(severity: string): boolean {
@@ -336,6 +376,18 @@ async function runKtsInspections(opts: {
           timeoutMs
         )
         outcome = normalizeKtsResult(raw)
+        if (outcome.status === 'malformed') {
+          await new Promise(resolve => setTimeout(resolve, KTS_RETRY_DELAY_MS))
+          const retryRaw = await bridge.callRemoteTool(
+            'run_inspection_kts',
+            { inspectionKtsCode: script.code, contextPath: file },
+            timeoutMs
+          )
+          outcome = normalizeKtsResult(retryRaw)
+          if (outcome.status === 'malformed') {
+            outcome.message = `malformed result after retry — raw: ${summarizeMalformedRaw(retryRaw)}`
+          }
+        }
       } catch (error) {
         outcome = {
           status: 'error',
@@ -436,7 +488,8 @@ export async function runEnforcedInspection(opts: RunEnforcedInspectionOptions):
 
   const maxFiles = opts.maxFiles ?? DEFAULT_MAX_FILES
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS
-  const files = collectChangedFiles(opts.cwd, maxFiles)
+  const gitFiles = collectChangedFiles(opts.cwd, maxFiles)
+  const files = mergeInspectFiles(opts.cwd, gitFiles, opts.extraFiles ?? [], maxFiles)
   if (files.length === 0) return { status: 'skipped', reason: 'no changed files to inspect' }
 
   let items: IdeInspectionFile[]

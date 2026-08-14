@@ -122,6 +122,34 @@ type RemoteToolsPage = { tools?: RemoteTool[]; nextCursor?: string }
  * MCP transport remains supported for other hosts. All transports use the
  * same bounded, immutable per-session catalog and Pi IPC adapter.
  */
+
+/**
+ * Remote tools the IDE MCP server may expose that stay outside the default
+ * profile (AGENTS.md): universal execution, debugger launch/control, and
+ * breakpoint mutation. Explicitly re-allow a reviewed tool with
+ * PI_ACP_IDE_EXTRA_TOOLS (comma-separated remote names); AllowAll is never
+ * implied by this list.
+ */
+const DEFAULT_IDE_DENYLIST = [
+  'execute_tool',
+  'xdebug_set_breakpoint',
+  'xdebug_start_debugger_session',
+  'xdebug_control_session'
+] as const
+
+export function extraAllowSet(): ReadonlySet<string> {
+  return new Set(
+    (process.env.PI_ACP_IDE_EXTRA_TOOLS ?? '')
+      .split(',')
+      .map(name => name.trim())
+      .filter(name => name.length > 0)
+  )
+}
+
+export function isDefaultDenied(remoteName: string, extra: ReadonlySet<string>): boolean {
+  return (DEFAULT_IDE_DENYLIST as readonly string[]).includes(remoteName) && !extra.has(remoteName)
+}
+
 export class AcpMcpBridge {
   readonly sessionId: string
   #lifecycle: BridgeLifecycle = 'idle'
@@ -309,6 +337,12 @@ export class AcpMcpBridge {
   }
   #addTools(server: McpServer, connectionId: string, remoteTools: RemoteTool[], usedNames: Set<string>): void {
     for (const tool of remoteTools) {
+      if (isDefaultDenied(tool.name, extraAllowSet())) {
+        this.#diagnostics.push(
+          `IDE bridge: ${server.name} tool excluded from default profile (${tool.name}; re-allow with PI_ACP_IDE_EXTRA_TOOLS)`
+        )
+        continue
+      }
       if (this.#tools.size >= this.#maxTools) {
         this.#catalogComplete = false
         this.#diagnostics.push(`IDE bridge: global tool catalog truncated at ${this.#maxTools} tools`)
