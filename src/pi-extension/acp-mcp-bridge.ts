@@ -1131,7 +1131,6 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
         .replace(/\\n/g, '\n')
         .replace(/\\"/g, '"')
         .replace(/\\\\/g, '\\')
-        .replace(/\\([0-7]{1,3})/g, (_m, oct) => String.fromCharCode(parseInt(oct, 8)))
       const bytes: number[] = []
       const octalRe = /\\([0-7]{1,3})/g
       let match: RegExpExecArray | null
