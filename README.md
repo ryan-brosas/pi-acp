@@ -1,5 +1,10 @@
 # pi-acp-jetbrain
 
+[![npm version](https://img.shields.io/npm/v/pi-acp-jetbrain)](https://www.npmjs.com/package/pi-acp-jetbrain)
+[![npm downloads](https://img.shields.io/npm/dm/pi-acp-jetbrain)](https://www.npmjs.com/package/pi-acp-jetbrain)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![check](https://github.com/ryan-brosas/pi-acp-jetbrain/actions/workflows/check.yml/badge.svg)](https://github.com/ryan-brosas/pi-acp-jetbrain/actions/workflows/check.yml)
+
 An Agent Client Protocol (ACP) adapter for the pi coding agent. JetBrains IntelliJ is the primary host. Other ACP clients work with partial coverage.
 
 The adapter runs as an ACP server over stdio. Each ACP session starts one `pi --mode rpc` subprocess. The adapter translates messages between the client and pi.

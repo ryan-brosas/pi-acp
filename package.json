@@ -20,9 +20,11 @@
     "acp",
     "agent-client-protocol",
     "pi-coding-agent",
+    "coding-agent",
     "adapter",
     "jetbrains",
-    "intellij"
+    "intellij",
+    "mcp"
   ],
   "engines": {
     "node": ">=20"
@@ -32,9 +34,7 @@
   "bin": {
     "pi-acp": "dist/index.js"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsup",
