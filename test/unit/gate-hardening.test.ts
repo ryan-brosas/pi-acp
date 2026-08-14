@@ -27,7 +27,11 @@ describe('mergeInspectFiles', () => {
   it('filters excluded prefixes and nonexistent paths', () => {
     const dir = fixture()
     try {
-      const files = mergeInspectFiles(dir, ['dist/x.js', 'node_modules/y/index.ts', 'src/missing.ts', 'src/a.ts'], ['src/a.ts'])
+      const files = mergeInspectFiles(
+        dir,
+        ['dist/x.js', 'node_modules/y/index.ts', 'src/missing.ts', 'src/a.ts'],
+        ['src/a.ts']
+      )
       assert.deepEqual(files, ['src/a.ts'])
     } finally {
       rmSync(dir, { recursive: true, force: true })
@@ -47,7 +51,7 @@ describe('mergeInspectFiles', () => {
 
 describe('summarizeMalformedRaw', () => {
   it('truncates oversized payloads', () => {
-    const raw = { compilationSuccess: undefined, note: 'x'.repeat(2000) }
+    const raw = { compilationSuccess: null, note: 'x'.repeat(2000) }
     const s = summarizeMalformedRaw(raw)
     assert.ok(s.length <= 400)
     assert.ok(s.includes('compilationSuccess'))
@@ -60,7 +64,7 @@ describe('summarizeMalformedRaw', () => {
   })
 
   it('renders primitives', () => {
-    assert.equal(summarizeMalformedRaw('tool error: kaboom'), 'tool error: kaboom')
+    assert.equal(summarizeMalformedRaw('tool error: kaboom'), '"tool error: kaboom"')
     assert.equal(summarizeMalformedRaw(null), 'null')
   })
 })
