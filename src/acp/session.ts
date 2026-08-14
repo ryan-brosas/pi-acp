@@ -473,10 +473,11 @@ export class PiAcpSession {
       })
     }
 
+    // Cancel active IDE bridge tool calls for this turn before the (potentially slow)
+    // pi abort RPC: bridge cancellation must never wait on pi mid-generation (P1-2 audit).
+    this.bridge?.cancelAll()
     // Abort the currently running turn (if any). If nothing is running, this is a no-op.
     await this.proc.abort()
-    // Cancel active IDE bridge tool calls for this turn (without closing connections).
-    this.bridge?.cancelAll()
   }
 
   wasCancelRequested(): boolean {

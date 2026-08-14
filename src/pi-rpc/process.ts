@@ -92,6 +92,12 @@ export class PiRpcProcess {
   private readonly exitPromise: Promise<void>
   private eventHandlers: Array<(ev: PiRpcEvent) => void> = []
   private readonly preludeLines: string[] = []
+  private readonly stderrTail: string[] = []
+
+  /** Bounded tail of retained child stderr for diagnostics; the raw stream stays untouched. */
+  stderrTailLines(limit = 40): string[] {
+    return this.stderrTail.slice(-limit)
+  }
 
   private constructor(child: ChildProcessWithoutNullStreams, requestTimeoutMs: number) {
     this.child = child
@@ -203,8 +209,11 @@ export class PiRpcProcess {
       throw new PiRpcSpawnError(`Could not start pi (command: ${cmd}).`, { code, cause: e })
     }
 
-    child.stderr.on('data', () => {
-      // leave stderr untouched; ACP clients may capture it.
+    child.stderr.on('data', chunk => {
+      // Retain a bounded tail for diagnostics; the raw stream stays untouched so ACP
+      // clients (which capture stderr) still receive the original output (P1-3 audit).
+      for (const line of String(chunk).split('\n')) this.stderrTail.push(line)
+      if (this.stderrTail.length > 200) this.stderrTail.splice(0, this.stderrTail.length - 200)
     })
 
     const proc = new PiRpcProcess(child, params.requestTimeoutMs ?? 30_000)
