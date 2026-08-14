@@ -43,7 +43,7 @@ Make sure pi is installed
 npm install -g @earendil-works/pi-coding-agent
 ```
 
-- Node.js 22+
+- Node.js 20+ (the CI matrix runs Node 20 and 24)
 - `pi` v0.80.4+ installed and available on your `PATH` (the adapter runs the `pi` executable)
 - Configure `pi` separately for your model providers/API keys
 
@@ -62,17 +62,30 @@ IntelliJ ships an ACP host; register `pi-acp-jetbrain` as an agent server in Int
       "env": {
         "PI_ACP_PI_COMMAND": "/path/to/pi",
         "PI_ACP_DEBUG_BRIDGE": "1"
-      }
+      },
+      "idea_mcp_allowed_tools": [
+        "search_symbol", "get_symbol_info", "analyze_calls",
+        "search_text", "search_regex", "get_file_problems",
+        "lint_files", "build_project", "execute_run_configuration",
+        "git_status", "get_repositories", "get_project_modules",
+        "get_project_dependencies", "list_directory_tree", "read_file",
+        "search_file", "open_file_in_editor", "get_all_open_file_paths",
+        "skill_search"
+      ]
     }
   }
 }
 ```
+
+`idea_mcp_allowed_tools` is a deny-all mask plus the named tools (see [Limitations](#limitations)); the profile above is the recommended read/build safe default — add only the tools you need. Omitting the key means the IDE allows everything (AllowAll), which is a deliberate security decision.
 
 IntelliJ passes its private IDE MCP server per chat; the bridge exposes the IDE's semantic tools to pi as `ide_<server>_<tool>` extension tools (see [Limitations](#limitations)). The same bridge is designed for any JetBrains IDE that ships ACP plus the integrated MCP server (IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, RubyMine, RustRover, Rider, CLion, DataGrip, DataSpell); per JetBrains documentation ACP and the integrated MCP server are available across these products. Tools are discovered dynamically, so product-specific capabilities surface per IDE and every tool stays optional.
 
 ### Package installation for IntelliJ
 
 #### Using `npx`
+
+Pin the version (`npx -y pi-acp-jetbrain@<version>`) so a future start cannot silently fetch a different release.
 
 ```json
 {
@@ -138,15 +151,17 @@ Point IntelliJ to the built `dist/index.js`:
 Add environment variables to the IntelliJ agent entry in `~/.jetbrains/acp.json`:
 
 ```json
+{
   "agent_servers": {
     "pi-acp-jetbrain": {
       "command": "node",
       "args": ["/path/to/pi-acp-jetbrain/dist/index.js"],
       "env": {
-          "PI_ACP_ENABLE_EMBEDDED_CONTEXT": "true",
+        "PI_ACP_ENABLE_EMBEDDED_CONTEXT": "true"
       }
     }
   }
+}
 ```
 
 ### Slash commands
@@ -229,7 +244,7 @@ Project layout:
 - After rebuilding the adapter, start a new chat: Node does not reload replaced files and IntelliJ reuses running agent processes. Verify the loaded bundle via `initialize.agentInfo._meta.piAcp.build` revision on a fresh PID (F-008).
 - The smoke matrix bounds the startup prelude (`startupInfo` ≤ 32 KB) and the `session/new` payload (≤ 64 KB) and prints measured sizes each run (F-010).
 
-- Assistant streaming is currently sent as `agent_message_chunk` (no separate thought stream).
+- Assistant streaming is sent as `agent_message_chunk`; model reasoning arrives as `agent_thought_chunk` when the provider emits it.
 - Queue is implemented client-side and should work like pi's `one-at-a-time`
 - ~~ACP clients don't yet suport session history, but ACP sessions from `pi-acp-jetbrain` can be `/resume`d in pi directly~~
 

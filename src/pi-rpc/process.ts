@@ -154,7 +154,9 @@ export class PiRpcProcess {
     child.stderr.on('data', chunk => {
       // Retain a bounded tail for diagnostics; the raw stream stays untouched so ACP
       // clients (which capture stderr) still receive the original output (P1-3 audit).
-      for (const line of String(chunk).split('\n')) this.stderrTail.push(line)
+      for (const line of String(chunk).split('\n')) {
+        if (line.length > 0) this.stderrTail.push(line)
+      }
       if (this.stderrTail.length > 200) this.stderrTail.splice(0, this.stderrTail.length - 200)
     })
   }
