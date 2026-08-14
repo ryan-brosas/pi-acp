@@ -378,6 +378,8 @@ export class PiAcpSession {
     })
   }
 
+  lastError: string | null = null
+
   /**
    * Idempotent session disposal: end queued work, dispose the IDE bridge
    * (rejects pending bridge calls, closes IPC, disconnects ACP MCP servers
@@ -581,6 +583,10 @@ export class PiAcpSession {
           this.pendingTurn?.reject(authErr)
         } else {
           const reason: StopReason = this.cancelRequested ? 'cancelled' : 'error'
+          if (reason === 'error') {
+            const tail = this.proc.stderrTailLines(8).join('\n')
+            this.lastError = `${err instanceof Error ? err.message : String(err)}${tail ? `\nstderr:\n${tail}` : ''}`
+          }
           this.pendingTurn?.resolve(reason)
         }
 
