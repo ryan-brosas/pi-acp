@@ -217,7 +217,7 @@ import { parsePatchTargets } from '../../src/pi-extension/acp-mcp-bridge.js'
 function makeFakeRuntime(
   initialActive: string[] = ['read', 'edit', 'write', 'grep', 'find', 'ls', 'bash', 'my_ext_tool']
 ) {
-  const handlers = new Map<string, Array<(event: any, ctx: any) => unknown>>()
+  const handlers = new Map<string, Array<(event: any, ctx: any) => any>>()
   const all = new Set<string>(initialActive)
   let active = [...initialActive]
   const registered: any[] = []
@@ -374,7 +374,6 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.equal(result.content[0].text, 'ok')
   })
 
-
   it('blocks direct Fabric file mutations while IntelliJ-first mode is active', async () => {
     const { rt, emitCatalog } = wireExtension('required', FULL_CATALOG)
     emitCatalog()
@@ -382,7 +381,7 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.ok(gate, 'tool_call gate registered')
 
     for (const code of [
-      "await schema.commit({ operations: [] })",
+      'await schema.commit({ operations: [] })',
       "await pi.write({ path: 'src/a.ts', text: 'x' })",
       "await pi.edit({ path: 'src/a.ts', old: 'a', new: 'b' })"
     ]) {

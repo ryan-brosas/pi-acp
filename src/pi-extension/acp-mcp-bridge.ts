@@ -1018,7 +1018,12 @@ const RESULT_PATH_KEYS = new Set([
 
 export type IdeCodingMode = 'off' | 'prefer' | 'required'
 export type IdeCodingState =
-  'disabled' | 'awaiting_catalog' | 'active' | 'native_fallback' | 'required_unavailable' | 'shutdown'
+  | 'disabled'
+  | 'awaiting_catalog'
+  | 'active'
+  | 'native_fallback'
+  | 'required_unavailable'
+  | 'shutdown'
 export type IdeCapabilityKey = 'read' | 'open' | 'patch' | 'create' | 'search' | 'inspect' | 'rename' | 'reformat'
 export type IdeCapabilityMap = Map<IdeCapabilityKey, string>
 
@@ -1423,7 +1428,9 @@ export function renderIdeCodingGuidance(
       parts.push('IntelliJ-first mode is active.')
       parts.push('Pi generates the code; IntelliJ applies and validates it.')
       parts.push('Native file tools (read, edit, write, grep, find, ls) are unavailable.')
-      parts.push('Direct Fabric/Schema file mutations (schema.commit, pi.write, pi.edit) are blocked; route mutations through the IDE tools.')
+      parts.push(
+        'Direct Fabric/Schema file mutations (schema.commit, pi.write, pi.edit) are blocked; route mutations through the IDE tools.'
+      )
       const lines: string[] = []
       const read = name('read')
       const open = name('open')
