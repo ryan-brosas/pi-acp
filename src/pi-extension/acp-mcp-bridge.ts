@@ -625,7 +625,13 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
       const done = (value: unknown) => {
         try {
           let mapped = mcpResultToPiResult(value)
-          if (ideMode !== 'off') mapped = filterIdeResult(tool, mapped, ideMode, projectRoot)
+          if (ideMode !== 'off') {
+            const rawStructured =
+              value && typeof value === 'object' && !Array.isArray(value)
+                ? (value as BridgeMcpResult).structuredContent
+                : undefined
+            mapped = filterIdeResult(tool, mapped, ideMode, projectRoot, rawStructured)
+          }
           signal?.removeEventListener('abort', onAbort)
           resolve(mapped)
         } catch (error) {
@@ -663,11 +669,12 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     tool: BridgeTool,
     result: PiMcpToolResult,
     mode: IdeCodingMode,
-    root: string | undefined
+    root: string | undefined,
+    rawStructured?: unknown
   ): PiMcpToolResult {
     if (mode === 'off' || MUTATION_REMOTE_NAMES.has(tool.remoteName) || root === undefined) return result
     let hit = false
-    const structured = result.details.structuredContent
+    const structured = rawStructured ?? result.details.structuredContent
     if (structured && typeof structured === 'object' && !Array.isArray(structured)) {
       const candidates: string[] = []
       const budget = { nodes: 5000 }
@@ -696,7 +703,9 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
       collect(structured, 0)
       if (truncated) {
         if (mode === 'required') {
-          throw new McpToolError('IDE tool result exceeded confinement depth; rejected as unscoped', { code: 'out_of_root_result' })
+          throw new McpToolError('IDE tool result exceeded confinement depth; rejected as unscoped', {
+            code: 'out_of_root_result'
+          })
         }
         result.details.composite = {
           ...(result.details.composite as Record<string, unknown>),
