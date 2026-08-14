@@ -64,5 +64,10 @@ test('PiAcpSession: cancel cancels the bridge before awaiting the pi abort (P1-2
   const first = session.prompt('one')
   await session.cancel()
   assert.equal(order.join(','), 'bridge,proc')
+
+  proc.emit({ type: 'agent_start' })
+  proc.emit({ type: 'turn_end' })
+  proc.emit({ type: 'agent_end' })
+  proc.emit({ type: 'agent_settled' })
   assert.equal(await first, 'cancelled')
 })
