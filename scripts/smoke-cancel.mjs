@@ -3,7 +3,11 @@
 // after cancel, and that a follow-up prompt still completes (F-018, F-017).
 import { SmokeHarness, assert } from './lib/acp-smoke.mjs'
 
-const h = new SmokeHarness().start()
+// The probe's phase budgets (stream start <=30s, prompt settle <=60s, no-late
+// window 2s, follow-up <=120s) sum to ~212s worst case, so the harness deadline
+// is raised above that; every phase stays individually bounded (F-004, D-1).
+const h = new SmokeHarness({ deadlineMs: 240_000 }).start()
+let cancelSentAt = null
 try {
   await h.expectResult(1, 'initialize', { protocolVersion: 1 })
   const created = await h.expectResult(2, 'session/new', { cwd: process.cwd(), mcpServers: [] })
@@ -34,8 +38,10 @@ try {
   const before = h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length
   assert(before > baseline, 'no model agent_message_chunk observed before cancel')
 
+  cancelSentAt = Date.now()
   h.notify('session/cancel', { sessionId })
   const result = await slow
+  const cancelLatencyMs = Date.now() - cancelSentAt
   assert(result?.stopReason === 'cancelled', `stopReason=${result?.stopReason}, expected cancelled`)
 
   // Reject late updates: no new agent_message_chunk within 2s of cancellation.
@@ -58,11 +64,15 @@ try {
   await h.close()
   h.assertExited(0)
   console.log(
-    `OK smoke-cancel (dist ${h.distHash()}; ${before} chunks before cancel; stopReason cancelled; no late updates; follow-up end_turn)`
+    `OK smoke-cancel (dist ${h.distHash()}; ${before} chunks before cancel; stopReason cancelled; cancel latency ${cancelLatencyMs}ms; no late updates; follow-up end_turn)`
   )
 } catch (err) {
   await h.close().catch(() => {})
   console.error(`FAIL smoke-cancel: ${err.message}`)
+  const last = h.updates.slice(-5).map(u => u?.sessionUpdate ?? JSON.stringify(u)?.slice(0, 80))
+  console.error(
+    `FAIL smoke-cancel diagnostics: updates=${h.updates.length}; last=${last.join(' | ')}; cancel wait ms=${cancelSentAt === null ? 'n/a' : Date.now() - cancelSentAt}`
+  )
   if (h.stderr.length) console.error('adapter stderr tail:\n' + h.stderr.slice(-20).join(''))
   process.exit(1)
 }
