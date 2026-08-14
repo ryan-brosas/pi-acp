@@ -564,8 +564,8 @@ $ extensions.ide_idea_lint_files({ files: ['src/acp/agent.ts','src/acp/session-s
 → 3 files with problems; 4 WARNINGs total; 0 ERRORs
 
 $ ps -eo pid,etimes,lstart,args | grep dist/index.js
-41966  625  …  node …/pi-acp/dist/index.js      (cwd = /home/utopia/work/project/pi-acp)
-46241  373  …  node …/pi-acp/dist/index.js      (cwd = /home/utopia/work/project/pi-template)
+41966  625  …  node …/pi-acp/dist/index.js      (cwd = ~/work/project/pi-acp)
+46241  373  …  node …/pi-acp/dist/index.js      (cwd = ~/work/project/pi-template)
 
 $ find ~/.local/share/JetBrains -iname '*acp*' (excerpt)
 …/platform-acp-plugin/lib/modules/intellij.platform.acp.jar
