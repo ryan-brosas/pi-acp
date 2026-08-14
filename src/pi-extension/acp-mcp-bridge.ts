@@ -674,7 +674,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         if (!matches) continue
         for (const raw of matches) {
           const candidate = raw.replace(/[:.,;)\]>"']+$/, '').replace(/:\d+(?::\d+)?$/, '')
-          if (candidate === '') continue
+          if (candidate === '' || !existsSync(candidate)) continue
           if (!isInside(resolve(root), resolve(candidate))) {
             hit = true
             break
