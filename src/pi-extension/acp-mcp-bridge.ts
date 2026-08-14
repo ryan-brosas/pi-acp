@@ -1258,16 +1258,20 @@ export function buildMutationPlan(tool: BridgeTool, args: Record<string, unknown
     }
     case 'rename_refactoring': {
       const source = firstPathArg(tool, args)
-      if (source !== undefined) preOpen.push(normalizeProjectPath(projectRoot, source, true).path)
+      if (source === undefined) throw new Error('rename_refactoring requires a recognized path argument')
+      preOpen.push(normalizeProjectPath(projectRoot, source, true).path)
       break
     }
     case 'reformat_file': {
-      for (const value of pathArgValues(tool, args)) preOpen.push(normalizeProjectPath(projectRoot, value, true).path)
+      const values = pathArgValues(tool, args)
+      if (values.length === 0) throw new Error('reformat_file requires recognized file arguments')
+      for (const value of values) preOpen.push(normalizeProjectPath(projectRoot, value, true).path)
       break
     }
     case 'create_new_file': {
       const target = firstPathArg(tool, args)
-      if (target !== undefined) postOpen.push(normalizeProjectPath(projectRoot, target, true).path)
+      if (target === undefined) throw new Error('create_new_file requires a recognized path argument')
+      postOpen.push(normalizeProjectPath(projectRoot, target, true).path)
       break
     }
     default:
