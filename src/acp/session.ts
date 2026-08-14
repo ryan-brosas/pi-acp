@@ -28,6 +28,7 @@ import {
   isBashTool
 } from './translate/bash.js'
 import { toolResultToText } from './translate/pi-tools.js'
+import { withTimeout } from './usage.js'
 
 type SessionCreateParams = {
   cwd: string
@@ -1022,12 +1023,17 @@ export class PiAcpSession {
       return
     }
 
-    if (method === 'input' || method === 'editor') {
+    if (method === 'input') {
+      await this.handleExtensionInput(ev, id)
+      return
+    }
+
+    if (method === 'editor') {
       this.emit({
         sessionUpdate: 'agent_message_chunk',
         content: {
           type: 'text',
-          text: `Pi ${method} UI request is not supported in ACP yet; cancelling it.`
+          text: 'Pi editor UI request is not supported in ACP (no multiline elicitation form); cancelling it.'
         } satisfies ContentBlock
       })
       await this.proc.sendExtensionUiResponse({ id, cancelled: true })
@@ -1084,6 +1090,51 @@ export class PiAcpSession {
     }
 
     await this.proc.sendExtensionUiResponse({ id, confirmed: selected.outcome.optionId === 'yes' })
+  }
+
+  private async handleExtensionInput(ev: PiRpcEvent, id: string): Promise<void> {
+    const title = stringProp(ev, 'title') ?? 'Pi input'
+    const placeholder = stringProp(ev, 'placeholder')
+    const timeout = typeof ev.timeout === 'number' && ev.timeout > 0 ? ev.timeout : 300_000
+
+    try {
+      const response = await withTimeout(
+        this.conn.unstable_createElicitation({
+          mode: 'form',
+          sessionId: this.sessionId,
+          message: title,
+          requestedSchema: {
+            type: 'object',
+            title,
+            properties: {
+              value: {
+                type: 'string',
+                ...(placeholder ? { description: placeholder } : {})
+              }
+            },
+            required: ['value']
+          }
+        }),
+        timeout
+      )
+
+      if (response.action !== 'accept' || typeof response.content?.value !== 'string') {
+        await this.proc.sendExtensionUiResponse({ id, cancelled: true })
+        return
+      }
+      await this.proc.sendExtensionUiResponse({ id, value: response.content.value })
+    } catch {
+      // The ACP client does not implement the UNSTABLE elicitation API (or the
+      // request failed): fall back to a visible cancellation so pi never hangs.
+      this.emit({
+        sessionUpdate: 'agent_message_chunk',
+        content: {
+          type: 'text',
+          text: 'Pi input UI request is not supported by this ACP client; cancelling it.'
+        } satisfies ContentBlock
+      })
+      await this.proc.sendExtensionUiResponse({ id, cancelled: true })
+    }
   }
 
   private async requestExtensionPermission(

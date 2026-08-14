@@ -20,7 +20,16 @@ import {
   type SetSessionModeRequest,
   type SetSessionModeResponse,
   type DeleteSessionRequest,
-  type DeleteSessionResponse
+  type DeleteSessionResponse,
+  type ForkSessionRequest,
+  type ForkSessionResponse,
+  type ResumeSessionRequest,
+  type ResumeSessionResponse,
+  type CloseSessionRequest,
+  type CloseSessionResponse,
+  type ListProvidersRequest,
+  type ListProvidersResponse,
+  type Usage
 } from '@agentclientprotocol/sdk'
 import { getAuthMethods } from './auth.js'
 import { SessionManager, type PiAcpSession } from './session.js'
@@ -32,6 +41,8 @@ import { PiRpcProcess } from '../pi-rpc/process.js'
 import { getPiCommand } from '../pi-rpc/command.js'
 import { listPiSessions, findPiSession } from './pi-sessions.js'
 import { normalizePiAssistantText, normalizePiMessageText } from './translate/pi-messages.js'
+import { sessionStatsToAcpUsage, withTimeout } from './usage.js'
+import { piModelsToProviderInfo } from './providers.js'
 import { toolResultToText } from './translate/pi-tools.js'
 import {
   bashCommand,
@@ -50,7 +61,7 @@ import { toAvailableCommandsFromPiGetCommands } from './pi-commands.js'
 import { maybeAuthRequiredError } from './auth-required.js'
 import { runEnforcedInspection, inspectionSummary, type IdeInspectionOutcome } from './ide-inspection.js'
 import { isAbsolute } from 'node:path'
-import { existsSync, readFileSync, realpathSync, readdirSync, statSync, unlinkSync } from 'node:fs'
+import { existsSync, readFileSync, realpathSync, readdirSync, statSync, unlinkSync, copyFileSync } from 'node:fs'
 import type { AvailableCommand } from '@agentclientprotocol/sdk'
 import { join, dirname, basename, relative, sep } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -351,6 +362,7 @@ export class PiAcpAgent implements ACPAgent {
       }),
       agentCapabilities: {
         loadSession: true,
+        providers: {},
         mcpCapabilities: { http: false, sse: false, acp: true },
         promptCapabilities: {
           image: true,
@@ -361,7 +373,10 @@ export class PiAcpAgent implements ACPAgent {
           // **UNSTABLE** ACP capability used by Zed's codex-acp adapter.
           // Enables a native session picker in clients that support it.
           list: {},
-          delete: {}
+          delete: {},
+          fork: {},
+          resume: {},
+          close: {}
         }
       }
     }
@@ -996,12 +1011,17 @@ export class PiAcpAgent implements ACPAgent {
 
     const result = await session.prompt(message, images)
 
+    // UNSTABLE ACP PromptResponse.usage: report cumulative session tokens after the
+    // turn settles (best effort; a slow or absent pi stats call omits the field).
+    const usage = await this.collectTurnUsage(session)
+
     // ACP StopReason does not include "error"; if pi fails we map to end_turn for now,
     // unless we know this was a cancellation.
     if (result === 'error') {
-      if (session.wasCancelRequested()) return { stopReason: 'cancelled' }
+      if (session.wasCancelRequested()) return { stopReason: 'cancelled', usage }
       return {
         stopReason: 'end_turn',
+        usage,
         _meta: { piAcp: { error: session.lastError ?? 'pi prompt failed (no diagnostic retained)' } }
       }
     }
@@ -1010,11 +1030,11 @@ export class PiAcpAgent implements ACPAgent {
       const inspection = await this.enforceIdeInspection(session)
       session.touchedFilePaths.clear()
       if (inspection) {
-        return { stopReason: 'end_turn', _meta: { piAcp: { inspection } } }
+        return { stopReason: 'end_turn', usage, _meta: { piAcp: { inspection } } }
       }
     }
 
-    return { stopReason: result }
+    return { stopReason: result, usage }
   }
 
   /**
@@ -1062,6 +1082,170 @@ export class PiAcpAgent implements ACPAgent {
     void session.cancel().catch(e => {
       process.stderr.write(`[pi-acp-jetbrain] session/cancel abort failed: ${String((e as Error)?.message ?? e)}\n`)
     })
+  }
+  private async collectTurnUsage(session: PiAcpSession): Promise<Usage | null> {
+    try {
+      const stats = await withTimeout(session.proc.getSessionStats(), 2_500)
+      return sessionStatsToAcpUsage(stats)
+    } catch {
+      return null
+    }
+  }
+
+  async unstable_forkSession(params: ForkSessionRequest): Promise<ForkSessionResponse> {
+    if (!isAbsolute(params.cwd)) {
+      throw RequestError.invalidParams(`cwd must be an absolute path: ${params.cwd}`)
+    }
+
+    const source = this.findStoredSession(params.sessionId)
+    if (!source?.sessionFile) {
+      throw RequestError.invalidParams(`Unknown sessionId: ${params.sessionId}`)
+    }
+
+    // Forking copies the source session file so the new session branches
+    // independently; pi's `fork` branches within the loaded session.
+    const newSessionId = crypto.randomUUID()
+    const forkedFile = join(
+      dirname(source.sessionFile),
+      `${basename(source.sessionFile).replace(/\.jsonl$/i, '')}-fork-${newSessionId}.jsonl`
+    )
+
+    try {
+      copyFileSync(source.sessionFile, forkedFile)
+    } catch (e) {
+      throw RequestError.internalError(
+        {},
+        `failed to copy session file for fork: ${e instanceof Error ? e.message : String(e)}`
+      )
+    }
+
+    const { bridge, settings: bridgeSettings } = await this.startBridge(
+      params.mcpServers ?? [],
+      newSessionId,
+      params.cwd
+    )
+
+    let proc: PiRpcProcess
+    try {
+      proc = await PiRpcProcess.spawn({
+        cwd: params.cwd,
+        sessionPath: forkedFile,
+        piCommand: process.env.PI_ACP_PI_COMMAND,
+        extensionPaths: bridgeSettings.extensionPaths,
+        env: bridgeSettings.env
+      })
+    } catch (e: unknown) {
+      await bridge.dispose()
+      try {
+        unlinkSync(forkedFile)
+      } catch {
+        // best-effort cleanup
+      }
+      const err = e as { name?: string; code?: string; message?: string }
+      if (err.name === 'PiRpcSpawnError') {
+        throw RequestError.internalError({ code: err.code }, String(err.message ?? e))
+      }
+      throw e
+    }
+
+    const session = this.sessions.getOrCreate(newSessionId, {
+      cwd: params.cwd,
+      mcpServers: params.mcpServers ?? [],
+      conn: this.conn,
+      proc,
+      fileCommands: loadSlashCommands(params.cwd),
+      bridge
+    })
+
+    if (bridgeSettings.extensionPaths.length > 0) {
+      await this.waitForBridgeReady(bridge, bridgeSettings)
+    }
+
+    this.store.upsert({ sessionId: newSessionId, cwd: params.cwd, sessionFile: forkedFile })
+    this.lastSessionCwd = params.cwd
+
+    // Fork at the source session's leaf entry so the new session starts from
+    // the source's current state.
+    const entries = (await proc.getEntries()) as { leafId?: string | null } | null
+    const leafId = entries && typeof entries.leafId === 'string' && entries.leafId ? entries.leafId : null
+    if (!leafId) {
+      await this.closeManagedSession(newSessionId)
+      throw RequestError.internalError({}, 'pi get_entries returned no leaf entry to fork from')
+    }
+
+    const fork = await proc.fork(leafId)
+    await this.closeManagedSessionsExcept(newSessionId)
+
+    const { modes, configOptions } = await getSessionConfiguration(proc)
+
+    return {
+      sessionId: newSessionId,
+      modes,
+      configOptions,
+      _meta: {
+        piAcp: {
+          fork: {
+            fromSessionId: params.sessionId,
+            entryId: leafId,
+            text: fork.text || null,
+            cancelled: fork.cancelled
+          }
+        }
+      }
+    }
+  }
+
+  async resumeSession(params: ResumeSessionRequest): Promise<ResumeSessionResponse> {
+    if (!isAbsolute(params.cwd)) {
+      throw RequestError.invalidParams(`cwd must be an absolute path: ${params.cwd}`)
+    }
+
+    const stored = this.findStoredSession(params.sessionId)
+    if (!stored) {
+      throw RequestError.invalidParams(`Unknown sessionId: ${params.sessionId}`)
+    }
+
+    const session = await this.restoreSession(params.sessionId, {
+      cwd: params.cwd,
+      mcpServers: params.mcpServers
+    })
+
+    await this.closeManagedSessionsExcept(session.sessionId)
+    const { modes, configOptions } = await getSessionConfiguration(session.proc)
+    return { modes, configOptions }
+  }
+
+  async closeSession(params: CloseSessionRequest): Promise<CloseSessionResponse> {
+    const session = this.sessions.maybeGet(params.sessionId)
+    if (!session) return {}
+
+    // ACP: treat close like session/cancel, then release the subprocess.
+    // The stored session file survives so the session can be resumed later.
+    try {
+      await session.cancel()
+    } catch {
+      // cancellation is best-effort; disposal below still releases the subprocess
+    }
+    await this.closeManagedSession(params.sessionId)
+    return {}
+  }
+
+  async unstable_listProviders(_params: ListProvidersRequest): Promise<ListProvidersResponse> {
+    const cwd = this.lastSessionCwd ?? process.cwd()
+    let proc: PiRpcProcess | null = null
+    try {
+      proc = await PiRpcProcess.spawn({
+        cwd,
+        piCommand: process.env.PI_ACP_PI_COMMAND
+      })
+      const data = (await proc.getAvailableModels()) as { models?: unknown } | null
+      const models: Array<Record<string, unknown>> = Array.isArray(data?.models)
+        ? (data.models as Array<Record<string, unknown>>)
+        : []
+      return { providers: piModelsToProviderInfo(models) }
+    } finally {
+      proc?.dispose()
+    }
   }
 
   async listSessions(params: ListSessionsRequest): Promise<ListSessionsResponse> {
