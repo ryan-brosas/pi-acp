@@ -830,12 +830,12 @@ export class PiAcpAgent implements ACPAgent {
         let text = ''
         try {
           text = readFileSync(changelogPath, 'utf-8')
-        } catch (e: any) {
+        } catch (e: unknown) {
           await this.conn.sessionUpdate({
             sessionId: session.sessionId,
             update: {
               sessionUpdate: 'agent_message_chunk',
-              content: { type: 'text', text: `Failed to read changelog: ${String(e?.message ?? e)}` }
+              content: { type: 'text', text: `Failed to read changelog: ${String(e instanceof Error ? e.message : e)}` }
             }
           })
           return { stopReason: 'end_turn' }
@@ -915,14 +915,14 @@ export class PiAcpAgent implements ACPAgent {
         try {
           const result = await session.proc.exportHtml(outputPath)
           resultPath = result.path
-        } catch (e: any) {
+        } catch (e: unknown) {
           await this.conn.sessionUpdate({
             sessionId: session.sessionId,
             update: {
               sessionUpdate: 'agent_message_chunk',
               content: {
                 type: 'text',
-                text: `Export failed: ${String(e?.message ?? e)}`
+                text: `Export failed: ${String(e instanceof Error ? e.message : e)}`
               }
             }
           })
