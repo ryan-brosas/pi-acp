@@ -1,25 +1,22 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
-    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="MagicNumberJS" enabled="true" level="WARNING" enabled_by_default="false">
-      <option name="isDeclaredConstant" value="true" />
-    </inspection_tool>
-    <inspection_tool class="UnnecessaryLocalVariableJS" enabled="true" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="EmptyStatementBodyJS" enabled="true" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="JSUnnecessarySemicolon" enabled="true" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="DebuggerStatementJS" enabled="true" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="ChainedFunctionCallJS" enabled="true" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CyclomaticComplexityJS" enabled="true" level="WARNING" enabled_by_default="false">
       <option name="m_limit" value="10" />
     </inspection_tool>
-    <inspection_tool class="NestingDepthJS" enabled="true" level="WARNING" enabled_by_default="false">
-      <option name="m_limit" value="3" />
-    </inspection_tool>
+    <inspection_tool class="DebuggerStatementJS" enabled="true" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="EmptyStatementBodyJS" enabled="true" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="IfStatementWithTooManyBranchesJS" enabled="true" level="WARNING" enabled_by_default="false">
       <option name="m_limit" value="5" />
     </inspection_tool>
-    <inspection_tool class="ChainedFunctionCallJS" enabled="true" level="WARNING" enabled_by_default="false">
-      <option name="m_limit" value="10" />
+    <inspection_tool class="JSUnnecessarySemicolon" enabled="true" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="MagicNumberJS" enabled="true" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="NestingDepthJS" enabled="true" level="WARNING" enabled_by_default="false">
+      <option name="m_limit" value="3" />
     </inspection_tool>
+    <inspection_tool class="UnnecessaryLocalVariableJS" enabled="true" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="no-declared-any-ts" enabled="true" level="WARNING" enabled_by_default="true" />
   </profile>
 </component>
