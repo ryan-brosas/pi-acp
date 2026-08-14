@@ -2,10 +2,12 @@ name: Publish Package
 
 on:
   workflow_dispatch:
+  push:
+    tags: ['v*']
 
 permissions:
-  id-token: write # Required for OIDC
-  contents: read
+  id-token: write # Required for OIDC provenance
+  contents: write # gh release create
 
 jobs:
   publish:
@@ -20,7 +22,31 @@ jobs:
 
       - run: npm install -g npm@latest
 
+      - name: Verify version matches tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "tag ${GITHUB_REF_NAME} does not match package.json version ${PKG_VERSION}"
+            exit 1
+          fi
+
+      - name: Verify version not already published
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if npm view pi-acp-jetbrain@${PKG_VERSION} version >/dev/null 2>&1; then
+            echo "pi-acp-jetbrain@${PKG_VERSION} is already on npm"
+            exit 1
+          fi
+
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
       - run: npm publish --provenance
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" --generate-notes

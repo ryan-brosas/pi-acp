@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 0.0.36)'
+        required: true
+        type: string
+
+permissions:
+  contents: write # version commit, tag push, GitHub release
+  id-token: write # npm OIDC provenance
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm install -g npm@latest
+
+      - name: Validate version input
+        run: |
+          echo "${{ github.event.inputs.version }}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$' || {
+            echo "version must look like x.y.z (got: ${{ github.event.inputs.version }})"
+            exit 1
+          }
+
+      - name: Ensure version not already published
+        run: |
+          if npm view pi-acp-jetbrain@${{ github.event.inputs.version }} version >/dev/null 2>&1; then
+            echo "pi-acp-jetbrain@${{ github.event.inputs.version }} is already on npm"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      - name: Bump version (package.json + package-lock.json)
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version
+
+      - name: Verify gates
+        run: npm run typecheck && npm run lint
+      - run: npm test
+      - run: npm run build
+
+      - name: Commit, tag and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore(release): ${{ github.event.inputs.version }}"
+          git tag "v${{ github.event.inputs.version }}"
+          git push origin HEAD:main
+          git push origin "v${{ github.event.inputs.version }}"
+
+      - name: Publish to npm
+        run: npm publish --provenance
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "v${{ github.event.inputs.version }}" --generate-notes

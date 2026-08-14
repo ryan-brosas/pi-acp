@@ -289,6 +289,14 @@ Known benign patterns in the IDE log do not indicate an adapter fault (F-029):
 
 Actionable patterns: any `IDE bridge: ... unavailable` diagnostic means discovery or a spawn failed and the chat has a partial catalog — check `idea.log` for the reason and start a new chat after fixing the cause.
 
+## Releasing
+
+Releases publish to npm from GitHub Actions with signed provenance — no interactive npm 2FA on CI:
+
+- **One-command release:** `gh workflow run Release -f version=0.0.36` validates the version, bumps `package.json` + `package-lock.json`, runs the full gate suite, commits, tags, pushes `v0.0.36`, publishes to npm, and creates a GitHub release.
+- **Manual release:** bump the version and push a `v*` tag; the `Publish Package` workflow fires on the tag and publishes after verifying the tag matches `package.json` and the version is not already on npm.
+- **One-time setup (package owner):** on npmjs.com, the package's Settings → GitHub Cloud CI/CD must authorize `ryan-brosas/pi-acp-jetbrain`, branch `main`, for workflow names `Publish Package` and `Release` (one publisher entry each).
+
 ## License
 
 MIT (see [LICENSE](LICENSE)).
