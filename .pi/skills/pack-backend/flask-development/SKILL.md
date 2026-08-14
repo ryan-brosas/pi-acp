@@ -1,6 +1,6 @@
 ---
 name: flask-development
-description: "Use when building Flask web apps or APIs - application factories, blueprints, configuration, SQLAlchemy models and migrations, authentication, and testing."
+description: 'Use when building Flask web apps or APIs - application factories, blueprints, configuration, SQLAlchemy models and migrations, authentication, and testing.'
 disable-model-invocation: true
 ---
 

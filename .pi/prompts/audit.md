@@ -1,11 +1,12 @@
 ---
 description: Audit codebase for a specific pattern
-argument-hint: "<pattern>"
+argument-hint: '<pattern>'
 ---
 
 # Audit: $ARGUMENTS
 
 Find every occurrence of a code pattern, review each match for correctness, security, and edge cases, then produce a prioritized remediation list.
+
 > Use for cross-cutting concerns: auth checks, error handling, API patterns, security vulnerabilities, TODO debt, or a specific function/style.
 
 ## Read-only
@@ -15,11 +16,12 @@ If remediation is wanted, a later Schema commit authorizes mutation.
 
 ## Parse Arguments
 
-| Argument | Default | Description |
-| --- | --- | --- |
-| Pattern | required | Code pattern, symbol, or string to search for |
+| Argument | Default  | Description                                   |
+| -------- | -------- | --------------------------------------------- |
+| Pattern  | required | Code pattern, symbol, or string to search for |
 
 **Examples:**
+
 - `/audit console.log` — every debug log
 - `/audit fetch(` — every fetch call and its error handling
 - `/audit app.use(` — every middleware registration
@@ -28,6 +30,7 @@ If remediation is wanted, a later Schema commit authorizes mutation.
 ## Phase 1: Discover
 
 Choose the right search for the pattern type:
+
 - **Symbol or API** (function name, class, method): use Pi Fovea focus to get definitions and call sites with file:line.
 - **Structural pattern** (try/catch, error-return checks): use `rg -n` with a regex over the relevant directories.
 - **Literal text** (strings, comments, TODO markers): use `rg -n` over the relevant directories. Never text-search the inspo tree (resolve the root from `$INSPO_ROOT` or ask the user — never assume a machine-specific path); query its indexed CGC context instead.
@@ -38,12 +41,12 @@ Group results by subdirectory. For each match record: `file:line` and one line o
 
 For every occurrence, read enough surrounding code (10-30 lines) to grade it:
 
-| Severity | Meaning | Example |
-| --- | --- | --- |
-| Critical | Security hole, data loss, crash on main path | Missing auth check, unvalidated input into SQL/shell |
-| Important | Wrong behavior in production paths | Swallowed error, missing cleanup, off-by-one |
-| Minor | Style, duplication, dead path, debug leftover | console.log, unused variable |
-| Correct | No issue — pattern is used appropriately | Properly wrapped try/finally |
+| Severity  | Meaning                                       | Example                                              |
+| --------- | --------------------------------------------- | ---------------------------------------------------- |
+| Critical  | Security hole, data loss, crash on main path  | Missing auth check, unvalidated input into SQL/shell |
+| Important | Wrong behavior in production paths            | Swallowed error, missing cleanup, off-by-one         |
+| Minor     | Style, duplication, dead path, debug leftover | console.log, unused variable                         |
+| Correct   | No issue — pattern is used appropriately      | Properly wrapped try/finally                         |
 
 Do not grade from the match line alone; context determines severity.
 For suspicious matches (security-sensitive pattern), check the surrounding validation, authorization, and error handling before grading.
@@ -68,8 +71,8 @@ If the user asks for a written report file, write it only after a Schema commit 
 
 ## Related Commands
 
-| Need | Command |
-| --- | --- |
-| Research a topic | `/research` |
-| Create a fix spec | `/create` |
-| Verify gates | `/verify` |
+| Need              | Command     |
+| ----------------- | ----------- |
+| Research a topic  | `/research` |
+| Create a fix spec | `/create`   |
+| Verify gates      | `/verify`   |

@@ -7,16 +7,11 @@
 ```typescript
 // Cache Reserve is designed for use WITH Tiered Cache
 const configuration = {
-  tieredCache: 'enabled',    // Required for optimal performance
-  cacheReserve: 'enabled',   // Works best with Tiered Cache
-  
-  hierarchy: [
-    'Lower-Tier Cache (visitor)',
-    'Upper-Tier Cache (origin region)',
-    'Cache Reserve (persistent)',
-    'Origin'
-  ]
-};
+  tieredCache: 'enabled', // Required for optimal performance
+  cacheReserve: 'enabled', // Works best with Tiered Cache
+
+  hierarchy: ['Lower-Tier Cache (visitor)', 'Upper-Tier Cache (origin region)', 'Cache Reserve (persistent)', 'Origin']
+}
 ```
 
 ### 2. Set Appropriate Cache-Control Headers
@@ -27,13 +22,13 @@ const originHeaders = {
   'Cache-Control': 'public, max-age=86400', // 24 hours minimum 10 hours
   'Content-Length': '1024000', // Required for eligibility
   'Cache-Tag': 'images,product-123', // Optional: For purging
-  'ETag': '"abc123"', // Optional: Support revalidation
-  'Last-Modified': 'Wed, 21 Oct 2025 07:28:00 GMT',
-  
+  ETag: '"abc123"', // Optional: Support revalidation
+  'Last-Modified': 'Wed, 21 Oct 2025 07:28:00 GMT'
+
   // Avoid: Prevents caching
   // 'Set-Cookie': 'session=xyz',  // Remove or use private directive
   // 'Vary': '*',                  // Not compatible
-};
+}
 ```
 
 ### 3. Use Cache Rules for Fine-Grained Control
@@ -64,7 +59,7 @@ const cacheRules = [
     expression: '(http.request.uri.path matches "^/api/")',
     action_parameters: { cache_reserve: { eligible: false }, cache: false }
   }
-];
+]
 ```
 
 ### 4. Ensuring Cache Reserve Eligibility in Workers
@@ -72,39 +67,39 @@ const cacheRules = [
 ```typescript
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const response = await fetch(request);
-    
+    const response = await fetch(request)
+
     if (response.ok) {
-      const headers = new Headers(response.headers);
-      
+      const headers = new Headers(response.headers)
+
       // Set minimum 10-hour cache
-      headers.set('Cache-Control', 'public, max-age=36000');
-      
+      headers.set('Cache-Control', 'public, max-age=36000')
+
       // Remove Set-Cookie if present (prevents caching)
-      headers.delete('Set-Cookie');
-      
+      headers.delete('Set-Cookie')
+
       // Ensure Content-Length is present
       if (!headers.has('Content-Length')) {
-        const blob = await response.blob();
-        headers.set('Content-Length', blob.size.toString());
-        
+        const blob = await response.blob()
+        headers.set('Content-Length', blob.size.toString())
+
         return new Response(blob, {
           status: response.status,
           statusText: response.statusText,
           headers
-        });
+        })
       }
-      
+
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
         headers
-      });
+      })
     }
-    
-    return response;
+
+    return response
   }
-};
+}
 ```
 
 ### 5. Hostname Best Practices
@@ -113,18 +108,18 @@ export default {
 // [x] CORRECT: Use Worker's hostname for efficient caching
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    return await fetch(request); // Keep the Worker's hostname
+    return await fetch(request) // Keep the Worker's hostname
   }
-};
+}
 
 // [ ] WRONG: Overriding hostname causes unnecessary DNS lookups
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    url.hostname = 'different-host.com'; // Avoid this!
-    return await fetch(url.toString());
+    const url = new URL(request.url)
+    url.hostname = 'different-host.com' // Avoid this!
+    return await fetch(url.toString())
   }
-};
+}
 ```
 
 ## Architecture Patterns
@@ -138,20 +133,20 @@ export default {
 // Immutable asset optimization with content hashing
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    const isImmutable = /\.[a-f0-9]{8,}\.(js|css|jpg|png|woff2)$/.test(url.pathname);
-    
-    const response = await fetch(request);
-    
+    const url = new URL(request.url)
+    const isImmutable = /\.[a-f0-9]{8,}\.(js|css|jpg|png|woff2)$/.test(url.pathname)
+
+    const response = await fetch(request)
+
     if (isImmutable) {
-      const headers = new Headers(response.headers);
-      headers.set('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year
-      return new Response(response.body, { status: response.status, headers });
+      const headers = new Headers(response.headers)
+      headers.set('Cache-Control', 'public, max-age=31536000, immutable') // 1 year
+      return new Response(response.body, { status: response.status, headers })
     }
-    
-    return response;
+
+    return response
   }
-};
+}
 ```
 
 ## Cost Optimization
@@ -162,10 +157,10 @@ export default {
 
 // 1. Set appropriate TTLs
 const optimizeTTL = {
-  tooShort: 3600,    // 1 hour - not eligible
-  optimal: 86400,    // 24 hours - reduces rewrites
-  tooLong: 2592000   // 30 days - use cautiously
-};
+  tooShort: 3600, // 1 hour - not eligible
+  optimal: 86400, // 24 hours - reduces rewrites
+  tooLong: 2592000 // 30 days - use cautiously
+}
 
 // 2. Cache high-value, stable assets: images, media, fonts, archives
 // 3. Exclude frequently changing: /api/, user-specific, JSON data

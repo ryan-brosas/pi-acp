@@ -14,17 +14,17 @@ Email Workers let you programmatically process incoming emails using Cloudflare 
 export default {
   async email(message, env, ctx) {
     // Process email
-    await message.forward("destination@example.com");
-  },
-};
+    await message.forward('destination@example.com')
+  }
+}
 ```
 
 ### Event Handler (Service Worker - Deprecated)
 
 ```typescript
-addEventListener("email", async (event) => {
-  await event.message.forward("destination@example.com");
-});
+addEventListener('email', async event => {
+  await event.message.forward('destination@example.com')
+})
 ```
 
 **Use ES modules format for all new projects.**
@@ -35,15 +35,15 @@ addEventListener("email", async (event) => {
 
 ```typescript
 interface ForwardableEmailMessage {
-  readonly from: string;        // Envelope From
-  readonly to: string;          // Envelope To
-  readonly headers: Headers;    // Message headers
-  readonly raw: ReadableStream; // Raw message stream
-  readonly rawSize: number;     // Message size in bytes
-  
-  setReject(reason: string): void;
-  forward(rcptTo: string, headers?: Headers): Promise<void>;
-  reply(message: EmailMessage): Promise<void>;
+  readonly from: string // Envelope From
+  readonly to: string // Envelope To
+  readonly headers: Headers // Message headers
+  readonly raw: ReadableStream // Raw message stream
+  readonly rawSize: number // Message size in bytes
+
+  setReject(reason: string): void
+  forward(rcptTo: string, headers?: Headers): Promise<void>
+  reply(message: EmailMessage): Promise<void>
 }
 ```
 
@@ -57,13 +57,13 @@ interface ForwardableEmailMessage {
 
 ```typescript
 interface EmailMessage {
-  readonly from: string;
-  readonly to: string;
+  readonly from: string
+  readonly to: string
 }
 
 // Usage
-import { EmailMessage } from "cloudflare:email";
-const msg = new EmailMessage(from, to, rawMimeContent);
+import { EmailMessage } from 'cloudflare:email'
+const msg = new EmailMessage(from, to, rawMimeContent)
 ```
 
 ## Common Patterns
@@ -73,14 +73,14 @@ const msg = new EmailMessage(from, to, rawMimeContent);
 ```typescript
 export default {
   async email(message, env, ctx) {
-    const allowList = ["friend@example.com", "coworker@example.com"];
+    const allowList = ['friend@example.com', 'coworker@example.com']
     if (!allowList.includes(message.from)) {
-      message.setReject("Address not allowed");
+      message.setReject('Address not allowed')
     } else {
-      await message.forward("inbox@corp.example.com");
+      await message.forward('inbox@corp.example.com')
     }
-  },
-};
+  }
+}
 ```
 
 ### 2. Blocklist
@@ -88,63 +88,59 @@ export default {
 ```typescript
 export default {
   async email(message, env, ctx) {
-    const blockList = ["spam@example.com", "badactor@example.com"];
+    const blockList = ['spam@example.com', 'badactor@example.com']
     if (blockList.includes(message.from)) {
-      message.setReject("Blocked sender");
+      message.setReject('Blocked sender')
     } else {
-      await message.forward("inbox@corp.example.com");
+      await message.forward('inbox@corp.example.com')
     }
-  },
-};
+  }
+}
 ```
 
 ### 3. Parse Email with postal-mime
 
 ```typescript
-import * as PostalMime from 'postal-mime';
+import * as PostalMime from 'postal-mime'
 
 export default {
   async email(message, env, ctx) {
-    const parser = new PostalMime.default();
-    const rawEmail = new Response(message.raw);
-    const email = await parser.parse(await rawEmail.arrayBuffer());
-    
+    const parser = new PostalMime.default()
+    const rawEmail = new Response(message.raw)
+    const email = await parser.parse(await rawEmail.arrayBuffer())
+
     // email contains: headers, from, to, subject, html, text, attachments
-    console.log(email.subject, email.from);
-    
-    await message.forward("inbox@example.com");
-  },
-};
+    console.log(email.subject, email.from)
+
+    await message.forward('inbox@example.com')
+  }
+}
 ```
 
 ### 4. Auto-Reply
 
 ```typescript
-import { EmailMessage } from "cloudflare:email";
-import { createMimeMessage } from 'mimetext';
+import { EmailMessage } from 'cloudflare:email'
+import { createMimeMessage } from 'mimetext'
 
 export default {
   async email(message, env, ctx) {
-    const msg = createMimeMessage();
-    msg.setSender({ name: 'Support Team', addr: 'support@example.com' });
-    msg.setRecipient(message.from);
-    msg.setHeader('In-Reply-To', message.headers.get('Message-ID'));
-    msg.setSubject('Re: Your inquiry');
+    const msg = createMimeMessage()
+    msg.setSender({ name: 'Support Team', addr: 'support@example.com' })
+    msg.setRecipient(message.from)
+    msg.setHeader('In-Reply-To', message.headers.get('Message-ID'))
+    msg.setSubject('Re: Your inquiry')
     msg.addMessage({
       contentType: 'text/plain',
-      data: 'Thank you for contacting us. We will respond within 24 hours.',
-    });
+      data: 'Thank you for contacting us. We will respond within 24 hours.'
+    })
 
-    const replyMessage = new EmailMessage(
-      'support@example.com',
-      message.from,
-      msg.asRaw()
-    );
+    const replyMessage = new EmailMessage('support@example.com', message.from, msg.asRaw())
 
-    await message.reply(replyMessage);
-    await message.forward("team@example.com");
-  },
-};
+    await message.reply(replyMessage)
+    await message.forward('team@example.com')
+  }
+}
 ```
 
 ### 5. Conditional Routing by Subject
@@ -152,41 +148,44 @@ export default {
 ```typescript
 export default {
   async email(message, env, ctx) {
-    const subject = message.headers.get('Subject') || '';
-    
+    const subject = message.headers.get('Subject') || ''
+
     if (subject.toLowerCase().includes('billing')) {
-      await message.forward("billing@example.com");
+      await message.forward('billing@example.com')
     } else if (subject.toLowerCase().includes('support')) {
-      await message.forward("support@example.com");
+      await message.forward('support@example.com')
     } else {
-      await message.forward("general@example.com");
+      await message.forward('general@example.com')
     }
-  },
-};
+  }
+}
 ```
 
 ### 6. Store Email in KV/R2
 
 ```typescript
-import * as PostalMime from 'postal-mime';
+import * as PostalMime from 'postal-mime'
 
 export default {
   async email(message, env, ctx) {
-    const parser = new PostalMime.default();
-    const rawEmail = new Response(message.raw);
-    const email = await parser.parse(await rawEmail.arrayBuffer());
-    
+    const parser = new PostalMime.default()
+    const rawEmail = new Response(message.raw)
+    const email = await parser.parse(await rawEmail.arrayBuffer())
+
     // Store in KV
-    const key = `email:${Date.now()}:${message.from}`;
-    await env.EMAIL_ARCHIVE.put(key, JSON.stringify({
-      from: email.from,
-      subject: email.subject,
-      receivedAt: new Date().toISOString(),
-    }));
-    
-    await message.forward("inbox@example.com");
-  },
-};
+    const key = `email:${Date.now()}:${message.from}`
+    await env.EMAIL_ARCHIVE.put(
+      key,
+      JSON.stringify({
+        from: email.from,
+        subject: email.subject,
+        receivedAt: new Date().toISOString()
+      })
+    )
+
+    await message.forward('inbox@example.com')
+  }
+}
 ```
 
 ### 7. Webhook Notification
@@ -194,22 +193,22 @@ export default {
 ```typescript
 export default {
   async email(message, env, ctx) {
-    const subject = message.headers.get('Subject');
-    
+    const subject = message.headers.get('Subject')
+
     // Notify via webhook
     ctx.waitUntil(
       fetch('https://hooks.slack.com/services/YOUR/WEBHOOK/URL', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: `New email from ${message.from}: ${subject}`,
-        }),
+          text: `New email from ${message.from}: ${subject}`
+        })
       })
-    );
-    
-    await message.forward("inbox@example.com");
-  },
-};
+    )
+
+    await message.forward('inbox@example.com')
+  }
+}
 ```
 
 ### 8. Size-Based Filtering
@@ -217,15 +216,15 @@ export default {
 ```typescript
 export default {
   async email(message, env, ctx) {
-    const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
-    
+    const MAX_SIZE = 10 * 1024 * 1024 // 10 MB
+
     if (message.rawSize > MAX_SIZE) {
-      message.setReject("Message too large");
+      message.setReject('Message too large')
     } else {
-      await message.forward("inbox@example.com");
+      await message.forward('inbox@example.com')
     }
-  },
-};
+  }
+}
 ```
 
 ## Wrangler Configuration
@@ -295,30 +294,26 @@ Hello world'
 Wrangler writes sent emails to local `.eml` files:
 
 ```typescript
-import { EmailMessage } from "cloudflare:email";
-import { createMimeMessage } from 'mimetext';
+import { EmailMessage } from 'cloudflare:email'
+import { createMimeMessage } from 'mimetext'
 
 export default {
   async fetch(request, env, ctx) {
-    const msg = createMimeMessage();
-    msg.setSender({ name: 'Test', addr: 'sender@example.com' });
-    msg.setRecipient('recipient@example.com');
-    msg.setSubject('Test from Worker');
+    const msg = createMimeMessage()
+    msg.setSender({ name: 'Test', addr: 'sender@example.com' })
+    msg.setRecipient('recipient@example.com')
+    msg.setSubject('Test from Worker')
     msg.addMessage({
       contentType: 'text/plain',
-      data: 'Hello from Email Worker',
-    });
+      data: 'Hello from Email Worker'
+    })
 
-    const message = new EmailMessage(
-      'sender@example.com',
-      'recipient@example.com',
-      msg.asRaw()
-    );
-    await env.EMAIL.send(message);
-    
-    return Response.json({ ok: true });
+    const message = new EmailMessage('sender@example.com', 'recipient@example.com', msg.asRaw())
+    await env.EMAIL.send(message)
+
+    return Response.json({ ok: true })
   }
-};
+}
 ```
 
 Visit `http://localhost:8787/` to trigger. Check terminal for `.eml` file path.
@@ -340,18 +335,19 @@ npx wrangler deploy
 ### Bind to Route
 
 In Cloudflare dashboard:
+
 1. Go to Email Routing → Email Workers
 2. Create route (e.g., `hello@yourdomain.com`)
 3. Bind route to your deployed Worker
 
 ## Limits
 
-| Limit | Value |
-|-------|-------|
-| Max message size | 25 MiB |
-| Max rules | 200 |
-| Max destination addresses | 200 |
-| Workers CPU (free tier) | Limited (upgrade for more) |
+| Limit                     | Value                      |
+| ------------------------- | -------------------------- |
+| Max message size          | 25 MiB                     |
+| Max rules                 | 200                        |
+| Max destination addresses | 200                        |
+| Workers CPU (free tier)   | Limited (upgrade for more) |
 
 ### CPU Limit Errors
 
@@ -362,6 +358,7 @@ npx wrangler tail
 ```
 
 Look for `EXCEEDED_CPU` errors. Consider:
+
 - Upgrading to Workers Paid plan
 - Optimizing email parsing logic
 - Using `ctx.waitUntil()` for non-critical operations
@@ -379,14 +376,14 @@ export default {
   async email(message, env, ctx) {
     if (message.rawSize > 20 * 1024 * 1024) {
       // Don't parse huge emails synchronously
-      ctx.waitUntil(processLargeEmail(message, env));
-      await message.forward("inbox@example.com");
-      return;
+      ctx.waitUntil(processLargeEmail(message, env))
+      await message.forward('inbox@example.com')
+      return
     }
-    
+
     // Normal processing
-  },
-};
+  }
+}
 ```
 
 ### 3. Use ctx.waitUntil for Async Operations
@@ -395,18 +392,12 @@ export default {
 export default {
   async email(message, env, ctx) {
     // Forward immediately
-    await message.forward("inbox@example.com");
-    
+    await message.forward('inbox@example.com')
+
     // Non-blocking operations
-    ctx.waitUntil(
-      Promise.all([
-        logToAnalytics(message),
-        notifySlack(message),
-        updateDatabase(message),
-      ])
-    );
-  },
-};
+    ctx.waitUntil(Promise.all([logToAnalytics(message), notifySlack(message), updateDatabase(message)]))
+  }
+}
 ```
 
 ### 4. Add Custom Headers When Forwarding
@@ -414,13 +405,13 @@ export default {
 ```typescript
 export default {
   async email(message, env, ctx) {
-    const customHeaders = new Headers();
-    customHeaders.set('X-Processed-By', 'Email-Worker');
-    customHeaders.set('X-Original-To', message.to);
-    
-    await message.forward("inbox@example.com", customHeaders);
-  },
-};
+    const customHeaders = new Headers()
+    customHeaders.set('X-Processed-By', 'Email-Worker')
+    customHeaders.set('X-Original-To', message.to)
+
+    await message.forward('inbox@example.com', customHeaders)
+  }
+}
 ```
 
 ### 5. Parse Headers Safely
@@ -428,28 +419,28 @@ export default {
 ```typescript
 export default {
   async email(message, env, ctx) {
-    const subject = message.headers.get('Subject') || '(no subject)';
-    const messageId = message.headers.get('Message-ID') || '';
-    
+    const subject = message.headers.get('Subject') || '(no subject)'
+    const messageId = message.headers.get('Message-ID') || ''
+
     // Avoid throwing on missing headers
-  },
-};
+  }
+}
 ```
 
 ### 6. Type Safety
 
 ```typescript
 interface Env {
-  EMAIL: SendEmail;
-  EMAIL_ARCHIVE: KVNamespace;
-  WEBHOOK_URL: string;
+  EMAIL: SendEmail
+  EMAIL_ARCHIVE: KVNamespace
+  WEBHOOK_URL: string
 }
 
 export default {
   async email(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext) {
     // Fully typed
-  },
-};
+  }
+}
 ```
 
 ## Common Use Cases
@@ -472,8 +463,8 @@ export default {
 ```json
 {
   "dependencies": {
-    "postal-mime": "^2.3.3",    // Parse incoming emails
-    "mimetext": "^4.0.0"         // Compose outgoing emails
+    "postal-mime": "^2.3.3", // Parse incoming emails
+    "mimetext": "^4.0.0" // Compose outgoing emails
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.0.0",
@@ -510,84 +501,82 @@ export default {
 ```typescript
 export default {
   async email(message, env, ctx) {
-    const [localPart, domain] = message.to.split('@');
-    
+    const [localPart, domain] = message.to.split('@')
+
     // Route based on subdomain or local part
-    const tenantId = extractTenantId(localPart);
-    const config = await env.TENANT_CONFIG.get(tenantId, 'json');
-    
+    const tenantId = extractTenantId(localPart)
+    const config = await env.TENANT_CONFIG.get(tenantId, 'json')
+
     if (config?.forwardTo) {
-      await message.forward(config.forwardTo);
+      await message.forward(config.forwardTo)
     } else {
-      message.setReject("Unknown recipient");
+      message.setReject('Unknown recipient')
     }
-  },
-};
+  }
+}
 ```
 
 ### Attachment Extraction
 
 ```typescript
-import * as PostalMime from 'postal-mime';
+import * as PostalMime from 'postal-mime'
 
 export default {
   async email(message, env, ctx) {
-    const parser = new PostalMime.default();
-    const rawEmail = new Response(message.raw);
-    const email = await parser.parse(await rawEmail.arrayBuffer());
-    
+    const parser = new PostalMime.default()
+    const rawEmail = new Response(message.raw)
+    const email = await parser.parse(await rawEmail.arrayBuffer())
+
     // Process attachments
     for (const attachment of email.attachments) {
-      const key = `attachments/${Date.now()}-${attachment.filename}`;
+      const key = `attachments/${Date.now()}-${attachment.filename}`
       ctx.waitUntil(
         env.ATTACHMENTS.put(key, attachment.content, {
           metadata: {
             contentType: attachment.mimeType,
-            from: email.from.address,
-          },
+            from: email.from.address
+          }
         })
-      );
+      )
     }
-    
-    await message.forward("inbox@example.com");
-  },
-};
+
+    await message.forward('inbox@example.com')
+  }
+}
 ```
 
 ### Conditional Auto-Reply with Rate Limiting
 
 ```typescript
-import { EmailMessage } from "cloudflare:email";
-import { createMimeMessage } from 'mimetext';
+import { EmailMessage } from 'cloudflare:email'
+import { createMimeMessage } from 'mimetext'
 
 export default {
   async email(message, env, ctx) {
-    const rateKey = `rate:${message.from}`;
-    const lastReply = await env.RATE_LIMIT.get(rateKey);
-    
+    const rateKey = `rate:${message.from}`
+    const lastReply = await env.RATE_LIMIT.get(rateKey)
+
     if (!lastReply) {
       // Send auto-reply
-      const msg = createMimeMessage();
-      msg.setSender({ name: 'Auto Reply', addr: 'noreply@example.com' });
-      msg.setRecipient(message.from);
-      msg.setSubject('Received your message');
+      const msg = createMimeMessage()
+      msg.setSender({ name: 'Auto Reply', addr: 'noreply@example.com' })
+      msg.setRecipient(message.from)
+      msg.setSubject('Received your message')
       msg.addMessage({
         contentType: 'text/plain',
-        data: 'Thank you for contacting us.',
-      });
-      
-      const reply = new EmailMessage('noreply@example.com', message.from, msg.asRaw());
-      await message.reply(reply);
-      
+        data: 'Thank you for contacting us.'
+      })
+
+      const reply = new EmailMessage('noreply@example.com', message.from, msg.asRaw())
+      await message.reply(reply)
+
       // Rate limit: 1 reply per hour
-      ctx.waitUntil(
-        env.RATE_LIMIT.put(rateKey, Date.now().toString(), { expirationTtl: 3600 })
-      );
+      ctx.waitUntil(env.RATE_LIMIT.put(rateKey, Date.now().toString(), { expirationTtl: 3600 }))
     }
-    
-    await message.forward("inbox@example.com");
-  },
-};
+
+    await message.forward('inbox@example.com')
+  }
+}
 ```
 
 ## Related Documentation

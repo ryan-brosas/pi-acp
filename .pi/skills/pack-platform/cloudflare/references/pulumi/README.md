@@ -7,6 +7,7 @@ Expert guidance for Cloudflare Pulumi Provider (@pulumi/cloudflare).
 Programmatic management of Cloudflare resources: Workers, Pages, D1, KV, R2, DNS, Queues, etc.
 
 **Packages:**
+
 - TypeScript/JS: `@pulumi/cloudflare`
 - Python: `pulumi-cloudflare`
 - Go: `github.com/pulumi/pulumi-cloudflare/sdk/v6/go/cloudflare`
@@ -27,35 +28,42 @@ Programmatic management of Cloudflare resources: Workers, Pages, D1, KV, R2, DNS
 Three methods (mutually exclusive):
 
 **1. API Token (Recommended)**
-```typescript
-import * as cloudflare from "@pulumi/cloudflare";
 
-const provider = new cloudflare.Provider("cf", {
-    apiToken: process.env.CLOUDFLARE_API_TOKEN,
-});
+```typescript
+import * as cloudflare from '@pulumi/cloudflare'
+
+const provider = new cloudflare.Provider('cf', {
+  apiToken: process.env.CLOUDFLARE_API_TOKEN
+})
 ```
+
 Env: `CLOUDFLARE_API_TOKEN`
 
 **2. API Key (Legacy)**
+
 ```typescript
-const provider = new cloudflare.Provider("cf", {
-    apiKey: process.env.CLOUDFLARE_API_KEY,
-    email: process.env.CLOUDFLARE_EMAIL,
-});
+const provider = new cloudflare.Provider('cf', {
+  apiKey: process.env.CLOUDFLARE_API_KEY,
+  email: process.env.CLOUDFLARE_EMAIL
+})
 ```
+
 Env: `CLOUDFLARE_API_KEY`, `CLOUDFLARE_EMAIL`
 
 **3. API User Service Key**
+
 ```typescript
-const provider = new cloudflare.Provider("cf", {
-    apiUserServiceKey: process.env.CLOUDFLARE_API_USER_SERVICE_KEY,
-});
+const provider = new cloudflare.Provider('cf', {
+  apiUserServiceKey: process.env.CLOUDFLARE_API_USER_SERVICE_KEY
+})
 ```
+
 Env: `CLOUDFLARE_API_USER_SERVICE_KEY`
 
 ## Setup
 
 **Pulumi.yaml:**
+
 ```yaml
 name: my-cloudflare-app
 runtime: nodejs
@@ -65,27 +73,31 @@ config:
 ```
 
 **Pulumi.<stack>.yaml:**
+
 ```yaml
 config:
-  cloudflare:accountId: "abc123..."
+  cloudflare:accountId: 'abc123...'
 ```
 
 **index.ts:**
-```typescript
-import * as pulumi from "@pulumi/pulumi";
-import * as cloudflare from "@pulumi/cloudflare";
 
-const config = new pulumi.Config("cloudflare");
-const accountId = config.require("accountId");
+```typescript
+import * as pulumi from '@pulumi/pulumi'
+import * as cloudflare from '@pulumi/cloudflare'
+
+const config = new pulumi.Config('cloudflare')
+const accountId = config.require('accountId')
 ```
 
 ## Essential Imports
+
 ```typescript
-import * as pulumi from "@pulumi/pulumi";
-import * as cloudflare from "@pulumi/cloudflare";
+import * as pulumi from '@pulumi/pulumi'
+import * as cloudflare from '@pulumi/cloudflare'
 ```
 
 ## Common Resource Types
+
 - `Provider` - Provider config
 - `WorkerScript` - Worker
 - `WorkersKvNamespace` - KV
@@ -98,10 +110,12 @@ import * as cloudflare from "@pulumi/cloudflare";
 - `WorkersDomain` - Custom domain
 
 ## Key Properties
+
 - `accountId` - Required for most resources
 - `zoneId` - Required for DNS/domain
 - `name`/`title` - Resource identifier
 - `*Bindings` - Connect resources to Workers
 
 ---
+
 See: [configuration.md](./configuration.md), [api.md](./api.md), [patterns.md](./patterns.md), [gotchas.md](./gotchas.md)

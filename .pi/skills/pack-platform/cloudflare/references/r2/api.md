@@ -4,7 +4,7 @@
 
 ```typescript
 // Basic
-await env.MY_BUCKET.put(key, value);
+await env.MY_BUCKET.put(key, value)
 
 // With metadata
 await env.MY_BUCKET.put(key, value, {
@@ -17,7 +17,7 @@ await env.MY_BUCKET.put(key, value, {
   storageClass: 'Standard', // or 'InfrequentAccess'
   sha256: arrayBufferOrHex, // Integrity check
   ssecKey: arrayBuffer32bytes // SSE-C encryption
-});
+})
 
 // Value types: ReadableStream | ArrayBuffer | string | Blob
 ```
@@ -25,38 +25,38 @@ await env.MY_BUCKET.put(key, value, {
 ## GET (Download)
 
 ```typescript
-const object = await env.MY_BUCKET.get(key);
-if (!object) return new Response('Not found', { status: 404 });
+const object = await env.MY_BUCKET.get(key)
+if (!object) return new Response('Not found', { status: 404 })
 
 // Body formats
-const buffer = await object.arrayBuffer();
-const text = await object.text();
-const json = await object.json();
-const stream = object.body; // ReadableStream
+const buffer = await object.arrayBuffer()
+const text = await object.text()
+const json = await object.json()
+const stream = object.body // ReadableStream
 
 // Ranged reads
 const object = await env.MY_BUCKET.get(key, {
   range: { offset: 0, length: 1024 }
-});
+})
 
 // Conditional GET
 const object = await env.MY_BUCKET.get(key, {
   onlyIf: { etagMatches: '"abc123"' }
-});
+})
 ```
 
 ## HEAD (Metadata Only)
 
 ```typescript
-const object = await env.MY_BUCKET.head(key);
-console.log(object?.size, object?.etag, object?.storageClass);
+const object = await env.MY_BUCKET.head(key)
+console.log(object?.size, object?.etag, object?.storageClass)
 ```
 
 ## DELETE
 
 ```typescript
-await env.MY_BUCKET.delete(key);
-await env.MY_BUCKET.delete([key1, key2, key3]); // Batch (max 1000)
+await env.MY_BUCKET.delete(key)
+await env.MY_BUCKET.delete([key1, key2, key3]) // Batch (max 1000)
 ```
 
 ## LIST
@@ -68,14 +68,14 @@ const listed = await env.MY_BUCKET.list({
   cursor: cursorFromPrevious,
   delimiter: '/',
   include: ['httpMetadata', 'customMetadata']
-});
+})
 
 // Pagination (always use truncated flag)
 while (listed.truncated) {
-  const next = await env.MY_BUCKET.list({ cursor: listed.cursor });
-  listed.objects.push(...next.objects);
-  listed.truncated = next.truncated;
-  listed.cursor = next.cursor;
+  const next = await env.MY_BUCKET.list({ cursor: listed.cursor })
+  listed.objects.push(...next.objects)
+  listed.truncated = next.truncated
+  listed.cursor = next.cursor
 }
 ```
 
@@ -84,36 +84,36 @@ while (listed.truncated) {
 ```typescript
 const multipart = await env.MY_BUCKET.createMultipartUpload(key, {
   httpMetadata: { contentType: 'video/mp4' }
-});
+})
 
-const uploadedParts: R2UploadedPart[] = [];
+const uploadedParts: R2UploadedPart[] = []
 for (let i = 0; i < partCount; i++) {
-  const part = await multipart.uploadPart(i + 1, partData);
-  uploadedParts.push(part);
+  const part = await multipart.uploadPart(i + 1, partData)
+  uploadedParts.push(part)
 }
 
-const object = await multipart.complete(uploadedParts);
+const object = await multipart.complete(uploadedParts)
 // OR: await multipart.abort();
 
 // Resume
-const multipart = env.MY_BUCKET.resumeMultipartUpload(key, uploadId);
+const multipart = env.MY_BUCKET.resumeMultipartUpload(key, uploadId)
 ```
 
 ## R2Object Interface
 
 ```typescript
 interface R2Object {
-  key: string;
-  version: string;
-  size: number;
-  etag: string; // Unquoted
-  httpEtag: string; // Quoted (use for headers)
-  uploaded: Date;
-  httpMetadata: R2HTTPMetadata;
-  customMetadata: Record<string, string>;
-  storageClass: 'Standard' | 'InfrequentAccess';
-  checksums: R2Checksums;
-  writeHttpMetadata(headers: Headers): void;
+  key: string
+  version: string
+  size: number
+  etag: string // Unquoted
+  httpEtag: string // Quoted (use for headers)
+  uploaded: Date
+  httpMetadata: R2HTTPMetadata
+  customMetadata: Record<string, string>
+  storageClass: 'Standard' | 'InfrequentAccess'
+  checksums: R2Checksums
+  writeHttpMetadata(headers: Headers): void
 }
 ```
 

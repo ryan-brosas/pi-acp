@@ -486,9 +486,7 @@ export async function runEnforcedInspection(opts: RunEnforcedInspectionOptions):
         : ktsResult.summaries
     }
   } catch {
-    kts = [
-      { scriptPath: '(gate)', status: 'error', filesRun: 0, problems: 0, message: 'KTS inspection pass failed' }
-    ]
+    kts = [{ scriptPath: '(gate)', status: 'error', filesRun: 0, problems: 0, message: 'KTS inspection pass failed' }]
   }
 
   const errors = items.reduce(

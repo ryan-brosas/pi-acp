@@ -23,9 +23,10 @@ Use Cloudflare Workers for programmatic control:
 export default {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    
+
     // Parse Accept header for format negotiation
     const accept = request.headers.get('Accept') || '';
     let format: 'avif' | 'webp' | undefined;
     if (/image\/avif/.test(accept)) {
       format = 'a
+```

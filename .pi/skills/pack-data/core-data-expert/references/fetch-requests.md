@@ -24,6 +24,7 @@ fetchRequest.propertiesToFetch = ["name", "categoryName", "views"]
 ```
 
 **SQL Impact:**
+
 ```sql
 -- Without propertiesToFetch
 SELECT * FROM ZARTICLE
@@ -33,6 +34,7 @@ SELECT Z_PK, ZNAME, ZCREATIONDATE FROM ZARTICLE
 ```
 
 **Benefits:**
+
 - Reduces memory usage
 - Faster query execution
 - Less data transferred from disk
@@ -47,11 +49,13 @@ fetchRequest.fetchBatchSize = 20
 ```
 
 **How it works:**
+
 - Initially fetches only 20 objects
 - Fetches next batch when needed (scrolling, iteration)
 - Keeps memory usage predictable
 
 **When to use:**
+
 - List views (table/collection views)
 - Large datasets
 - Scrollable content
@@ -66,6 +70,7 @@ fetchRequest.fetchLimit = 1 // Only fetch one result
 ```
 
 **Common use cases:**
+
 ```swift
 // Get newest article
 fetchRequest.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
@@ -88,11 +93,13 @@ let objectIDs = try context.fetch(fetchRequest) as! [NSManagedObjectID]
 ```
 
 **Benefits:**
+
 - Minimal memory usage
 - Very fast
 - No faulting overhead
 
 **Use for:**
+
 - Counting objects
 - Checking existence
 - Batch operations
@@ -218,23 +225,23 @@ For table and collection views, use `NSFetchedResultsController` for automatic u
 ```swift
 class ArticlesViewController: UIViewController {
     var fetchedResultsController: NSFetchedResultsController<Article>!
-    
+
     func setupFetchedResultsController() {
         let fetchRequest = Article.fetchRequest()
         fetchRequest.sortDescriptors = [
             NSSortDescriptor(key: "creationDate", ascending: false)
         ]
         fetchRequest.fetchBatchSize = 20
-        
+
         fetchedResultsController = NSFetchedResultsController(
             fetchRequest: fetchRequest,
             managedObjectContext: viewContext,
             sectionNameKeyPath: nil,
             cacheName: "ArticlesCache"
         )
-        
+
         fetchedResultsController.delegate = self
-        
+
         try? fetchedResultsController.performFetch()
     }
 }
@@ -258,7 +265,7 @@ extension ArticlesViewController: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
     }
-    
+
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
                    didChange anObject: Any,
                    at indexPath: IndexPath?,
@@ -286,7 +293,7 @@ extension ArticlesViewController: NSFetchedResultsControllerDelegate {
             break
         }
     }
-    
+
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.endUpdates()
     }
@@ -301,7 +308,7 @@ Modern approach using `NSDiffableDataSourceSnapshot`:
 class ArticlesViewController: UICollectionViewController {
     private var dataSource: UICollectionViewDiffableDataSource<String, NSManagedObjectID>!
     private var fetchedResultsController: NSFetchedResultsController<Article>!
-    
+
     func setupDataSource() {
         dataSource = UICollectionViewDiffableDataSource<String, NSManagedObjectID>(
             collectionView: collectionView
@@ -310,26 +317,26 @@ class ArticlesViewController: UICollectionViewController {
                 withReuseIdentifier: "ArticleCell",
                 for: indexPath
             ) as! ArticleCell
-            
+
             if let article = try? self.viewContext.existingObject(with: objectID) as? Article {
                 cell.configure(with: article)
             }
-            
+
             return cell
         }
     }
-    
+
     func setupFetchedResultsController() {
         let fetchRequest = Article.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
+
         fetchedResultsController = NSFetchedResultsController(
             fetchRequest: fetchRequest,
             managedObjectContext: viewContext,
             sectionNameKeyPath: nil,
             cacheName: nil
         )
-        
+
         fetchedResultsController.delegate = self
         try? fetchedResultsController.performFetch()
     }
@@ -450,7 +457,7 @@ extension Managed {
     static var entityName: String {
         return String(describing: self)
     }
-    
+
     static func fetchRequest<T: NSManagedObject>() -> NSFetchRequest<T> {
         return NSFetchRequest<T>(entityName: entityName)
     }
@@ -471,7 +478,7 @@ For large datasets, fetch asynchronously:
 let fetchRequest = Article.fetchRequest()
 let asyncFetchRequest = NSAsynchronousFetchRequest(fetchRequest: fetchRequest) { result in
     guard let articles = result.finalResult else { return }
-    
+
     DispatchQueue.main.async {
         // Update UI with articles
     }
@@ -490,6 +497,7 @@ fetchRequest.relationshipKeyPathsForPrefetching = ["category", "attachments"]
 ```
 
 **Benefits:**
+
 - Reduces number of database trips
 - Improves performance when accessing relationships
 - Prevents N+1 query problem
@@ -501,6 +509,7 @@ fetchRequest.returnsObjectsAsFaults = false
 ```
 
 **When to use:**
+
 - You know you'll access all properties immediately
 - Small result sets
 - Avoid for large datasets (high memory usage)
@@ -522,11 +531,11 @@ func fetchOrCreateArticle(withName name: String) -> Article {
     let fetchRequest = Article.fetchRequest()
     fetchRequest.predicate = NSPredicate(format: "name == %@", name)
     fetchRequest.fetchLimit = 1
-    
+
     if let existing = try? context.fetch(fetchRequest).first {
         return existing
     }
-    
+
     let article = Article(context: context)
     article.name = name
     return article
@@ -541,7 +550,7 @@ func articleExists(withName name: String) -> Bool {
     fetchRequest.predicate = NSPredicate(format: "name == %@", name)
     fetchRequest.fetchLimit = 1
     fetchRequest.resultType = .countResultType
-    
+
     let count = (try? context.count(for: fetchRequest)) ?? 0
     return count > 0
 }
@@ -611,11 +620,13 @@ let articles = try context.fetch(fetchRequest)
 ### Enable SQL Debug
 
 Add launch argument:
+
 ```
 -com.apple.CoreData.SQLDebug 1
 ```
 
 **Output:**
+
 ```sql
 CoreData: sql: SELECT Z_PK, ZNAME, ZVIEWS FROM ZARTICLE WHERE ZVIEWS > ? ORDER BY ZCREATIONDATE DESC LIMIT 20
 ```

@@ -1,6 +1,6 @@
 ---
 name: ruby-development
-description: "Use when writing or reviewing Ruby - Rails conventions, Active Record, background jobs, and RSpec testing."
+description: 'Use when writing or reviewing Ruby - Rails conventions, Active Record, background jobs, and RSpec testing.'
 disable-model-invocation: true
 ---
 

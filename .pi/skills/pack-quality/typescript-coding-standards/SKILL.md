@@ -4,7 +4,6 @@ description: Use when writing, refactoring, or reviewing TypeScript code that ne
 disable-model-invocation: true
 ---
 
-
 # TypeScript Coding Standards
 
 ## Iron Laws
@@ -21,15 +20,15 @@ disable-model-invocation: true
 
 ```ts
 // Branded primitives (no runtime cost)
-type UserId = string & { readonly __brand: "UserId" }
+type UserId = string & { readonly __brand: 'UserId' }
 const UserId = (s: string): UserId => s as UserId
 
 // Discriminated unions
 type RequestState<T> =
-  | { kind: "idle" }
-  | { kind: "loading" }
-  | { kind: "success"; data: T }
-  | { kind: "error"; error: AppError }
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'success'; data: T }
+  | { kind: 'error'; error: AppError }
 ```
 
 Use `kind` for discriminants (not `type` — collides with TS).
@@ -49,8 +48,10 @@ Never let `req.body`, `JSON.parse`, `process.env`, or query strings reach the co
 
 ```ts
 class UserNotFound extends Error {
-  readonly _tag = "UserNotFound" as const
-  constructor(readonly userId: UserId) { super(`User ${userId} not found`) }
+  readonly _tag = 'UserNotFound' as const
+  constructor(readonly userId: UserId) {
+    super(`User ${userId} not found`)
+  }
 }
 
 type GetUser = (id: UserId) => Effect.Effect<User, UserNotFound | DbError>
@@ -82,10 +83,11 @@ interface UserRepo {
 }
 
 class PostgresUserRepo implements UserRepo {
-  findById = (id) => Effect.tryPromise({
-    try: () => pg.query("SELECT * FROM users WHERE id = $1", [id]),
-    catch: (e) => toDbError(e)
-  })
+  findById = id =>
+    Effect.tryPromise({
+      try: () => pg.query('SELECT * FROM users WHERE id = $1', [id]),
+      catch: e => toDbError(e)
+    })
 }
 ```
 

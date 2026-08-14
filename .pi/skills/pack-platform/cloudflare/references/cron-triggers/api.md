@@ -8,22 +8,18 @@ interface Env {
 }
 
 export default {
-  async scheduled(
-    controller: ScheduledController,
-    env: Env,
-    ctx: ExecutionContext,
-  ): Promise<void> {
-    console.log("Cron executed:", new Date(controller.scheduledTime));
-  },
-};
+  async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    console.log('Cron executed:', new Date(controller.scheduledTime))
+  }
+}
 ```
 
 ```javascript
 export default {
   async scheduled(controller, env, ctx) {
-    console.log("Cron executed:", new Date(controller.scheduledTime));
-  },
-};
+    console.log('Cron executed:', new Date(controller.scheduledTime))
+  }
+}
 ```
 
 ```python
@@ -38,64 +34,68 @@ class Default(WorkerEntrypoint):
 
 ```typescript
 interface ScheduledController {
-  scheduledTime: number;  // Unix ms when scheduled to run
-  cron: string;           // Expression that triggered (e.g., "*/5 * * * *")
-  type: string;           // Always "scheduled"
+  scheduledTime: number // Unix ms when scheduled to run
+  cron: string // Expression that triggered (e.g., "*/5 * * * *")
+  type: string // Always "scheduled"
 }
 ```
 
 **Parse time:**
+
 ```typescript
-const date = new Date(controller.scheduledTime);
-console.log(date.toISOString());
+const date = new Date(controller.scheduledTime)
+console.log(date.toISOString())
 ```
 
 ## Handler Parameters
 
 **`controller: ScheduledController`**
+
 - Access cron expression and scheduled time
 
 **`env: Env`**
+
 - All bindings: KV, R2, D1, secrets, service bindings
 
 **`ctx: ExecutionContext`**
+
 - `ctx.waitUntil(promise)` - Extend execution for async tasks (logging, cleanup, external APIs)
 - First `waitUntil` failure recorded in Cron Events
 
 ## Multiple Schedules Pattern
 
 ```typescript
-import { Hono } from "hono";
+import { Hono } from 'hono'
 
 interface Env {
-  MY_KV: KVNamespace;
+  MY_KV: KVNamespace
 }
 
-const app = new Hono<{ Bindings: Env }>();
-app.get("/", (c) => c.text("API Running"));
+const app = new Hono<{ Bindings: Env }>()
+app.get('/', c => c.text('API Running'))
 
 export default {
   fetch: app.fetch,
 
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
     switch (controller.cron) {
-      case "*/3 * * * *":
-        ctx.waitUntil(updateRecentData(env));
-        break;
-      
-      case "0 * * * *":
-        ctx.waitUntil(processHourlyAggregation(env));
-        break;
-      
-      case "0 2 * * *":
-        ctx.waitUntil(performDailyMaintenance(env));
-        break;
-      
+      case '*/3 * * * *':
+        ctx.waitUntil(updateRecentData(env))
+        break
+
+      case '0 * * * *':
+        ctx.waitUntil(processHourlyAggregation(env))
+        break
+
+      case '0 2 * * *':
+        ctx.waitUntil(performDailyMaintenance(env))
+        break
+
       default:
-        console.warn(`Unhandled cron: ${controller.cron}`);
+        console.warn(`Unhandled cron: ${controller.cron}`)
     }
-  },
-};
+  }
+}
 ```
 
 ## ctx.waitUntil Usage
@@ -106,20 +106,14 @@ Non-blocking async tasks:
 export default {
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
     // Critical path - runs immediately
-    const data = await fetchCriticalData();
-    
+    const data = await fetchCriticalData()
+
     // Non-blocking background tasks
-    ctx.waitUntil(
-      Promise.all([
-        logToAnalytics(data),
-        cleanupOldRecords(env.DB),
-        notifyWebhook(env.WEBHOOK_URL, data),
-      ])
-    );
-    
+    ctx.waitUntil(Promise.all([logToAnalytics(data), cleanupOldRecords(env.DB), notifyWebhook(env.WEBHOOK_URL, data)]))
+
     // Handler returns while waitUntil tasks complete
-  },
-};
+  }
+}
 ```
 
 ## Workflow Integration
@@ -127,25 +121,25 @@ export default {
 Trigger long-running workflows on schedule:
 
 ```typescript
-import { WorkflowEntrypoint } from "cloudflare:workers";
+import { WorkflowEntrypoint } from 'cloudflare:workers'
 
 interface Env {
-  MY_WORKFLOW: Workflow;
+  MY_WORKFLOW: Workflow
 }
 
 export class DataProcessingWorkflow extends WorkflowEntrypoint {
   async run(event: any, step: any) {
-    const data = await step.do("fetch-data", async () => {
-      return await fetchLargeDataset();
-    });
-    
-    const processed = await step.do("process-data", async () => {
-      return await processDataset(data);
-    });
-    
-    await step.do("store-results", async () => {
-      return await storeResults(processed);
-    });
+    const data = await step.do('fetch-data', async () => {
+      return await fetchLargeDataset()
+    })
+
+    const processed = await step.do('process-data', async () => {
+      return await processDataset(data)
+    })
+
+    await step.do('store-results', async () => {
+      return await storeResults(processed)
+    })
   }
 }
 
@@ -154,42 +148,42 @@ export default {
     const instance = await env.MY_WORKFLOW.create({
       params: {
         scheduledTime: controller.scheduledTime,
-        cron: controller.cron,
-      },
-    });
-    
-    console.log(`Started workflow: ${instance.id}`);
-  },
-};
+        cron: controller.cron
+      }
+    })
+
+    console.log(`Started workflow: ${instance.id}`)
+  }
+}
 ```
 
 ## Testing Handler
 
 ```typescript
 // test/scheduled.test.ts
-import { describe, it, expect } from "vitest";
-import worker from "../src/index";
+import { describe, it, expect } from 'vitest'
+import worker from '../src/index'
 
-describe("Scheduled Handler", () => {
-  it("processes scheduled event", async () => {
-    const env = getMiniflareBindings();
+describe('Scheduled Handler', () => {
+  it('processes scheduled event', async () => {
+    const env = getMiniflareBindings()
     const ctx = {
       waitUntil: (promise: Promise<any>) => promise,
-      passThroughOnException: () => {},
-    };
-    
+      passThroughOnException: () => {}
+    }
+
     const controller = {
       scheduledTime: Date.now(),
-      cron: "*/5 * * * *",
-      type: "scheduled" as const,
-    };
-    
-    await worker.scheduled(controller, env, ctx);
-    
-    const result = await env.MY_KV.get("last_run");
-    expect(result).toBeDefined();
-  });
-});
+      cron: '*/5 * * * *',
+      type: 'scheduled' as const
+    }
+
+    await worker.scheduled(controller, env, ctx)
+
+    const result = await env.MY_KV.get('last_run')
+    expect(result).toBeDefined()
+  })
+})
 ```
 
 ## See Also

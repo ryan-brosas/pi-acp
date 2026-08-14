@@ -1,9 +1,8 @@
 ---
 name: agent-code-quality-gate
-description: "Use when a coding agent claims implementation work is complete - an operational gate over scope, duplication, behavior tests, verification evidence, and regressions."
+description: 'Use when a coding agent claims implementation work is complete - an operational gate over scope, duplication, behavior tests, verification evidence, and regressions.'
 disable-model-invocation: true
 ---
-
 
 # Agent Code Quality Gate
 
@@ -41,33 +40,33 @@ Before declaring "done" after bugfix, feature edit, refactor, or subagent work. 
 
 ## Common Findings
 
-| Finding | Action |
-|---|---|
-| "While I'm here" cleanup | Split or revert |
-| Copy-pasted helper | Extract to common module |
-| New test that doesn't test | Rewrite or delete |
-| Skipped test (`.skip`) | Un-skip or fix |
-| Removed test | Add back, or justify |
-| No regression test | Add one |
-| Output truncated | Show full output |
+| Finding                    | Action                   |
+| -------------------------- | ------------------------ |
+| "While I'm here" cleanup   | Split or revert          |
+| Copy-pasted helper         | Extract to common module |
+| New test that doesn't test | Rewrite or delete        |
+| Skipped test (`.skip`)     | Un-skip or fix           |
+| Removed test               | Add back, or justify     |
+| No regression test         | Add one                  |
+| Output truncated           | Show full output         |
 
 ## Severity Tells
 
-| Tell | Action |
-|---|---|
-| `[blocker]` | Must fix. Violated invariant. |
-| `[should-fix]` | Worth fixing now. Real cost. |
-| `[nit]` | Cosmetic. Note, don't block. |
-| `[question]` | Need clarification. |
+| Tell           | Action                        |
+| -------------- | ----------------------------- |
+| `[blocker]`    | Must fix. Violated invariant. |
+| `[should-fix]` | Worth fixing now. Real cost.  |
+| `[nit]`        | Cosmetic. Note, don't block.  |
+| `[question]`   | Need clarification.           |
 
 ## When to Override
 
-| Override | When |
-|---|---|
-| "Scope creep is acceptable" | User explicitly approved the extra work |
-| "Duplication is acceptable" | One-time use, extraction premature |
-| "Skipped test is acceptable" | Flaky, in test-quarantine |
-| "Removed test is acceptable" | Replaced by a better test |
+| Override                     | When                                    |
+| ---------------------------- | --------------------------------------- |
+| "Scope creep is acceptable"  | User explicitly approved the extra work |
+| "Duplication is acceptable"  | One-time use, extraction premature      |
+| "Skipped test is acceptable" | Flaky, in test-quarantine               |
+| "Removed test is acceptable" | Replaced by a better test               |
 
 Document the override in the commit. Don't hide it.
 

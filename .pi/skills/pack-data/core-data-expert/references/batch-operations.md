@@ -5,11 +5,13 @@ Batch operations provide significant performance improvements for large-scale da
 ## Overview
 
 Core Data provides three batch operation types:
+
 - **NSBatchInsertRequest** - Bulk inserts (iOS 14+)
 - **NSBatchDeleteRequest** - Bulk deletes
 - **NSBatchUpdateRequest** - Bulk updates
 
 **Key Characteristics:**
+
 - Operate at SQL level (very fast)
 - Don't load objects into memory
 - Don't trigger validation
@@ -26,14 +28,14 @@ let context = container.newBackgroundContext()
 context.perform {
     let batchInsert = NSBatchInsertRequest(entity: Article.entity()) { (object: NSManagedObject) -> Bool in
         guard let article = object as? Article else { return true }
-        
+
         article.name = "Sample Article"
         article.content = "Content here"
         article.creationDate = Date()
-        
+
         return false // Continue inserting
     }
-    
+
     do {
         try context.execute(batchInsert)
     } catch {
@@ -47,7 +49,7 @@ context.perform {
 ```swift
 func batchInsertArticles(_ data: [ArticleData]) {
     let context = container.newBackgroundContext()
-    
+
     context.perform {
         var index = 0
         let batchInsert = NSBatchInsertRequest(
@@ -55,16 +57,16 @@ func batchInsertArticles(_ data: [ArticleData]) {
         ) { (object: NSManagedObject) -> Bool in
             guard index < data.count else { return true } // Stop
             guard let article = object as? Article else { return true }
-            
+
             let articleData = data[index]
             article.name = articleData.name
             article.content = articleData.content
             article.creationDate = Date()
-            
+
             index += 1
             return false // Continue
         }
-        
+
         do {
             try context.execute(batchInsert)
         } catch {
@@ -85,12 +87,12 @@ context.perform {
         ["name": "Article 2", "content": "Content 2", "creationDate": Date()],
         ["name": "Article 3", "content": "Content 3", "creationDate": Date()]
     ]
-    
+
     let batchInsert = NSBatchInsertRequest(
         entity: Article.entity(),
         objects: objects
     )
-    
+
     do {
         try context.execute(batchInsert)
     } catch {
@@ -102,6 +104,7 @@ context.perform {
 ### Limitations
 
 **Cannot set relationships:**
+
 ```swift
 // [ ] This won't work
 let batchInsert = NSBatchInsertRequest(entity: Article.entity()) { object in
@@ -112,6 +115,7 @@ let batchInsert = NSBatchInsertRequest(entity: Article.entity()) { object in
 ```
 
 **Workaround:** Set relationships after batch insert:
+
 ```swift
 // 1. Batch insert articles
 let batchInsert = NSBatchInsertRequest(entity: Article.entity()) { object in
@@ -140,7 +144,7 @@ let context = container.newBackgroundContext()
 context.perform {
     let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Article.fetchRequest()
     let batchDelete = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-    
+
     do {
         try context.execute(batchDelete)
     } catch {
@@ -196,7 +200,7 @@ context.perform {
     let batchUpdate = NSBatchUpdateRequest(entityName: "Article")
     batchUpdate.predicate = NSPredicate(format: "isRead == NO")
     batchUpdate.propertiesToUpdate = ["isRead": true]
-    
+
     do {
         try context.execute(batchUpdate)
     } catch {
@@ -263,7 +267,7 @@ context.perform {
 ```swift
 guard let description = container.persistentStoreDescriptions.first else { return }
 
-description.setOption(true as NSNumber, 
+description.setOption(true as NSNumber,
                      forKey: NSPersistentHistoryTrackingKey)
 description.setOption(true as NSNumber,
                      forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
@@ -318,24 +322,28 @@ try context.execute(batchInsert)
 ## When to Use Batch Operations
 
 ### Use Batch Insert When:
+
 - Importing large datasets (>100 objects)
 - Initial data seeding
 - Syncing data from server
 - Performance is critical
 
 ### Use Batch Delete When:
+
 - Deleting many objects at once
 - Clearing old data
 - Implementing data retention policies
 - Performance is critical
 
 ### Use Batch Update When:
+
 - Updating many objects with same values
 - Bulk status changes
 - Incrementing counters
 - Performance is critical
 
 ### Don't Use Batch Operations When:
+
 - Need to set relationships
 - Need validation
 - Need to trigger lifecycle events (willSave, etc.)
@@ -347,14 +355,14 @@ try context.execute(batchInsert)
 ```swift
 class DataImporter {
     let container: NSPersistentContainer
-    
+
     init(container: NSPersistentContainer) {
         self.container = container
     }
-    
+
     func importArticles(_ data: [ArticleData]) {
         let context = container.newBackgroundContext()
-        
+
         context.perform {
             var index = 0
             let batchInsert = NSBatchInsertRequest(
@@ -362,21 +370,21 @@ class DataImporter {
             ) { (object: NSManagedObject) -> Bool in
                 guard index < data.count else { return true }
                 guard let article = object as? Article else { return true }
-                
+
                 let articleData = data[index]
                 article.name = articleData.name
                 article.content = articleData.content
                 article.views = 0
                 article.creationDate = Date()
-                
+
                 index += 1
                 return false
             }
-            
+
             do {
                 let result = try context.execute(batchInsert) as? NSBatchInsertResult
                 print("Inserted \(data.count) articles")
-                
+
                 // If you need the object IDs
                 if let objectIDs = result?.result as? [NSManagedObjectID] {
                     print("Object IDs: \(objectIDs)")
@@ -394,30 +402,30 @@ class DataImporter {
 ```swift
 class DataCleaner {
     let container: NSPersistentContainer
-    
+
     init(container: NSPersistentContainer) {
         self.container = container
     }
-    
+
     func deleteOldArticles(olderThan days: Int) {
         let context = container.newBackgroundContext()
-        
+
         context.perform {
             let cutoffDate = Calendar.current.date(
                 byAdding: .day,
                 value: -days,
                 to: Date()
             )!
-            
+
             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Article.fetchRequest()
             fetchRequest.predicate = NSPredicate(
                 format: "creationDate < %@",
                 cutoffDate as NSDate
             )
-            
+
             let batchDelete = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             batchDelete.resultType = .resultTypeCount
-            
+
             do {
                 let result = try context.execute(batchDelete) as? NSBatchDeleteResult
                 if let count = result?.result as? Int {
@@ -501,9 +509,9 @@ context.perform {
 ```swift
 func testBatchInsert() throws {
     let context = container.newBackgroundContext()
-    
+
     let expectation = XCTestExpectation(description: "Batch insert")
-    
+
     context.perform {
         var count = 0
         let batchInsert = NSBatchInsertRequest(entity: Article.entity()) { object in
@@ -513,7 +521,7 @@ func testBatchInsert() throws {
             count += 1
             return false
         }
-        
+
         do {
             try context.execute(batchInsert)
             expectation.fulfill()
@@ -521,9 +529,9 @@ func testBatchInsert() throws {
             XCTFail("Batch insert failed: \(error)")
         }
     }
-    
+
     wait(for: [expectation], timeout: 5.0)
-    
+
     // Verify
     let fetchRequest = Article.fetchRequest()
     let articles = try context.fetch(fetchRequest)

@@ -1,7 +1,7 @@
 name: Bug report
 description: Report a defect or failing behavior
-title: "[bug]: "
-labels: ["bug"]
+title: '[bug]: '
+labels: ['bug']
 body:
   - type: textarea
     id: summary
@@ -35,7 +35,7 @@ body:
     id: artifact
     attributes:
       label: Artifact path
-      description: ".pi/work/<issue>-<slug>/ once /fix or /create runs."
+      description: '.pi/work/<issue>-<slug>/ once /fix or /create runs.'
     validations:
       required: false
   - type: textarea

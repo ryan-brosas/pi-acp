@@ -1,6 +1,6 @@
 ---
 name: pack-apple
-description: "Apple platform router: Swift concurrency and SwiftUI development."
+description: 'Apple platform router: Swift concurrency and SwiftUI development.'
 ---
 
 # Pack: Apple

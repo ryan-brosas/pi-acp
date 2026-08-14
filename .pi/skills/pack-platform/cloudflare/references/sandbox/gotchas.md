@@ -3,6 +3,7 @@
 ## Common Issues
 
 ### Container Not Ready
+
 **Error**: `CONTAINER_NOT_READY`  
 **Cause**: Container still provisioning (first request or after sleep)  
 **Fix**: Retry after 2-3s
@@ -11,38 +12,44 @@
 async function execWithRetry(sandbox, cmd) {
   for (let i = 0; i < 3; i++) {
     try {
-      return await sandbox.exec(cmd);
+      return await sandbox.exec(cmd)
     } catch (e) {
       if (e.code === 'CONTAINER_NOT_READY') {
-        await new Promise(r => setTimeout(r, 2000));
-        continue;
+        await new Promise(r => setTimeout(r, 2000))
+        continue
       }
-      throw e;
+      throw e
     }
   }
 }
 ```
 
 ### Port Exposure Fails in Dev
+
 **Error**: "Connection refused: container port not found"  
 **Cause**: Missing `EXPOSE` directive in Dockerfile  
 **Fix**: Add `EXPOSE <port>` to Dockerfile (only needed for `wrangler dev`, production auto-exposes)
 
 ### Preview URLs Not Working
+
 **Checklist**:
+
 1. Custom domain configured? (not `.workers.dev`)
 2. Wildcard DNS set up? (`*.domain.com → worker.domain.com`)
 3. `normalizeId: true` in getSandbox?
 4. `proxyToSandbox()` called first in fetch?
 
 ### Slow First Request
+
 **Cause**: Cold start (container provisioning)  
 **Solutions**:
+
 - Use `sleepAfter` instead of creating new sandboxes
 - Pre-warm with cron triggers
 - Set `keepAlive: true` for critical sandboxes
 
 ### File Not Persisting
+
 **Cause**: Files in `/tmp` or other ephemeral paths  
 **Fix**: Use `/workspace` for persistent files
 
@@ -52,13 +59,13 @@ async function execWithRetry(sandbox, cmd) {
 
 ```typescript
 // [ ] BAD: Creates new sandbox every time (slow, expensive)
-const sandbox = getSandbox(env.Sandbox, `user-${Date.now()}`);
+const sandbox = getSandbox(env.Sandbox, `user-${Date.now()}`)
 
 // [x] GOOD: Reuse sandbox per user
-const sandbox = getSandbox(env.Sandbox, `user-${userId}`);
+const sandbox = getSandbox(env.Sandbox, `user-${userId}`)
 
 // [x] GOOD: Reuse for temporary tasks
-const sandbox = getSandbox(env.Sandbox, 'shared-runner');
+const sandbox = getSandbox(env.Sandbox, 'shared-runner')
 ```
 
 ### Sleep Configuration
@@ -68,28 +75,31 @@ const sandbox = getSandbox(env.Sandbox, 'shared-runner');
 const sandbox = getSandbox(env.Sandbox, 'id', {
   sleepAfter: '30m',
   keepAlive: false
-});
+})
 
 // Always-on (higher cost, faster response)
 const sandbox = getSandbox(env.Sandbox, 'id', {
   keepAlive: true
-});
+})
 ```
 
 ### Increase max_instances for High Traffic
 
 ```jsonc
 {
-  "containers": [{
-    "class_name": "Sandbox",
-    "max_instances": 50  // Allow 50 concurrent sandboxes
-  }]
+  "containers": [
+    {
+      "class_name": "Sandbox",
+      "max_instances": 50 // Allow 50 concurrent sandboxes
+    }
+  ]
 }
 ```
 
 ## Security Best Practices
 
 ### Sandbox Isolation
+
 - Each sandbox = isolated container (filesystem, network, processes)
 - Use unique sandbox IDs per tenant for multi-tenant apps
 - Sandboxes cannot communicate directly
@@ -98,11 +108,11 @@ const sandbox = getSandbox(env.Sandbox, 'id', {
 
 ```typescript
 // [ ] DANGEROUS: Command injection
-const result = await sandbox.exec(`python3 -c "${userCode}"`);
+const result = await sandbox.exec(`python3 -c "${userCode}"`)
 
 // [x] SAFE: Write to file, execute file
-await sandbox.writeFile('/workspace/user_code.py', userCode);
-const result = await sandbox.exec('python3 /workspace/user_code.py');
+await sandbox.writeFile('/workspace/user_code.py', userCode)
+const result = await sandbox.exec('python3 /workspace/user_code.py')
 ```
 
 ### Resource Limits
@@ -110,30 +120,33 @@ const result = await sandbox.exec('python3 /workspace/user_code.py');
 ```typescript
 // Timeout long-running commands
 const result = await sandbox.exec('python3 script.py', {
-  timeout: 30000  // 30 seconds
-});
+  timeout: 30000 // 30 seconds
+})
 ```
 
 ### Secrets Management
 
 ```typescript
 // [ ] NEVER hardcode secrets
-const token = 'ghp_abc123';
+const token = 'ghp_abc123'
 
 // [x] Use environment secrets
-const token = env.GITHUB_TOKEN;
+const token = env.GITHUB_TOKEN
 
 // Pass to sandbox via exec env
 const result = await sandbox.exec('git clone ...', {
   env: { GIT_TOKEN: token }
-});
+})
 ```
 
 ### Preview URL Security
+
 Preview URLs include auto-generated tokens:
+
 ```
 https://8080-sandbox-abc123def456.yourdomain.com
 ```
+
 Token changes on each expose operation, preventing unauthorized access.
 
 ## Limits

@@ -1,6 +1,6 @@
 ---
 name: python-development
-description: "Use when writing or reviewing Python - typing, packaging, virtual environments, async, resource handling, and pytest testing conventions."
+description: 'Use when writing or reviewing Python - typing, packaging, virtual environments, async, resource handling, and pytest testing conventions.'
 disable-model-invocation: true
 ---
 

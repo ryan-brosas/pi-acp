@@ -1,6 +1,7 @@
 # Workerd Patterns
 
 ## Multi-Service Architecture
+
 ```capnp
 const config :Workerd.Config = (
   services = [
@@ -9,7 +10,7 @@ const config :Workerd.Config = (
       compatibilityDate = "2024-01-15",
       bindings = [(name = "API", service = "api")]
     )),
-    
+
     (name = "api", worker = (
       modules = [(name = "index.js", esModule = embed "api/index.js")],
       compatibilityDate = "2024-01-15",
@@ -18,16 +19,17 @@ const config :Workerd.Config = (
         (name = "CACHE", kvNamespace = "kv"),
       ]
     )),
-    
+
     (name = "postgres", external = (address = "db.internal:5432", http = ())),
     (name = "kv", disk = (path = "/var/kv", writable = true)),
   ],
-  
+
   sockets = [(name = "http", address = "*:8080", http = (), service = "frontend")]
 );
 ```
 
 ## Durable Objects
+
 ```capnp
 const config :Workerd.Config = (
   services = [
@@ -47,6 +49,7 @@ const config :Workerd.Config = (
 ```
 
 ## Dev vs Prod Configs
+
 ```capnp
 const devWorker :Workerd.Worker = (
   modules = [(name = "index.js", esModule = embed "src/index.js")],
@@ -67,6 +70,7 @@ const prodWorker :Workerd.Worker = (
 ```
 
 ## HTTP Reverse Proxy
+
 ```capnp
 const config :Workerd.Config = (
   services = [
@@ -84,17 +88,20 @@ const config :Workerd.Config = (
 ## Local Development
 
 ### Using Wrangler
+
 ```bash
 export MINIFLARE_WORKERD_PATH="/path/to/workerd"
 wrangler dev
 ```
 
 ### Direct Workerd
+
 ```bash
 workerd serve config.capnp --socket-addr http=*:3000 --verbose
 ```
 
 ### Environment Variables
+
 ```capnp
 bindings = [
   (name = "DATABASE_URL", fromEnvironment = "DATABASE_URL"),
@@ -111,6 +118,7 @@ workerd serve config.capnp
 ## Testing
 
 ### Test Config
+
 ```capnp
 const testWorker :Workerd.Worker = (
   modules = [
@@ -129,6 +137,7 @@ workerd test config.capnp --test-only=test.js
 ## Production Deployment
 
 ### Systemd
+
 ```ini
 # /etc/systemd/system/workerd.service
 [Unit]
@@ -157,6 +166,7 @@ WantedBy=sockets.target
 ```
 
 ### Docker
+
 ```dockerfile
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y ca-certificates
@@ -168,6 +178,7 @@ CMD ["workerd", "serve", "/etc/workerd/config.capnp"]
 ```
 
 ### Compiled Binary
+
 ```bash
 workerd compile config.capnp myConfig -o production-server
 ./production-server
@@ -185,32 +196,32 @@ workerd compile config.capnp myConfig -o production-server
 8. **Configure resource limits** on caches/storage
 
 ## Error Handling Pattern
+
 ```javascript
 export default {
   async fetch(request, env, ctx) {
     try {
-      return await handleRequest(request, env);
+      return await handleRequest(request, env)
     } catch (error) {
-      console.error("Request failed", error);
-      return new Response("Internal Error", {status: 500});
+      console.error('Request failed', error)
+      return new Response('Internal Error', { status: 500 })
     }
   }
-};
+}
 ```
 
 ## Logging Pattern
+
 ```javascript
 export default {
   async fetch(request, env, ctx) {
-    console.log("Request", {method: request.method, url: request.url});
-    
-    ctx.waitUntil(
-      logToAnalytics(request, env)
-    );
-    
-    return new Response("OK");
+    console.log('Request', { method: request.method, url: request.url })
+
+    ctx.waitUntil(logToAnalytics(request, env))
+
+    return new Response('OK')
   }
-};
+}
 ```
 
 See [configuration.md](./configuration.md) for config syntax, [api.md](./api.md) for runtime APIs, [gotchas.md](./gotchas.md) for common errors.

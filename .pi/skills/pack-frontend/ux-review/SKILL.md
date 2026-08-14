@@ -1,6 +1,6 @@
 ---
 name: ux-review
-description: "Use when reviewing an existing interface for user-goal, flow, interaction-state, microcopy, accessibility, and responsive evidence before changing or shipping it."
+description: 'Use when reviewing an existing interface for user-goal, flow, interaction-state, microcopy, accessibility, and responsive evidence before changing or shipping it.'
 disable-model-invocation: true
 license: MIT
 metadata: '{"source":"sickn33/antigravity-awesome-skills","commit":"75c558b","adapted_from":"design-thinking,ui-review,mobile-design,screen-reader-testing,ux-copy"}'

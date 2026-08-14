@@ -1,6 +1,6 @@
 ---
 name: shell-development
-description: "Use when writing or reviewing shell scripts - defensive Bash, error handling, ShellCheck, and Bats testing."
+description: 'Use when writing or reviewing shell scripts - defensive Bash, error handling, ShellCheck, and Bats testing.'
 disable-model-invocation: true
 ---
 

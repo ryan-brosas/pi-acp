@@ -1,6 +1,6 @@
 ---
 name: go-development
-description: "Use when writing or reviewing Go - error handling, contexts, interfaces, goroutines, modules, and testing conventions."
+description: 'Use when writing or reviewing Go - error handling, contexts, interfaces, goroutines, modules, and testing conventions.'
 disable-model-invocation: true
 ---
 

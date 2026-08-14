@@ -1,6 +1,6 @@
 ---
 name: background-jobs
-description: "Use when adding background or scheduled work - queues, task retries, idempotency, poison messages, and job observability."
+description: 'Use when adding background or scheduled work - queues, task retries, idempotency, poison messages, and job observability.'
 disable-model-invocation: true
 ---
 

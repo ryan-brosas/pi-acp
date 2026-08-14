@@ -5,10 +5,10 @@ Form, Field, Input Group, and new 2026 components.
 ## Form (React Hook Form + Zod)
 
 ```tsx
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 
 const schema = z.object({
   email: z.string().email(),
@@ -16,18 +16,30 @@ const schema = z.object({
 })
 
 function LoginForm() {
-  const form = useForm({ resolver: zodResolver(schema), defaultValues: { email: "", password: "" } })
+  const form = useForm({ resolver: zodResolver(schema), defaultValues: { email: '', password: '' } })
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(console.log)} className="space-y-6">
-        <FormField control={form.control} name="email" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
-            <FormControl><Input type="email" {...field} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
+      <form
+        onSubmit={form.handleSubmit(console.log)}
+        className="space-y-6"
+      >
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button type="submit">Sign In</Button>
       </form>
     </Form>
@@ -100,9 +112,9 @@ import { Spinner } from "@/components/ui/spinner"
 ## Kbd (2026)
 
 ```tsx
-import { Kbd, KbdGroup } from "@/components/ui/kbd"
+import { Kbd, KbdGroup } from '@/components/ui/kbd'
 
-<KbdGroup>
+;<KbdGroup>
   <Kbd>Cmd</Kbd>
   <Kbd>K</Kbd>
 </KbdGroup>
@@ -111,14 +123,16 @@ import { Kbd, KbdGroup } from "@/components/ui/kbd"
 ## Button Group (2026)
 
 ```tsx
-import { ButtonGroup } from "@/components/ui/button-group"
+import { ButtonGroup } from '@/components/ui/button-group'
 
-<ButtonGroup>
+;<ButtonGroup>
   <Button>Archive</Button>
   <Button>Report</Button>
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Button size="icon"><MoreIcon /></Button>
+      <Button size="icon">
+        <MoreIcon />
+      </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent>...</DropdownMenuContent>
   </DropdownMenu>
@@ -147,12 +161,16 @@ import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription, ItemActions }
 ## Empty (2026)
 
 ```tsx
-import { Empty, EmptyIcon, EmptyTitle, EmptyDescription, EmptyActions } from "@/components/ui/empty"
+import { Empty, EmptyIcon, EmptyTitle, EmptyDescription, EmptyActions } from '@/components/ui/empty'
 
-<Empty>
-  <EmptyIcon><InboxIcon /></EmptyIcon>
+;<Empty>
+  <EmptyIcon>
+    <InboxIcon />
+  </EmptyIcon>
   <EmptyTitle>No messages</EmptyTitle>
   <EmptyDescription>Send your first message.</EmptyDescription>
-  <EmptyActions><Button>New Message</Button></EmptyActions>
+  <EmptyActions>
+    <Button>New Message</Button>
+  </EmptyActions>
 </Empty>
 ```

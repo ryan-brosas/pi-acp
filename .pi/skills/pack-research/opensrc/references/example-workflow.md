@@ -10,36 +10,36 @@ npx opensrc zod
 ```typescript
 // 2. Find refinement code
 grep({
-  pattern: "refine.*async",
-  path: "opensrc/",
-  include: "*.ts",
-});
+  pattern: 'refine.*async',
+  path: 'opensrc/',
+  include: '*.ts'
+})
 
 // 3. Locate implementation
 ast_grep({
-  pattern: "refine($$$) { $$$ }",
-  path: "opensrc/repos/github.com/colinhacks/zod/",
-});
+  pattern: 'refine($$$) { $$$ }',
+  path: 'opensrc/repos/github.com/colinhacks/zod/'
+})
 
 // 4. Read the implementation
 read({
-  filePath: "opensrc/repos/github.com/colinhacks/zod/src/types.ts",
+  filePath: 'opensrc/repos/github.com/colinhacks/zod/src/types.ts',
   offset: 500,
-  limit: 100,
-});
+  limit: 100
+})
 
 // 5. Check tests for usage examples
 glob({
-  pattern: "opensrc/**/zod/**/*.test.ts",
-});
+  pattern: 'opensrc/**/zod/**/*.test.ts'
+})
 
 read({
-  filePath: "opensrc/repos/.../async.test.ts",
-});
+  filePath: 'opensrc/repos/.../async.test.ts'
+})
 
 // 6. Document findings
 write({
-  filePath: ".pi/work/<slug>/research.md",
+  filePath: '.pi/work/<slug>/research.md',
   content: `# Zod Async Refinements
 
 **Finding:** Async refinements use \`parseAsync()\` not \`parse()\`
@@ -55,6 +55,6 @@ Async refinements return Promise<Output> and require:
 [paste relevant code]
 
 **Recommendation:** Use \`.refine(async (val) => {...})\` with \`.parseAsync()\`
-`,
-});
+`
+})
 ```

@@ -10,7 +10,7 @@
   "containers": [
     {
       "class_name": "MyContainer",
-      "image": "./Dockerfile",  // or path to directory with Dockerfile
+      "image": "./Dockerfile", // or path to directory with Dockerfile
       "max_instances": 10
     }
   ],
@@ -25,7 +25,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["MyContainer"]  // Must use new_sqlite_classes
+      "new_sqlite_classes": ["MyContainer"] // Must use new_sqlite_classes
     }
   ]
 }
@@ -53,4 +53,5 @@ new_sqlite_classes = ["MyContainer"]
 ```
 
 Key config requirements:
+
 - `image` - Path to Dockerfile or directory conta

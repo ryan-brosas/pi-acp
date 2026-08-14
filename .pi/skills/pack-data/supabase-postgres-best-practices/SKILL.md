@@ -1,9 +1,8 @@
 ---
 name: supabase-postgres-best-practices
-description: "Use when writing, reviewing, or optimizing Postgres queries, schema design, indexes, or RLS policies in Supabase projects."
+description: 'Use when writing, reviewing, or optimizing Postgres queries, schema design, indexes, or RLS policies in Supabase projects.'
 disable-model-invocation: true
 ---
-
 
 # Supabase Postgres Best Practices
 
@@ -14,7 +13,6 @@ disable-model-invocation: true
 ## When NOT to Use
 
 - When the task is not related to Postgres performance or schema design.
-
 
 ## When to Apply
 

@@ -39,6 +39,7 @@ Schedule Workers execution using cron expressions. Runs on Cloudflare's global n
 ## Quick Start
 
 **wrangler.jsonc:**
+
 ```jsonc
 {
   "name": "my-cron-worker",
@@ -49,22 +50,20 @@ Schedule Workers execution using cron expressions. Runs on Cloudflare's global n
 ```
 
 **Handler:**
+
 ```typescript
 export default {
-  async scheduled(
-    controller: ScheduledController,
-    env: Env,
-    ctx: ExecutionContext,
-  ): Promise<void> {
-    console.log("Cron:", controller.cron);
-    console.log("Time:", new Date(controller.scheduledTime));
-    
-    ctx.waitUntil(asyncTask(env)); // Non-blocking
-  },
-};
+  async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    console.log('Cron:', controller.cron)
+    console.log('Time:', new Date(controller.scheduledTime))
+
+    ctx.waitUntil(asyncTask(env)) // Non-blocking
+  }
+}
 ```
 
 **Test locally:**
+
 ```bash
 npx wrangler dev
 curl "http://localhost:8787/__scheduled?cron=*/5+*+*+*+*"

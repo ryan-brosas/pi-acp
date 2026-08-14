@@ -4,7 +4,6 @@ description: Use when extracting text, images, tables, or metadata from PDF file
 disable-model-invocation: true
 ---
 
-
 # PDF Extraction
 
 ## Iron Laws
@@ -27,14 +26,14 @@ Data exists in a non-PDF format (use that); copy-paste works; one-time, hand ins
 
 ## Library Selection
 
-| PDF type | Library |
-|---|---|
-| Simple text, English | `pdf-parse`, `pdfplumber` |
-| Complex text, multi-column | `pdfplumber` (layout-aware) |
+| PDF type                       | Library                              |
+| ------------------------------ | ------------------------------------ |
+| Simple text, English           | `pdf-parse`, `pdfplumber`            |
+| Complex text, multi-column     | `pdfplumber` (layout-aware)          |
 | Tables (financial, scientific) | `camelot`, `tabula-py`, `pdfplumber` |
-| Scanned (image-based) | `pytesseract` (OCR), or vision model |
-| Mixed (text + tables + images) | Vision model (GPT-4V, Claude) |
-| Form fields | `pdf-lib`, `pdfrw`, `pypdf` |
+| Scanned (image-based)          | `pytesseract` (OCR), or vision model |
+| Mixed (text + tables + images) | Vision model (GPT-4V, Claude)        |
+| Form fields                    | `pdf-lib`, `pdfrw`, `pypdf`          |
 
 When in doubt: `pdfplumber` for English text, vision model for weird layouts.
 

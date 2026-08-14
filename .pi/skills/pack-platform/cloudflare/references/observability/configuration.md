@@ -7,7 +7,7 @@
 {
   "observability": {
     "enabled": true,
-    "head_sampling_rate": 1  // 100% sampling (default)
+    "head_sampling_rate": 1 // 100% sampling (default)
   }
 }
 ```
@@ -23,15 +23,15 @@ head_sampling_rate = 1  # 100% sampling
 
 ```typescript
 // Good - structured logging
-console.log({ 
-  user_id: 123, 
-  action: "login", 
-  status: "success",
+console.log({
+  user_id: 123,
+  action: 'login',
+  status: 'success',
   duration_ms: 45
-});
+})
 
 // Avoid - unstructured string
-console.log("user_id: 123 logged in successfully in 45ms");
+console.log('user_id: 123 logged in successfully in 45ms')
 ```
 
 ### Enable Workers Traces
@@ -42,7 +42,7 @@ console.log("user_id: 123 logged in successfully in 45ms");
   "observability": {
     "traces": {
       "enabled": true,
-      "head_sampling_rate": 0.05  // 5% sampling
+      "head_sampling_rate": 0.05 // 5% sampling
     }
   }
 }

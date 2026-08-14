@@ -4,7 +4,6 @@ description: Use when deploying to or configuring ANY Cloudflare service — Wor
 disable-model-invocation: true
 ---
 
-
 # Cloudflare
 
 ## Iron Laws
@@ -27,19 +26,19 @@ Plain Node.js server (no CF); static without Workers; different platform.
 
 ## Core Services
 
-| Service | Use |
-|---|---|
-| **Workers** | Compute at the edge (V8 isolate) |
-| **Pages** | Static + Workers Functions |
-| **KV** | Low-latency key-value (eventually consistent) |
-| **D1** | SQLite at the edge |
-| **R2** | S3-compatible, no egress fees |
-| **Queues** | Async messaging |
-| **Workers AI** | Run models on Workers |
-| **Vectorize** | Vector DB for similarity search |
-| **Tunnel** | Secure origin connectivity |
-| **WAF** | Web app firewall rules |
-| **DNS** | Authoritative DNS |
+| Service        | Use                                           |
+| -------------- | --------------------------------------------- |
+| **Workers**    | Compute at the edge (V8 isolate)              |
+| **Pages**      | Static + Workers Functions                    |
+| **KV**         | Low-latency key-value (eventually consistent) |
+| **D1**         | SQLite at the edge                            |
+| **R2**         | S3-compatible, no egress fees                 |
+| **Queues**     | Async messaging                               |
+| **Workers AI** | Run models on Workers                         |
+| **Vectorize**  | Vector DB for similarity search               |
+| **Tunnel**     | Secure origin connectivity                    |
+| **WAF**        | Web app firewall rules                        |
+| **DNS**        | Authoritative DNS                             |
 
 ## Workers Code Anatomy
 
@@ -92,8 +91,8 @@ Use `env.SECRET_NAME` in code. NEVER in `wrangler.toml`, NEVER in git.
 ## KV (eventually consistent)
 
 ```ts
-await env.KV.put("user:123", JSON.stringify(user), { expirationTtl: 3600 })
-const user = JSON.parse(await env.KV.get("user:123"))
+await env.KV.put('user:123', JSON.stringify(user), { expirationTtl: 3600 })
+const user = JSON.parse(await env.KV.get('user:123'))
 ```
 
 Updates are eventually consistent (60s globally). Strong consistency → D1.
@@ -101,8 +100,8 @@ Updates are eventually consistent (60s globally). Strong consistency → D1.
 ## D1 (SQLite at edge)
 
 ```ts
-const user = await env.DB.prepare("SELECT * FROM users WHERE id = ?").bind("123").first()
-await env.DB.prepare("INSERT INTO users (id, name) VALUES (?, ?)").bind("123", "Alice").run()
+const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind('123').first()
+await env.DB.prepare('INSERT INTO users (id, name) VALUES (?, ?)').bind('123', 'Alice').run()
 ```
 
 SQLite semantics. Transactions via `db.batch([...])`.
@@ -110,7 +109,7 @@ SQLite semantics. Transactions via `db.batch([...])`.
 ## R2 (object storage)
 
 ```ts
-await env.BUCKET.put("file.pdf", data, { httpMetadata: { contentType: "application/pdf" } })
+await env.BUCKET.put('file.pdf', data, { httpMetadata: { contentType: 'application/pdf' } })
 ```
 
 S3-like API. No egress fees. Public buckets for static.

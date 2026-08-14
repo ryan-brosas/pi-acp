@@ -15,6 +15,7 @@ func updateUI() {
 ```
 
 **Problems:**
+
 - Writes to disk even when no changes exist
 - Triggers merge notifications unnecessarily
 - Wastes CPU and battery
@@ -32,11 +33,13 @@ if context.hasChanges {
 ```
 
 **Benefits:**
+
 - Avoids unnecessary disk writes
 - Faster performance
 - Still simple to use
 
 **Limitation:**
+
 - `hasChanges` returns `true` for transient properties too
 - Transient changes don't need to be persisted
 
@@ -47,11 +50,11 @@ Check for **persistent** changes only, excluding transient properties:
 ```swift
 extension NSManagedObjectContext {
     var hasPersistentChanges: Bool {
-        return !insertedObjects.isEmpty || 
-               !deletedObjects.isEmpty || 
+        return !insertedObjects.isEmpty ||
+               !deletedObjects.isEmpty ||
                updatedObjects.contains(where: { $0.hasPersistentChangedValues })
     }
-    
+
     func saveIfNeeded() throws {
         guard hasPersistentChanges else { return }
         try save()
@@ -63,6 +66,7 @@ try context.saveIfNeeded()
 ```
 
 **Why this is better:**
+
 - Excludes transient property changes
 - Only saves when data actually needs persisting
 - Most efficient approach
@@ -119,7 +123,7 @@ func sceneDidEnterBackground(_ scene: UIScene) {
 @IBAction func saveButtonTapped(_ sender: UIButton) {
     article.name = nameTextField.text
     article.content = contentTextView.text
-    
+
     do {
         try context.saveIfNeeded()
         dismiss(animated: true)
@@ -139,13 +143,13 @@ func importLargeDataset() {
         for (index, data) in largeDataset.enumerated() {
             let article = Article(context: context)
             article.name = data.name
-            
+
             // Save every 100 objects
             if index % 100 == 0 {
                 try? context.saveIfNeeded()
             }
         }
-        
+
         // Final save
         try? context.saveIfNeeded()
     }
@@ -172,10 +176,10 @@ private var saveWorkItem: DispatchWorkItem?
 
 func textFieldDidChange(_ textField: UITextField) {
     article.name = textField.text
-    
+
     // Cancel previous save
     saveWorkItem?.cancel()
-    
+
     // Schedule new save after 2 seconds of inactivity
     let workItem = DispatchWorkItem { [weak self] in
         try? self?.context.saveIfNeeded()
@@ -205,7 +209,7 @@ do {
 } catch let error as NSError {
     print("Failed to save context: \(error)")
     print("User info: \(error.userInfo)")
-    
+
     // Check for specific errors
     if error.domain == NSCocoaErrorDomain {
         switch error.code {
@@ -232,7 +236,7 @@ extension NSError {
         guard domain == NSCocoaErrorDomain else {
             return localizedDescription
         }
-        
+
         switch code {
         case NSValidationStringTooShortError:
             return "The text is too short. Please enter at least 3 characters."
@@ -283,7 +287,7 @@ context.perform {
     // Make changes
     let article = Article(context: context)
     article.name = "New Article"
-    
+
     // Save within perform block
     do {
         try context.saveIfNeeded()
@@ -315,6 +319,7 @@ try? parentContext.save()
 ```
 
 **Use nested contexts for:**
+
 - Cancellable editing (discard child without saving parent)
 - Temporary changes
 - Complex forms
@@ -332,12 +337,12 @@ do {
         if let errors = error.userInfo[NSDetailedErrorsKey] as? [NSError] {
             for validationError in errors {
                 print("Validation error: \(validationError.localizedDescription)")
-                
+
                 // Get the object that failed validation
                 if let object = validationError.userInfo[NSValidationObjectErrorKey] as? NSManagedObject {
                     print("Failed object: \(object)")
                 }
-                
+
                 // Get the property that failed
                 if let key = validationError.userInfo[NSValidationKeyErrorKey] as? String {
                     print("Failed property: \(key)")
@@ -360,14 +365,14 @@ func importArticles(_ articles: [ArticleData]) {
             let article = Article(context: context)
             article.name = data.name
             article.content = data.content
-            
+
             // Save every 100 objects to avoid memory buildup
             if index % 100 == 0 && context.hasChanges {
                 try? context.save()
                 context.reset() // Clear memory
             }
         }
-        
+
         // Final save
         try? context.save()
     }
@@ -424,19 +429,19 @@ func dismiss() {
             message: "Do you want to save your changes?",
             preferredStyle: .alert
         )
-        
+
         alert.addAction(UIAlertAction(title: "Save", style: .default) { _ in
             try? self.context.save()
             self.dismissView()
         })
-        
+
         alert.addAction(UIAlertAction(title: "Discard", style: .destructive) { _ in
             self.context.rollback()
             self.dismissView()
         })
-        
+
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
+
         present(alert, animated: true)
     } else {
         dismissView()
@@ -468,15 +473,15 @@ NotificationCenter.default.addObserver(
 
 @objc func contextDidSave(_ notification: Notification) {
     guard let userInfo = notification.userInfo else { return }
-    
+
     if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject> {
         print("Inserted: \(inserts.count) objects")
     }
-    
+
     if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
         print("Updated: \(updates.count) objects")
     }
-    
+
     if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject> {
         print("Deleted: \(deletes.count) objects")
     }
@@ -490,16 +495,16 @@ NotificationCenter.default.addObserver(
 ```swift
 func testSaveArticle() throws {
     let context = testContainer.viewContext
-    
+
     let article = Article(context: context)
     article.name = "Test Article"
-    
+
     XCTAssertTrue(context.hasChanges)
-    
+
     try context.save()
-    
+
     XCTAssertFalse(context.hasChanges)
-    
+
     // Verify saved
     let fetchRequest = Article.fetchRequest()
     let results = try context.fetch(fetchRequest)

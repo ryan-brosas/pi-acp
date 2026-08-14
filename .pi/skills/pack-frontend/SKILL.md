@@ -1,6 +1,6 @@
 ---
 name: pack-frontend
-description: "Frontend and UI router: React web UI, components, styling, design systems, accessibility, browser testing, mockup conversion, redesign, UX review."
+description: 'Frontend and UI router: React web UI, components, styling, design systems, accessibility, browser testing, mockup conversion, redesign, UX review.'
 ---
 
 # Pack: Frontend

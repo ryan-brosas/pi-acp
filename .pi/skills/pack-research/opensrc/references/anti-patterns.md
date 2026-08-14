@@ -17,9 +17,9 @@ npx opensrc react-query
 
 ```typescript
 // Bad: Reading without purpose
-read({ filePath: "opensrc/.../index.ts" });
-read({ filePath: "opensrc/.../utils.ts" });
-read({ filePath: "opensrc/.../helpers.ts" });
+read({ filePath: 'opensrc/.../index.ts' })
+read({ filePath: 'opensrc/.../utils.ts' })
+read({ filePath: 'opensrc/.../helpers.ts' })
 // ... (unfocused exploration)
 ```
 

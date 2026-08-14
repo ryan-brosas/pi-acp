@@ -1,6 +1,6 @@
 ---
 name: pack-delivery
-description: "Delivery workflow router: implementing, planning, testing, shipping, prototyping, or development lifecycle work. Loads matching leaf skill on demand."
+description: 'Delivery workflow router: implementing, planning, testing, shipping, prototyping, or development lifecycle work. Loads matching leaf skill on demand.'
 ---
 
 # Pack: Delivery

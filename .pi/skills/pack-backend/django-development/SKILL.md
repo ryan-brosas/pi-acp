@@ -1,6 +1,6 @@
 ---
 name: django-development
-description: "Use when building Django apps - models, migrations, ORM query optimization, views, DRF APIs, permissions, and transactions."
+description: 'Use when building Django apps - models, migrations, ORM query optimization, views, DRF APIs, permissions, and transactions.'
 disable-model-invocation: true
 ---
 

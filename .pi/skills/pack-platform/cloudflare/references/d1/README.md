@@ -5,6 +5,7 @@ Expert guidance for Cloudflare D1, a serverless SQLite database designed for hor
 ## Overview
 
 D1 is Cloudflare's managed, serverless database with:
+
 - SQLite SQL semantics and compatibility
 - Built-in disaster recovery via Time Travel (30-day point-in-time recovery)
 - Horizontal scale-out architecture (10 GB per database)
@@ -31,8 +32,8 @@ wrangler dev
 ```typescript
 // .all() - Returns all rows; .first() - First row or null; .first(col) - Single column value
 // .run() - INSERT/UPDATE/DELETE; .raw() - Array of arrays (efficient)
-const { results, success, meta } = await env.DB.prepare('SELECT * FROM users WHERE active = ?').bind(true).all();
-const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId).first();
+const { results, success, meta } = await env.DB.prepare('SELECT * FROM users WHERE active = ?').bind(true).all()
+const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId).first()
 ```
 
 ## Batch Operations
@@ -43,18 +44,18 @@ const results = await env.DB.batch([
   env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(1),
   env.DB.prepare('SELECT * FROM posts WHERE author_id = ?').bind(1),
   env.DB.prepare('UPDATE users SET last_access = ? WHERE id = ?').bind(Date.now(), 1)
-]);
+])
 ```
 
 ## Platform Limits
 
-| Limit | Value |
-|-------|-------|
-| Database size | 10 GB per database |
-| Row size | 1 MB maximum |
-| Query timeout | 30 seconds |
-| Batch size | 10,000 statements |
-| Time Travel retention | 30 days |
+| Limit                 | Value              |
+| --------------------- | ------------------ |
+| Database size         | 10 GB per database |
+| Row size              | 1 MB maximum       |
+| Query timeout         | 30 seconds         |
+| Batch size            | 10,000 statements  |
+| Time Travel retention | 30 days            |
 
 ## CLI Commands
 

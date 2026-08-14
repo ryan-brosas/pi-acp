@@ -8,15 +8,16 @@ Instead of `run_worker_first = true`, use array patterns:
 {
   "assets": {
     "run_worker_first": [
-      "/api/*",           // API routes
-      "/admin/*",         // Admin area
-      "!/admin/assets/*"  // Except admin assets
+      "/api/*", // API routes
+      "/admin/*", // Admin area
+      "!/admin/assets/*" // Except admin assets
     ]
   }
 }
 ```
 
 **Benefits:**
+
 - Reduces Worker invocations
 - Lowers costs
 - Improves asset delivery performance
@@ -42,3 +43,4 @@ Always type your environment:
 
 ```typescript
 interface
+```

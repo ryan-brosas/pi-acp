@@ -12,6 +12,7 @@ Optimizing Core Data performance requires understanding where bottlenecks occur 
 4. Find heaviest stack traces
 
 **Look for:**
+
 - Excessive faulting
 - Slow fetch requests
 - Save operations taking too long
@@ -24,6 +25,7 @@ Optimizing Core Data performance requires understanding where bottlenecks occur 
 4. Identify retained objects
 
 **Look for:**
+
 - Unbounded memory growth
 - Objects not being released
 - Large allocations
@@ -31,17 +33,20 @@ Optimizing Core Data performance requires understanding where bottlenecks occur 
 ## SQL Debug Logging
 
 Enable SQL logging:
+
 ```
 -com.apple.CoreData.SQLDebug 1
 ```
 
 **Output:**
+
 ```sql
 CoreData: sql: SELECT Z_PK, ZNAME FROM ZARTICLE WHERE ZVIEWS > ? LIMIT 20
 CoreData: annotation: sql execution time: 0.0023s
 ```
 
 **Analyze:**
+
 - Query complexity
 - Execution time
 - Number of queries (N+1 problem)
@@ -51,6 +56,7 @@ CoreData: annotation: sql execution time: 0.0023s
 ### 1. N+1 Query Problem
 
 **Problem:**
+
 ```swift
 // Fetches articles
 let articles = try context.fetch(Article.fetchRequest())
@@ -62,6 +68,7 @@ for article in articles {
 ```
 
 **Solution:**
+
 ```swift
 let fetchRequest = Article.fetchRequest()
 fetchRequest.relationshipKeyPathsForPrefetching = ["category"]
@@ -76,6 +83,7 @@ for article in articles {
 ### 2. Fetching Too Much Data
 
 **Problem:**
+
 ```swift
 // Fetches all properties of all objects
 let articles = try context.fetch(Article.fetchRequest())
@@ -83,6 +91,7 @@ let count = articles.count
 ```
 
 **Solution:**
+
 ```swift
 // Only counts, doesn't fetch objects
 let count = try context.count(for: Article.fetchRequest())
@@ -91,6 +100,7 @@ let count = try context.count(for: Article.fetchRequest())
 ### 3. Not Using Batch Sizes
 
 **Problem:**
+
 ```swift
 // Loads 10,000 objects into memory
 let fetchRequest = Article.fetchRequest()
@@ -98,6 +108,7 @@ let articles = try context.fetch(fetchRequest)
 ```
 
 **Solution:**
+
 ```swift
 fetchRequest.fetchBatchSize = 20
 // Only loads 20 at a time
@@ -106,12 +117,14 @@ fetchRequest.fetchBatchSize = 20
 ### 4. Fetching Unnecessary Properties
 
 **Problem:**
+
 ```swift
 // Fetches all properties
 let fetchRequest = Article.fetchRequest()
 ```
 
 **Solution:**
+
 ```swift
 fetchRequest.propertiesToFetch = ["name", "creationDate"]
 // Only fetches needed properties
@@ -120,6 +133,7 @@ fetchRequest.propertiesToFetch = ["name", "creationDate"]
 ### 5. Saving Too Frequently
 
 **Problem:**
+
 ```swift
 for item in items {
     item.processed = true
@@ -128,6 +142,7 @@ for item in items {
 ```
 
 **Solution:**
+
 ```swift
 for item in items {
     item.processed = true
@@ -138,6 +153,7 @@ try? context.save() // Save once
 ### 6. Not Resetting Context
 
 **Problem:**
+
 ```swift
 // Context accumulates objects
 for i in 0..<10000 {
@@ -147,10 +163,11 @@ for i in 0..<10000 {
 ```
 
 **Solution:**
+
 ```swift
 for i in 0..<10000 {
     let article = Article(context: context)
-    
+
     if i % 100 == 0 {
         try? context.save()
         context.reset() // Clear memory
@@ -167,6 +184,7 @@ context.reset()
 ```
 
 **When to use:**
+
 - After processing large batches
 - When context accumulates many objects
 - To free memory
@@ -180,6 +198,7 @@ context.refresh(article, mergeChanges: false)
 ```
 
 **When to use:**
+
 - Discard in-memory changes
 - Free memory for specific object
 - Reload from database
@@ -191,6 +210,7 @@ context.refreshAllObjects()
 ```
 
 **When to use:**
+
 - Free memory across all objects
 - After large operations
 - When memory is constrained
@@ -239,6 +259,7 @@ try context.execute(batchUpdate)
 ```
 
 **Benefits:**
+
 - 10-20x faster
 - Lower memory usage
 - SQL-level operations
@@ -253,7 +274,7 @@ class DataGenerator {
         for i in 0..<count {
             let article = Article(context: context)
             article.name = "Article \(i)"
-            
+
             if i % 100 == 0 {
                 try? context.save()
                 context.reset()

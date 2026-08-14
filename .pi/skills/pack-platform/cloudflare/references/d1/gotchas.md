@@ -4,10 +4,10 @@
 
 ```typescript
 // [ ] NEVER: String interpolation - SQL injection vulnerability
-await env.DB.prepare(`SELECT * FROM users WHERE id = ${userId}`).all(); // DANGEROUS!
+await env.DB.prepare(`SELECT * FROM users WHERE id = ${userId}`).all() // DANGEROUS!
 
 // [x] ALWAYS: Prepared statements with bind()
-await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId).all();
+await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId).all()
 ```
 
 Attacker could pass `1 OR 1=1` to dump table or `1; DROP TABLE users;--` to delete data.
@@ -23,13 +23,15 @@ Attacker could pass `1 OR 1=1` to dump table or `1; DROP TABLE users;--` to dele
 ```typescript
 // [ ] BAD: N+1 queries (multiple round trips)
 for (const post of posts.results) {
-  const author = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(post.user_id).first();
+  const author = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(post.user_id).first()
 }
 
 // [x] GOOD: Single JOIN or batch()
-const postsWithAuthors = await env.DB.prepare(`
+const postsWithAuthors = await env.DB.prepare(
+  `
   SELECT posts.*, users.name FROM posts JOIN users ON posts.user_id = users.id
-`).all();
+`
+).all()
 ```
 
 ## Missing Indexes
@@ -41,12 +43,12 @@ CREATE INDEX idx_users_email ON users(email);  -- Add if missing
 
 ## Limits to Watch
 
-| Limit | Value | Impact |
-|-------|-------|--------|
-| Database size | 10 GB | Design for multiple DBs per tenant |
-| Row size | 1 MB | Store large files in R2, not D1 |
-| Query timeout | 30s | Break long queries into smaller chunks |
-| Batch size | 10,000 statements | Split large batches |
+| Limit         | Value             | Impact                                 |
+| ------------- | ----------------- | -------------------------------------- |
+| Database size | 10 GB             | Design for multiple DBs per tenant     |
+| Row size      | 1 MB              | Store large files in R2, not D1        |
+| Query timeout | 30s               | Break long queries into smaller chunks |
+| Batch size    | 10,000 statements | Split large batches                    |
 
 ## Local vs Remote
 

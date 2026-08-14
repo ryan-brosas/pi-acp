@@ -4,7 +4,6 @@ description: Use when working with any Supabase service — database operations,
 disable-model-invocation: true
 ---
 
-
 # Supabase Platform (MCP)
 
 ## When to Use
@@ -14,7 +13,6 @@ disable-model-invocation: true
 ## When NOT to Use
 
 - When the backend is not Supabase or MCP access is unavailable.
-
 
 ## Available Tools
 
@@ -67,8 +65,6 @@ Read-only examples: `list_projects`, `list_tables`, `generate_typescript_types`,
 Read-only examples: `get_logs`, `get_advisors`.
 
 Deploying an Edge Function (`deploy_edge_function`) is a production mutation — Schema commit (or explicit user approval) required.
-
-
 
 ## Security Notes
 

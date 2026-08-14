@@ -1,18 +1,19 @@
 ---
 description: Implement the active specification end to end with verification
-argument-hint: "<id>"
+argument-hint: '<id>'
 ---
 
 # Ship: $ARGUMENTS
 
 Implement the active specification end to end: read the spec, run the plan as an assembly line of stations, verify each station, and report.
+
 > **Workflow:** `/create` → `/plan` (optional) → **`/ship`** → `/verify`
 
 ## Parse Arguments
 
-| Argument | Default | Description |
-| --- | --- | --- |
-| `<id>` | active slug | Feature id from `.pi/work/.active` |
+| Argument | Default     | Description                        |
+| -------- | ----------- | ---------------------------------- |
+| `<id>`   | active slug | Feature id from `.pi/work/.active` |
 
 ## Phase 0: Load Skills
 
@@ -26,6 +27,7 @@ Read `.pi/work/$(cat .pi/work/.active)/spec.md` to understand the requirements.
 Read `.pi/work/$(cat .pi/work/.active)/` to check what plan artifacts exist (plan.md, research.md, proposal.md, design.md, adr.md).
 
 **Guards:**
+
 - [ ] Spec exists and is up to date
 - [ ] You have read the full spec
 
@@ -36,6 +38,7 @@ Parse the plan (`.pi/work/$(cat .pi/work/.active)/plan.md`) if present; each sta
 For each station record its `files` (from tasks.md metadata or the plan).
 
 Group stations:
+
 - **Independent stations** (no overlapping files) — run independent read-only discovery and checks in parallel batches; serialize all file mutations; one direct execution pass per station. Agents and subagents are unsupported: never dispatch one and never simulate delegation.
 - **Dependent stations** (shared or chained files) — run strictly in order.
 
@@ -58,6 +61,7 @@ Run each station in dependency order through the station loop:
 For independent stations, run their read-only discovery and checks in parallel batches where tooling allows; keep all file mutations sequential and run the combined check once at the end.
 
 **Rules:**
+
 - Smallest working change, scoped to known territory
 - No speculative abstractions or error handling for impossible scenarios
 - Surgical diffs only — every changed line traces to the current request
@@ -68,6 +72,7 @@ For independent stations, run their read-only discovery and checks in parallel b
 ## Phase 4: Final Whole-Change Review
 
 After the last station:
+
 - Review the complete diff across stations for integration breaks, duplicated seams, and spec drift.
 - Re-check the current tree — other work may have landed.
 - Run the project's full gate if one exists (tests, lint, typecheck, build).
@@ -85,6 +90,7 @@ Follow the verification protocol: `.pi/skills/verification-before-completion/ref
 Append progress to `.pi/work/$(cat .pi/work/.active)/.progress.md`, updating the station ledger.
 
 Output:
+
 1. **Completed stations** with per-station acceptance evidence, keyed by station id
 2. **Verification results** (typecheck/lint/test/build)
 3. **Deviations** from the plan, with reasons
@@ -103,10 +109,11 @@ until every item is complete; mark each with `[DONE:n]`. If verification fails
 or scope changes, do not mutate. After verification, record the gate decision (passed/disposition; evidence kinds: command, artifact, trace, custom) with the session's workflow recorder when available, or carry it in the completion report.
 
 **Dual mode.** Read-only discovery is identical in both modes; only mutation authorization differs. Schema mode (`schema.status().mode === "enforce"`): the loop above applies. Main-session mode (guard off or project untrusted): propose each mutation to the user and apply only after explicit approval of the exact action and files. Detect at the mutation boundary: `schema.status()` reports `enforce` → Schema mode; otherwise → main-session mode.
+
 ## Related Commands
 
-| Need | Command |
-| --- | --- |
+| Need                  | Command   |
+| --------------------- | --------- |
 | Create the spec first | `/create` |
-| Deeper planning | `/plan` |
-| Run the full gate | `/verify` |
+| Deeper planning       | `/plan`   |
+| Run the full gate     | `/verify` |

@@ -1,9 +1,8 @@
 ---
 name: react-best-practices
-description: "Use when writing, reviewing, or refactoring React or Next.js code for performance - covers Vercel engineering patterns: components, data fetching, bundle optimization, server components."
+description: 'Use when writing, reviewing, or refactoring React or Next.js code for performance - covers Vercel engineering patterns: components, data fetching, bundle optimization, server components.'
 disable-model-invocation: true
 ---
-
 
 # React Best Practices
 
@@ -31,7 +30,7 @@ disable-model-invocation: true
 // Server component (default in App Router)
 export async function UserPage({ params }: { params: { id: string } }) {
   const user = await db.findUser(params.id)
-  return <UserCard user={user} />  // user is serializable, passes to client
+  return <UserCard user={user} /> // user is serializable, passes to client
 }
 ```
 
@@ -40,8 +39,8 @@ No `useState`, no `useEffect`, no `useContext` (reading context is fine, setting
 ## Client Components
 
 ```tsx
-"use client"
-import { useState, useEffect } from "react"
+'use client'
+import { useState, useEffect } from 'react'
 
 export function UserMenu() {
   const [open, setOpen] = useState(false)
@@ -58,12 +57,12 @@ Minimize the `"use client"` boundary. Put the interactive part in a client wrapp
 ```tsx
 // Server: React Cache (fetch caching)
 async function getData() {
-  const data = await fetch("https://api.example.com/data")
+  const data = await fetch('https://api.example.com/data')
   return data.json()
 }
 
 // Client: SWR / TanStack Query
-const { data, error } = useSWR("/api/data", fetcher)
+const { data, error } = useSWR('/api/data', fetcher)
 ```
 
 ## Performance

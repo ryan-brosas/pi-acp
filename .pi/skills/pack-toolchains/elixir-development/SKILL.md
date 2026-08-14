@@ -1,6 +1,6 @@
 ---
 name: elixir-development
-description: "Use when writing or reviewing Elixir - OTP, supervision trees, GenServers, Ecto, and Phoenix LiveView."
+description: 'Use when writing or reviewing Elixir - OTP, supervision trees, GenServers, Ecto, and Phoenix LiveView.'
 disable-model-invocation: true
 ---
 

@@ -1,9 +1,8 @@
 ---
 name: opensrc
-description: "Use when you need to understand how a library works internally, debug dependency issues, or inspect package source beyond types and docs - fetches source for npm, PyPI, crates.io, and GitHub repos."
+description: 'Use when you need to understand how a library works internally, debug dependency issues, or inspect package source beyond types and docs - fetches source for npm, PyPI, crates.io, and GitHub repos.'
 disable-model-invocation: true
 ---
-
 
 # Open Source Code Investigation
 
@@ -35,14 +34,14 @@ OpenSrc's first-use setup may edit `.gitignore`, `tsconfig.json`, and `AGENTS.md
 
 ## Common Targets
 
-| Question | Where |
-|---|---|
-| "How does X work?" | The function's source file |
-| "Why is X slow?" | The function + callers + trace |
-| "What is Y's behavior?" | Types + tests + source |
-| "Is X safe?" | Audit (eval, exec, fs.write) |
-| "When was X added?" | `git log` on the file |
-| "Known bug?" | GitHub issues |
+| Question                | Where                          |
+| ----------------------- | ------------------------------ |
+| "How does X work?"      | The function's source file     |
+| "Why is X slow?"        | The function + callers + trace |
+| "What is Y's behavior?" | Types + tests + source         |
+| "Is X safe?"            | Audit (eval, exec, fs.write)   |
+| "When was X added?"     | `git log` on the file          |
+| "Known bug?"            | GitHub issues                  |
 
 ## Red Flags While Reading
 

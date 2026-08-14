@@ -50,8 +50,10 @@ git(['add', 'sample.ts'])
 git(['commit', '-qm', 'init'])
 writeFileSync(join(repo, 'sample.ts'), 'export const sample = 2\n')
 mkdirSync(join(repo, 'inspections'), { recursive: true })
-writeFileSync(join(repo, 'inspections', 'no-any.inspection.kts'), "import com.intellij.psi.*\n\n// Flags declared 'any' types (annotations, parameters, generics) but allows\n// `as any` casts on untyped external data, per AGENTS.md.\nval declaredAnyInspection = localInspection { psiFile, inspection ->\n    psiFile.descendants()\n        .filter { it.text == \"any\" && it.javaClass.simpleName != \"LeafPsiElement\" }\n        .filter { node ->\n            node.parents(withSelf = false).none { p -> p.javaClass.simpleName == \"TypeScriptAsExpressionImpl\" }\n        }\n        .forEach { inspection.registerProblem(it, \"Avoid declaring 'any' — use an explicit type or unknown\") }\n}\n\nlistOf(\n    InspectionKts(\n        id = \"no-declared-any-ts\",\n        localTool = declaredAnyInspection,\n        name = \"No declared any in TypeScript\",\n        htmlDescription = \"Avoid declared 'any' types; 'as any' casts for untyped external data are allowed.\",\n        level = HighlightDisplayLevel.WARNING\n    )\n)\n")
-
+writeFileSync(
+  join(repo, 'inspections', 'no-any.inspection.kts'),
+  'import com.intellij.psi.*\n\n// Flags declared \'any\' types (annotations, parameters, generics) but allows\n// `as any` casts on untyped external data, per AGENTS.md.\nval declaredAnyInspection = localInspection { psiFile, inspection ->\n    psiFile.descendants()\n        .filter { it.text == "any" && it.javaClass.simpleName != "LeafPsiElement" }\n        .filter { node ->\n            node.parents(withSelf = false).none { p -> p.javaClass.simpleName == "TypeScriptAsExpressionImpl" }\n        }\n        .forEach { inspection.registerProblem(it, "Avoid declaring \'any\' — use an explicit type or unknown") }\n}\n\nlistOf(\n    InspectionKts(\n        id = "no-declared-any-ts",\n        localTool = declaredAnyInspection,\n        name = "No declared any in TypeScript",\n        htmlDescription = "Avoid declared \'any\' types; \'as any\' casts for untyped external data are allowed.",\n        level = HighlightDisplayLevel.WARNING\n    )\n)\n'
+)
 
 const h = new SmokeHarness({ env: { PI_ACP_DEBUG_BRIDGE: '1', FAKE_MCP_LOG: logPath } }).start()
 try {
@@ -137,7 +139,9 @@ try {
   const reportJson = readdirSync(reportDir).filter(f => f.endsWith('.json'))
   const report = JSON.parse(readFileSync(join(reportDir, reportJson[0]), 'utf8'))
   assert(
-    report?.kts?.some(s => s.scriptPath === 'inspections/no-any.inspection.kts' && s.status === 'ok' && s.problems >= 1),
+    report?.kts?.some(
+      s => s.scriptPath === 'inspections/no-any.inspection.kts' && s.status === 'ok' && s.problems >= 1
+    ),
     `kts summary missing in report: ${JSON.stringify(report?.kts)}`
   )
 

@@ -29,7 +29,7 @@ AsyncImage(url: imageURL) { phase in
 ```swift
 struct ImageView: View {
     let url: URL?
-    
+
     var body: some View {
         AsyncImage(url: url) { phase in
             switch phase {
@@ -101,7 +101,7 @@ struct OptimizedImageView: View {
     let imageData: Data
     let targetSize: CGSize
     @State private var processedImage: UIImage?
-    
+
     var body: some View {
         Group {
             if let processedImage {
@@ -116,23 +116,23 @@ struct OptimizedImageView: View {
             processedImage = await decodeAndDownsample(imageData, targetSize: targetSize)
         }
     }
-    
+
     private func decodeAndDownsample(_ data: Data, targetSize: CGSize) async -> UIImage? {
         await Task.detached {
             guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
                 return nil
             }
-            
+
             let options: [CFString: Any] = [
                 kCGImageSourceThumbnailMaxPixelSize: max(targetSize.width, targetSize.height),
                 kCGImageSourceCreateThumbnailFromImageAlways: true,
                 kCGImageSourceCreateThumbnailWithTransform: true
             ]
-            
+
             guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
                 return nil
             }
-            
+
             return UIImage(cgImage: cgImage)
         }.value
     }
@@ -153,20 +153,20 @@ actor ImageProcessor {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             return nil
         }
-        
+
         let maxDimension = max(targetSize.width, targetSize.height) * UIScreen.main.scale
-        
+
         let options: [CFString: Any] = [
             kCGImageSourceThumbnailMaxPixelSize: maxDimension,
             kCGImageSourceCreateThumbnailFromImageAlways: true,
             kCGImageSourceCreateThumbnailWithTransform: true,
             kCGImageSourceShouldCache: false
         ]
-        
+
         guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
             return nil
         }
-        
+
         return UIImage(cgImage: cgImage)
     }
 }
@@ -176,9 +176,9 @@ struct ImageView: View {
     let imageData: Data
     let targetSize: CGSize
     @State private var image: UIImage?
-    
+
     private let processor = ImageProcessor()
-    
+
     var body: some View {
         Group {
             if let image {
@@ -199,6 +199,7 @@ struct ImageView: View {
 ### When to Suggest This Optimization
 
 Mention this optimization when you see `UIImage(data:)` usage, particularly in:
+
 - Scrollable content (List, ScrollView with LazyVStack/LazyHStack)
 - Grid layouts with many images
 - Image galleries or carousels

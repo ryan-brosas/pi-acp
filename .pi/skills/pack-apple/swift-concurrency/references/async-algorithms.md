@@ -48,12 +48,14 @@ for await (image, metadata) in imageStream.zip(metadataStream) {
 Extends Swift's AsyncSequence with time-based operators, stream combination tools, and multi-consumer primitives.
 
 **Use for**:
+
 - Time-based operations: debounce, throttle, timers
 - Combining streams: merge, combineLatest, zip, chain
 - Multi-consumer scenarios: AsyncChannel for backpressure
 - Specific operators: removeDuplicates, chunks, adjacentPairs, compacted
 
 **Use standard library for**:
+
 - Bridging callbacks: AsyncStream
 - Simple iteration: for await in sequence
 - Single-value operations: async/await
@@ -248,7 +250,7 @@ func startTimer() {
 
 ## Combining Operators
 
-### merge(_:...)
+### merge(\_:...)
 
 Combine sequences into one, emitting as they arrive. **Stable operator [x]**
 
@@ -291,7 +293,7 @@ for await message in mergedMessages {
 
 ---
 
-### combineLatest(_:...)
+### combineLatest(\_:...)
 
 Combine sequences, emitting tuple when any source emits. Always uses latest values. **Stable operator [x]**
 
@@ -352,7 +354,7 @@ actor FormValidator {
 
 ---
 
-### zip(_:...)
+### zip(\_:...)
 
 Combine sequences by pairing elements in order. **Stable operator [x]**
 
@@ -396,7 +398,7 @@ struct ImageLoader {
 
 ---
 
-### chain(_:...)
+### chain(\_:...)
 
 Concatenate sequences sequentially. **Stable operator [x]**
 
@@ -597,20 +599,20 @@ do {
 
 ### Operator Mapping Table
 
-| Combine | AsyncAlgorithms | Status | Alternative |
-|---------|-----------------|---------|-------------|
-| `.debounce()` | `debounce()` | [x] Stable | - |
-| `.throttle()` | `throttle()` | [x] Stable | - |
-| `.merge()` | `merge()` | [x] Stable | - |
-| `.combineLatest()` | `combineLatest()` | [x] Stable | - |
-| `.zip()` | `zip()` | [x] Stable | - |
-| `.concat()` | `chain()` | [x] Stable | - |
-| `.removeDuplicates()` | `removeDuplicates()` | [x] Stable | - |
-| `.timer()` | `AsyncTimerSequence` | [x] Stable | - |
-| `.share()` | - | - | `AsyncChannel` |
-| `.flatMap()` | - | - | `TaskGroup` |
-| `.receive(on:)` | - | - | `Task` / `@MainActor` |
-| `.eraseToAnyPublisher()` | - | - | `any AsyncSequence` |
+| Combine                  | AsyncAlgorithms      | Status     | Alternative           |
+| ------------------------ | -------------------- | ---------- | --------------------- |
+| `.debounce()`            | `debounce()`         | [x] Stable | -                     |
+| `.throttle()`            | `throttle()`         | [x] Stable | -                     |
+| `.merge()`               | `merge()`            | [x] Stable | -                     |
+| `.combineLatest()`       | `combineLatest()`    | [x] Stable | -                     |
+| `.zip()`                 | `zip()`              | [x] Stable | -                     |
+| `.concat()`              | `chain()`            | [x] Stable | -                     |
+| `.removeDuplicates()`    | `removeDuplicates()` | [x] Stable | -                     |
+| `.timer()`               | `AsyncTimerSequence` | [x] Stable | -                     |
+| `.share()`               | -                    | -          | `AsyncChannel`        |
+| `.flatMap()`             | -                    | -          | `TaskGroup`           |
+| `.receive(on:)`          | -                    | -          | `Task` / `@MainActor` |
+| `.eraseToAnyPublisher()` | -                    | -          | `any AsyncSequence`   |
 
 ---
 
@@ -797,6 +799,7 @@ final class FormValidator {
 ```
 
 **Choose**:
+
 - `combineLatest()`: Continuous validation as fields change
 - `async let`: One-time validation when all values available
 

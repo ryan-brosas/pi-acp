@@ -1,6 +1,6 @@
 ---
 name: dotnet-development
-description: "Use when writing or reviewing C# and .NET - ASP.NET Core APIs, async, dependency injection, Entity Framework Core, and xUnit testing."
+description: 'Use when writing or reviewing C# and .NET - ASP.NET Core APIs, async, dependency injection, Entity Framework Core, and xUnit testing.'
 disable-model-invocation: true
 ---
 

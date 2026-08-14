@@ -1,6 +1,6 @@
 ---
 description: One-time full project initialization — AGENTS.md, .pi/project.md, .pi/tech-stack.md, planning context, and .pi/user.md
-argument-hint: "[--deep] [--context|--user|--all]"
+argument-hint: '[--deep] [--context|--user|--all]'
 ---
 
 # Init: $ARGUMENTS
@@ -16,13 +16,13 @@ user.md. Flags only narrow or repeat parts of that one-time run.
 
 ## Idempotency Rules
 
-| File | Rule |
-| --- | --- |
-| `AGENTS.md` | Improve in-place — never overwrite blindly |
-| `.pi/project.md` | Create if missing; ask before overwriting an existing file (holds product and architecture context) |
-| `.pi/tech-stack.md` | Overwrite with detected values (auto-regenerated) |
-| `.pi/roadmap.md` / `.pi/state.md` | Skip if exists, ask before overwrite |
-| `.pi/user.md` | Skip if exists, ask before overwrite |
+| File                              | Rule                                                                                                |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `AGENTS.md`                       | Improve in-place — never overwrite blindly                                                          |
+| `.pi/project.md`                  | Create if missing; ask before overwriting an existing file (holds product and architecture context) |
+| `.pi/tech-stack.md`               | Overwrite with detected values (auto-regenerated)                                                   |
+| `.pi/roadmap.md` / `.pi/state.md` | Skip if exists, ask before overwrite                                                                |
+| `.pi/user.md`                     | Skip if exists, ask before overwrite                                                                |
 
 ## Artifact Quality Contract
 
@@ -43,15 +43,16 @@ Load `.pi/skills/verification-before-completion/SKILL.md` after the artifacts ar
 
 ## Parse Arguments
 
-| Argument | Default | Description |
-| --- | --- | --- |
-| (none) | — | Full deep initialization — every artifact, run once |
-| `--deep` | true | Comprehensive research for every artifact (already the default) |
-| `--context` | false | Planning context only (roadmap.md, state.md) — partial rerun |
-| `--user` | false | User profile only (user.md) — partial rerun |
-| `--all` | false | Full init — same as the default (kept for compatibility) |
+| Argument    | Default | Description                                                     |
+| ----------- | ------- | --------------------------------------------------------------- |
+| (none)      | —       | Full deep initialization — every artifact, run once             |
+| `--deep`    | true    | Comprehensive research for every artifact (already the default) |
+| `--context` | false   | Planning context only (roadmap.md, state.md) — partial rerun    |
+| `--user`    | false   | User profile only (user.md) — partial rerun                     |
+| `--all`     | false   | Full init — same as the default (kept for compatibility)        |
 
 **Mode rules:**
+
 - No flags (default): the one-time full deep init — AGENTS.md, .pi/project.md, .pi/tech-stack.md, .pi/roadmap.md, .pi/state.md, .pi/user.md.
 - `--deep`: explicit deep research; the default already runs it.
 - `--context`: write roadmap.md and state.md only (partial setup or rerun).
@@ -69,6 +70,7 @@ directory, or standard language layouts (`.ts`, `.js`, `.tsx`, `.jsx`, `.py`,
 ### Phase 1: Deep Detect
 
 Detect and validate, all in this one-time pass. Run independent probes through bounded read-only sub-agents when the session supports spawning them; Main synthesizes the detection table. Persist gathered answers across phases with session-persistent state (the runtime's carry mechanism when available) so later phases reuse instead of re-deriving:
+
 - Package manager and dependencies (with versions) — read the manifest, confirm the tool exists
 - Build, test, lint, dev commands — validate each actually works before writing it anywhere
 - CI/CD configuration — read workflow files, extract the job list
@@ -151,6 +153,7 @@ without gh or GitHub access: when `gh auth status` fails or gh is missing,
 state that GitHub setup is skipped and finish.
 
 **Step 1 — Detect (read-only).**
+
 - `git remote get-url origin` — read the remote. If there is no origin, report
   "no origin remote" and proceed to Step 2.
 - If an origin exists, verify the repository read-only before proposing
@@ -160,6 +163,7 @@ state that GitHub setup is skipped and finish.
 - Never propose a mutation before this detection completes.
 
 **Step 2 — Create the repository (only when missing, only with approval).**
+
 - Determine the owner from `gh api user --jq .login` (read-only) or ask the
   user. Propose the exact command:
   `gh repo create <owner>/<repo> --source=. --remote=origin --<visibility>`
@@ -171,10 +175,12 @@ state that GitHub setup is skipped and finish.
   `gh repo view <owner>/<repo> --json nameWithOwner,url` and report the result.
 
 **Step 3 — First push (separate approval).**
+
 - Propose `git push -u origin <branch>` for the current branch.
 - Ask for separate approval. Creation and push are never the same approval.
 
 **Step 4 — Central GitHub Project (optional, separate approval).**
+
 - Offer to add the repository to the central development GitHub Project:
   `gh project list --owner <owner>` (read-only) to find the project, then
   `gh project item-add <number> --owner <owner> --url <repo-url>`.
@@ -187,6 +193,7 @@ state that GitHub setup is skipped and finish.
 ### Phase 1: Discovery (brownfield)
 
 If the project has existing code (brownfield — see auto-detection above), run read-only codebase analysis directly:
+
 - Pi Fovea sketch/focus to map architecture patterns, data flow, domain boundaries, module structure.
 - Read 3-5 representative files per subsystem to ground the map in real code.
 
@@ -195,6 +202,7 @@ If greenfield (no existing code), skip to requirements gathering.
 ### Phase 2: Requirements Gathering
 
 Ask the user to define project direction:
+
 1. **Project vision** — What is the project vision? (1-2 sentences)
 2. **Target users** — Who are the primary users? (Developers, End users, Internal team, Both)
 3. **Success criteria** — What defines success? (Stability, Speed, UX, Maintainability)
@@ -212,6 +220,7 @@ Write `.pi/roadmap.md` (vision, target users, feature roadmap with outcomes, dep
 ### Phase 1: Gather Preferences
 
 Ask the user:
+
 1. **Identity** — What is your name and role?
 2. **Communication** — How detailed should AI responses be? (Concise, Detailed, Mixed)
 3. **Git workflow** — How should git commits be handled? (Ask first, Auto-commit)

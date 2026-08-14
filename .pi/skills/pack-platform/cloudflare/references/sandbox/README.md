@@ -14,50 +14,56 @@ Secure isolated code execution in containers on Cloudflare's edge. Run untrusted
 ## Quick Start
 
 ```typescript
-import { getSandbox, proxyToSandbox, type Sandbox } from '@cloudflare/sandbox';
-export { Sandbox } from '@cloudflare/sandbox';
+import { getSandbox, proxyToSandbox, type Sandbox } from '@cloudflare/sandbox'
+export { Sandbox } from '@cloudflare/sandbox'
 
-type Env = { Sandbox: DurableObjectNamespace<Sandbox>; };
+type Env = { Sandbox: DurableObjectNamespace<Sandbox> }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     // CRITICAL: proxyToSandbox MUST be called first for preview URLs
-    const proxyResponse = await proxyToSandbox(request, env);
-    if (proxyResponse) return proxyResponse;
+    const proxyResponse = await proxyToSandbox(request, env)
+    if (proxyResponse) return proxyResponse
 
-    const sandbox = getSandbox(env.Sandbox, 'my-sandbox');
-    const result = await sandbox.exec('python3 -c "print(2 + 2)"');
-    return Response.json({ output: result.stdout });
+    const sandbox = getSandbox(env.Sandbox, 'my-sandbox')
+    const result = await sandbox.exec('python3 -c "print(2 + 2)"')
+    return Response.json({ output: result.stdout })
   }
-};
+}
 ```
 
 **wrangler.jsonc**:
+
 ```jsonc
 {
   "name": "my-sandbox-worker",
   "main": "src/index.ts",
   "compatibility_date": "2024-01-01",
-  
-  "containers": [{
-    "class_name": "Sandbox",
-    "image": "./Dockerfile",
-    "instance_type": "lite",        // lite | standard | heavy
-    "max_instances": 5
-  }],
-  
+
+  "containers": [
+    {
+      "class_name": "Sandbox",
+      "image": "./Dockerfile",
+      "instance_type": "lite", // lite | standard | heavy
+      "max_instances": 5
+    }
+  ],
+
   "durable_objects": {
     "bindings": [{ "class_name": "Sandbox", "name": "Sandbox" }]
   },
-  
-  "migrations": [{
-    "tag": "v1",
-    "new_sqlite_classes": ["Sandbox"]
-  }]
+
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["Sandbox"]
+    }
+  ]
 }
 ```
 
 **Dockerfile**:
+
 ```dockerfile
 FROM docker.io/cloudflare/sandbox:latest
 RUN pip3 install --no-cache-dir pandas numpy matplotlib

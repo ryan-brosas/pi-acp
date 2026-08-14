@@ -61,3 +61,4 @@ curl --request POST 'http://localhost:8787/cdn-cgi/handler/email' \
   --header 'Content-Type: application/json' \
   --data-raw 'From: sender@example.com
 To: recipient@example.co
+```

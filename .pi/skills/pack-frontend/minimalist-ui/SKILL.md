@@ -1,9 +1,8 @@
 ---
 name: minimalist-ui
-description: "Use when the user requests clean, editorial, or minimalist aesthetics instead of design-taste-frontend - warm monochrome, typographic contrast, flat bento grids, muted pastels."
+description: 'Use when the user requests clean, editorial, or minimalist aesthetics instead of design-taste-frontend - warm monochrome, typographic contrast, flat bento grids, muted pastels.'
 disable-model-invocation: true
 ---
-
 
 # Minimalist UI
 
@@ -29,11 +28,11 @@ Product needs visual warmth (use `design-taste-frontend` or `high-end-visual-des
 
 ```css
 :root {
-  --bg: #fafaf9;        /* warm off-white */
-  --fg: #1a1a1a;        /* warm near-black */
+  --bg: #fafaf9; /* warm off-white */
+  --fg: #1a1a1a; /* warm near-black */
   --muted: #6b6b6b;
   --border: #e5e5e4;
-  --accent: #c96442;   /* terracotta, dusty rose, deep amber */
+  --accent: #c96442; /* terracotta, dusty rose, deep amber */
   --accent-soft: #f4ebe5;
 }
 ```
@@ -44,15 +43,30 @@ NEVER: pure black `#000`, pure white `#fff`, neon, "AI purple", gradients.
 
 ```css
 :root {
-  --font-sans: "Inter", "Söhne", -apple-system, system-ui;
-  --font-serif: "Newsreader", "Spectral", Georgia, serif;  /* optional editorial */
-  --font-mono: "JetBrains Mono", "Berkeley Mono", monospace;
+  --font-sans: 'Inter', 'Söhne', -apple-system, system-ui;
+  --font-serif: 'Newsreader', 'Spectral', Georgia, serif; /* optional editorial */
+  --font-mono: 'JetBrains Mono', 'Berkeley Mono', monospace;
 }
 
-body { font-family: var(--font-sans); font-size: 15px; line-height: 1.6; color: var(--fg); }
-h1 { font-size: 2.5rem; line-height: 1.2; letter-spacing: -0.02em; }
-h2 { font-size: 1.75rem; line-height: 1.3; }
-h3 { font-size: 1.25rem; line-height: 1.4; }
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg);
+}
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+h2 {
+  font-size: 1.75rem;
+  line-height: 1.3;
+}
+h3 {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
 ```
 
 ONE family. Maybe a serif for editorial hero. Never three.
