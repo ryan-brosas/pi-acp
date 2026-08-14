@@ -1245,33 +1245,38 @@ Second dogfood pass over revision `4af9792e9f31` with live IntelliJ MCP tools, f
 
 ### P1 fixes landed in this phase
 
-| # | Finding | Fix |
-| --- | --- | --- |
-| P1-2 | `cancel()` awaited the slow pi abort before bridge cancellation | `bridge.cancelAll()` runs first; ordering test added |
-| P1-3 | pi stderr was discarded; a failed turn looked like a normal completion | bounded stderr tail retained (`PiRpcProcess.stderrTailLines`) and surfaced via `_meta.piAcp.error` in the prompt result; unit tests |
-| P1-4 | onboarding examples omitted `idea_mcp_allowed_tools` (AllowAll) | README primary example ships a deny-by-default read/build profile |
+| #    | Finding                                                                          | Fix                                                                                                                                            |
+| ---- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1-2 | `cancel()` awaited the slow pi abort before bridge cancellation                  | `bridge.cancelAll()` runs first; ordering test added                                                                                           |
+| P1-3 | pi stderr was discarded; a failed turn looked like a normal completion           | bounded stderr tail retained (`PiRpcProcess.stderrTailLines`) and surfaced via `_meta.piAcp.error` in the prompt result; unit tests            |
+| P1-4 | onboarding examples omitted `idea_mcp_allowed_tools` (AllowAll)                  | README primary example ships a deny-by-default read/build profile                                                                              |
 | P1-5 | probe oracles could be satisfied by the startup chunk; queue probe sent `/queue` | `smoke-cancel`/`smoke-acp` baseline chunk counts after `session/new`; `smoke-queue` now fires two concurrent prompts through the adapter queue |
-| P1-6 | dogfood exited 0 without a fresh build or host acceptance | `dogfood-report` builds first and fails on build failure; `dogfood-ide` exits 1 on warn findings |
+| P1-6 | dogfood exited 0 without a fresh build or host acceptance                        | `dogfood-report` builds first and fails on build failure; `dogfood-ide` exits 1 on warn findings                                               |
 
-### P1-1 open (deliberately deferred)
+### P1-1 turn lifecycle (implemented)
 
-An accepted prompt can stay unresolved forever if pi exits mid-generation or the session is disposed: `pendingTurn` settles only on `agent_settled`, and `dispose()` rejects queued turns but not the running turn. Recommended fix: propagate process exit into sessions, settle `pendingTurn` on dispose, add a turn watchdog. Deferred because it is a turn-lifecycle redesign needing dedicated cancel/queue interplay tests.
+An accepted prompt could stay unresolved forever if pi exited mid-generation or the session was disposed: `pendingTurn` settled only on `agent_settled`, and `dispose()` rejected queued turns but not the running turn. Fixed: `PiRpcProcess` exposes `onExit` handlers; `PiAcpSession` settles the running turn when the process exits (stopReason `error` with exit code/signal + retained stderr tail) and `dispose()` settles it as `cancelled`; the settle path is idempotent and guarded for proc-shaped objects. Tests: process-exit settle, dispose settle, defensive guards.
 
 ### P2/P3 addressed
 
 - P2-13 consistency: version/update checks honor `PI_ACP_PI_COMMAND`; prompts/extensions inventory uses `getAgentDir()` (PI_CODING_AGENT_DIR-aware); README Node claim aligned to engines (`>=20`, CI 20/24).
 - P2-16 export file URI: raw interpolation replaced with `pathToFileURL()`.
+- P2-7 session-map writes are atomic (temp + rename) and corrupt maps emit a stderr diagnostic instead of silently resetting.
+- P2-8 `session/delete` reports unlink failures via `_meta.piAcp.deleteError` and keeps the mapping for retry.
+- P2-11 `tools/list_changed` is surfaced once per session via `session_info_update` after startup.
+- P2-12 startup inventory is bounded: per-section caps, symlink-cycle protection (realpath visited set), and a hard 64 KB markdown cap.
+- P2-15 build identity reports a `dirty` flag (uncommitted changes at build time) shown in the startup build line.
 - P2-14 pinned-npx note added; P3-17 env JSON example fixed; P3-19 thinking-stream wording aligned (`agent_thought_chunk`); P3-18 this doc refreshed.
 
 ### Remaining recommendations (not yet implemented)
 
-- P2-7 session-map atomicity (write temp + rename); P2-8 deletion should report unlink failures; P2-9 paginated/size-bounded session restore; P2-10 parallel MCP discovery; P2-11 surface `tools/list_changed` after startup; P2-12 bounded inventory traversal; P2-15 revision identity for dirty source.
-- P1-1 turn-lifecycle watchdog (see above).
+- P2-9 paginated/size-bounded session restore (`loadSession` replays full history synchronously).
+- P2-10 parallel MCP discovery (currently serial across servers).
 - Real-IDE allowlist verification against a fresh chat (the profile's tool names come from the observed catalog).
 
 ### Reviewer's three highest-value next changes
 
-1. Deterministic turn lifecycle (P1-1).
+1. Deterministic turn lifecycle (P1-1) — implemented (see above).
 2. Secure copy-paste onboarding — implemented in README; verify tool names on a fresh chat.
 3. Dogfood as a real gate — implemented: build-first report + nonzero on warn.
 

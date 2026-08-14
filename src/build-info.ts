@@ -5,6 +5,7 @@
 
 declare const __PI_ACP_BUILD_REVISION__: string | undefined
 declare const __PI_ACP_BUILD_TIME__: string | undefined
+declare const __PI_ACP_BUILD_DIRTY__: string | undefined
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -19,6 +20,8 @@ export interface BuildInfo {
   packageVersion: string
   /** True when built through tsup (constants injected), false in dev/tests. */
   isRelease: boolean
+  /** True when the git tree had uncommitted changes at build time (P2-15 audit). */
+  dirty: boolean
 }
 
 function gitShortRevision(): string {
@@ -55,5 +58,6 @@ export const buildInfo: BuildInfo = {
       : gitShortRevision(),
   buildTime: typeof __PI_ACP_BUILD_TIME__ === 'string' ? __PI_ACP_BUILD_TIME__ : '',
   packageVersion: nearestPackageJsonVersion(),
-  isRelease: typeof __PI_ACP_BUILD_REVISION__ === 'string'
+  isRelease: typeof __PI_ACP_BUILD_REVISION__ === 'string',
+  dirty: typeof __PI_ACP_BUILD_DIRTY__ === 'string' ? __PI_ACP_BUILD_DIRTY__ === 'true' : false
 }

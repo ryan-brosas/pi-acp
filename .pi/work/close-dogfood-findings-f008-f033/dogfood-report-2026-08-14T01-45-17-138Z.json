@@ -1,0 +1,132 @@
+{
+  "schema": "pi-acp.dogfood-report.v1",
+  "generatedAt": "2026-08-14T01:45:17.138Z",
+  "repository": "pi-acp-jetbrain",
+  "node": "v26.7.0",
+  "build": {
+    "distSha256": "cd2e2700767aed6e85dbf9b7f6f6e9c3a083c772aace5edc3fec99fda4769cbb",
+    "buildRevision": "714f5b40ea46"
+  },
+  "probes": [
+    {
+      "probe": "scripts/smoke-startupinfo.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 9721,
+      "summary": "OK smoke-startupinfo (dist cd2e2700767a; build 714f5b40ea46; startupInfo 6119 chars; sections: Context=20; Skills=5536; Prompts=23; Extensions=434)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-acp.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 11512,
+      "summary": "OK smoke-acp (dist cd2e2700767a; 4 chunks; stopReason end_turn; session/new 26697 B)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-acp-load.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 13869,
+      "summary": "OK smoke-acp-load (sessionId 019ffdf2-3f1c-762e-a77c-4a55b5201454; replay updates 2)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-session.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 9704,
+      "summary": "OK smoke-session (dist cd2e2700767a; stats text 6395 chars)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-modes.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 9945,
+      "summary": "OK smoke-modes (current_mode_update + config_option_update observed)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-queue.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 12812,
+      "summary": "OK smoke-queue (2 concurrent prompts serialized end_turn; queueDepth drained to 0)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-changelog.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 10472,
+      "summary": "OK smoke-changelog (adapter round-trip OK; pi reports installation lookup unavailable in this environment)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-export.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 12115,
+      "summary": "OK smoke-export (artifact <repo>/pi-session-019ffdf3-1d7f-79fa-9c0a-fc883bebbe69.html verified and cleaned up)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-compact.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 10451,
+      "summary": "OK smoke-compact (expected negative: ACP error -32603, details \"Nothing to compact (session too small)\")",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-cancel.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 62559,
+      "summary": "OK smoke-cancel (dist cd2e2700767a; 1 chunks before cancel; stopReason cancelled; no late updates; follow-up end_turn)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-lifecycle.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 13442,
+      "summary": "OK smoke-lifecycle (dist cd2e2700767a; create/list/prompt/close/load-replay/delete/idempotent-delete; isolation cleaned)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-negative.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 5426,
+      "summary": "OK smoke-negative (dist cd2e2700767a; cases: unknown prompt/load, relative cwd, cancel no-op, idempotent delete, version clamp, bogus cursor)",
+      "stderrTail": ""
+    },
+    {
+      "probe": "scripts/smoke-mcp-fixture.mjs",
+      "ok": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 14045,
+      "summary": "OK smoke-mcp-fixture (dist cd2e2700767a; server discovered; ide_fixture_echo registered and invoked; descriptor secret redacted)",
+      "stderrTail": ""
+    }
+  ],
+  "okCount": 13,
+  "totalCount": 13,
+  "exitOk": true
+}

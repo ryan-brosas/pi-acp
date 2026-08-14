@@ -8,9 +8,10 @@ describe('build-info', () => {
     assert.match(buildInfo.packageVersion, /^\d+\.\d+\.\d+/, `packageVersion=${buildInfo.packageVersion}`)
     assert.equal(typeof buildInfo.isRelease, 'boolean')
     assert.equal(typeof buildInfo.buildTime, 'string')
+    assert.equal(typeof buildInfo.dirty, 'boolean')
   })
 
   it('exposes a stable shape suitable for agentInfo._meta', () => {
-    assert.deepEqual(Object.keys(buildInfo).sort(), ['buildTime', 'isRelease', 'packageVersion', 'revision'])
+    assert.deepEqual(Object.keys(buildInfo).sort(), ['buildTime', 'dirty', 'isRelease', 'packageVersion', 'revision'])
   })
 })

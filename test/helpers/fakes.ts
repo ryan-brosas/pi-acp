@@ -37,6 +37,16 @@ export class FakePiRpcProcess {
     }
   }
 
+  private exitHandlers: Array<(code: number | null, signal: string | null) => void> = []
+
+  onExit(handler: (code: number | null, signal: string | null) => void): void {
+    this.exitHandlers.push(handler)
+  }
+
+  exit(code: number | null = 0, signal: string | null = null): void {
+    for (const h of this.exitHandlers) h(code, signal)
+  }
+
   emit(ev: PiRpcEvent) {
     for (const h of this.handlers) h(ev)
   }
@@ -47,6 +57,10 @@ export class FakePiRpcProcess {
 
   async abort(): Promise<void> {
     this.abortCount += 1
+  }
+
+  stderrTailLines(_limit = 40): string[] {
+    return []
   }
 
   async sendExtensionUiResponse(response: unknown): Promise<void> {

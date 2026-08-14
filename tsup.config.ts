@@ -9,6 +9,14 @@ function gitRevision(): string {
   }
 }
 
+function gitDirty(): boolean {
+  try {
+    return execSync('git status --porcelain', { encoding: 'utf8', timeout: 5000 }).toString().trim().length > 0
+  } catch {
+    return false
+  }
+}
+
 export default defineConfig({
   entry: ['src/index.ts', 'src/pi-extension/acp-mcp-bridge.ts'],
   format: ['esm'],
@@ -21,7 +29,8 @@ export default defineConfig({
   minify: false,
   define: {
     __PI_ACP_BUILD_REVISION__: JSON.stringify(gitRevision()),
-    __PI_ACP_BUILD_TIME__: JSON.stringify(new Date().toISOString())
+    __PI_ACP_BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __PI_ACP_BUILD_DIRTY__: JSON.stringify(gitDirty())
   },
   banner: {
     js: '#!/usr/bin/env node'

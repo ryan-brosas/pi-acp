@@ -1,5 +1,6 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
+import { randomUUID } from 'node:crypto'
 import { getPiAcpSessionMapPath } from './paths.js'
 
 export type StoredSession = {
@@ -26,14 +27,23 @@ function loadFile(path: string): SessionMapFile {
       return { version: 1, sessions: {} }
     }
     return parsed
-  } catch {
+  } catch (e) {
+    if (existsSync(path)) {
+      process.stderr.write(
+        `[pi-acp-jetbrain] session map ${path} is unreadable; starting with an empty map (P2-7 audit): ${e instanceof Error ? e.message : String(e)}\n`
+      )
+    }
     return { version: 1, sessions: {} }
   }
 }
 
 function saveFile(path: string, data: SessionMapFile): void {
   ensureParentDir(path)
-  writeFileSync(path, JSON.stringify(data, null, 2) + '\n', 'utf-8')
+  // Atomic write (temp + rename): an interruption or concurrent adapter process
+  // cannot truncate or interleave the session map (P2-7 audit).
+  const tmp = `${path}.tmp-${process.pid}-${randomUUID()}`
+  writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n', 'utf-8')
+  renameSync(tmp, path)
 }
 
 export class SessionStore {

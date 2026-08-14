@@ -347,15 +347,36 @@ export class PiAcpSession {
     this.bridge = opts.bridge
 
     this.proc.onEvent(ev => this.handlePiEvent(ev))
+    this.proc.onExit?.((code, signal) => this.handleProcessExit(code, signal))
   }
 
   ownsMcpConnection(connectionId: string): boolean {
     return this.bridge?.ownsConnection(connectionId) ?? false
   }
 
-  handleIncomingMcpMessage(params: Record<string, unknown>, notification: boolean): Promise<Record<string, unknown>> {
+  async handleIncomingMcpMessage(
+    params: Record<string, unknown>,
+    notification: boolean
+  ): Promise<Record<string, unknown>> {
     if (!this.bridge) throw new Error('Session has no MCP bridge')
-    return this.bridge.handleIncomingMcpMessage(params, notification)
+    const before = this.bridge.diagnostics.length
+    const result = await this.bridge.handleIncomingMcpMessage(params, notification)
+    // Surface tools/list_changed after startup: the catalog is a per-session snapshot,
+    // so the client should start a new chat to refresh (P2-11 audit, F-023).
+    if (notification && String(params?.method ?? '') === 'notifications/tools/list_changed') {
+      if (this.bridge.diagnostics.length > before && !this.listChangedSurfaced) {
+        this.listChangedSurfaced = true
+        this.emit({
+          sessionUpdate: 'session_info_update',
+          _meta: {
+            piAcp: {
+              mcp: 'IDE bridge: tools/list_changed advertised; the catalog is a session snapshot — start a new chat to refresh (F-023)'
+            }
+          }
+        })
+      }
+    }
+    return result
   }
 
   setStartupInfo(text: string) {
@@ -379,6 +400,8 @@ export class PiAcpSession {
   }
 
   lastError: string | null = null
+  /** Set once so tools/list_changed is surfaced at most once per session (P2-11 audit). */
+  private listChangedSurfaced = false
 
   /**
    * Idempotent session disposal: end queued work, dispose the IDE bridge
@@ -391,6 +414,12 @@ export class PiAcpSession {
       for (const q of this.turnQueue) q.reject(new Error('session disposed'))
       this.turnQueue.length = 0
       this.cancelRequested = true
+      // Settle an in-flight ACP prompt so the request never hangs (P1-1 audit).
+      const running = this.pendingTurn
+      if (running) {
+        this.pendingTurn = null
+        void this.flushEmits().finally(() => running.resolve('cancelled'))
+      }
       this.bridge?.cancelAll()
       try {
         await this.bridge?.dispose()
@@ -601,6 +630,19 @@ export class PiAcpSession {
       })
       void err
     })
+  }
+
+  /** Process exit while a turn is running settles the ACP prompt (P1-1 audit). */
+  private handleProcessExit(code: number | null, signal: string | null): void {
+    const t = this.pendingTurn
+    if (!t) return
+    this.pendingTurn = null
+    const reason: StopReason = this.cancelRequested ? 'cancelled' : 'error'
+    if (reason === 'error') {
+      const tail = typeof this.proc.stderrTailLines === 'function' ? this.proc.stderrTailLines(8).join('\n') : ''
+      this.lastError = `pi process exited (code=${code}, signal=${signal})${tail ? `\nstderr:\n${tail}` : ''}`
+    }
+    void this.flushEmits().finally(() => t.resolve(reason))
   }
 
   private handlePiEvent(ev: PiRpcEvent) {

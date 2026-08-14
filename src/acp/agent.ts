@@ -65,6 +65,13 @@ type AdvertisedModel = {
 const MODEL_CONFIG_ID = 'model'
 const THOUGHT_LEVEL_CONFIG_ID = 'thought_level'
 
+// Startup inventory bounds (P2-12 audit): per-section caps plus a hard markdown cap
+// keep session/new bounded even with pathological skill trees or symlink cycles.
+const SKILL_ITEMS_CAP = 300
+const PROMPT_ITEMS_CAP = 100
+const EXTENSION_ITEMS_CAP = 100
+const MAX_STARTUP_MD = 64_000
+
 function builtinAvailableCommands(): AvailableCommand[] {
   return [
     {
@@ -1261,8 +1268,16 @@ export class PiAcpAgent implements ACPAgent {
     if (sessionFile) {
       try {
         if (existsSync(sessionFile)) unlinkSync(sessionFile)
-      } catch {
-        // best-effort cleanup
+      } catch (e) {
+        // Report cleanup failures through the reserved _meta extension (P2-8 audit):
+        // keep the mapping so a retry can delete the session again.
+        return {
+          _meta: {
+            piAcp: {
+              deleteError: `failed to remove session file ${sessionFile}: ${e instanceof Error ? e.message : String(e)}`
+            }
+          }
+        }
       }
     }
 
@@ -1725,7 +1740,7 @@ export function buildStartupInfo(opts: {
 
   const md: string[] = []
 
-  const buildLine = `pi-acp-jetbrain ${buildInfo.packageVersion} (build ${buildInfo.revision}${buildInfo.buildTime ? ', ' + buildInfo.buildTime : ''})`
+  const buildLine = `pi-acp-jetbrain ${buildInfo.packageVersion} (build ${buildInfo.revision}${buildInfo.dirty ? ', dirty source' : ''}${buildInfo.buildTime ? ', ' + buildInfo.buildTime : ''})`
   md.push(buildLine)
   md.push('---')
   md.push('')
@@ -1815,6 +1830,7 @@ export function buildStartupInfo(opts: {
     try {
       // Direct .md files in root
       for (const e of readdirSync(root)) {
+        if (skillsItems.length >= SKILL_ITEMS_CAP) break
         const p = join(root, e)
         try {
           const st = statSync(p)
@@ -1826,10 +1842,20 @@ export function buildStartupInfo(opts: {
         }
       }
 
-      // Recursive SKILL.md under subdirectories
+      // Recursive SKILL.md under subdirectories with symlink-cycle protection and a
+      // hard item cap so pathological trees cannot hang session/new (P2-12 audit).
+      const visited = new Set<string>()
       const stack: string[] = [root]
-      while (stack.length) {
+      while (stack.length && skillsItems.length < SKILL_ITEMS_CAP) {
         const dir = stack.pop()!
+        let real
+        try {
+          real = realpathSync(dir)
+        } catch {
+          continue
+        }
+        if (visited.has(real)) continue
+        visited.add(real)
         let entries: string[] = []
         try {
           entries = readdirSync(dir)
@@ -1850,6 +1876,7 @@ export function buildStartupInfo(opts: {
           if (st.isDirectory()) {
             stack.push(p)
           } else if (st.isFile() && name === 'SKILL.md') {
+            if (skillsItems.length >= SKILL_ITEMS_CAP) break
             skillsItems.push(displayPath(p))
           }
         }
@@ -1878,7 +1905,9 @@ export function buildStartupInfo(opts: {
   const promptsItems: string[] = []
   const promptsDir = join(getAgentDir(), 'prompts')
   try {
-    const prompts = readdirSync(promptsDir).filter(f => f.endsWith('.md'))
+    const prompts = readdirSync(promptsDir)
+      .filter(f => f.endsWith('.md'))
+      .slice(0, PROMPT_ITEMS_CAP)
     for (const f of prompts) promptsItems.push(`/${basename(f, '.md')}`)
   } catch {
     // ignore
@@ -1889,7 +1918,9 @@ export function buildStartupInfo(opts: {
   const extItems: string[] = []
   const extDir = join(getAgentDir(), 'extensions')
   try {
-    const exts = readdirSync(extDir).filter(f => f.endsWith('.ts') || f.endsWith('.js'))
+    const exts = readdirSync(extDir)
+      .filter(f => f.endsWith('.ts') || f.endsWith('.js'))
+      .slice(0, EXTENSION_ITEMS_CAP)
     for (const f of exts) extItems.push(displayPath(join(extDir, f)))
   } catch {
     // ignore
@@ -1923,7 +1954,12 @@ export function buildStartupInfo(opts: {
   }
 
   // Do NOT include themes (per request).
-  return md.join('\n').trim() + '\n'
+  const text = md.join('\n').trim() + '\n'
+  // Hard production cap so pathological trees cannot balloon session/new
+  // regardless of the per-section caps above (P2-12 audit).
+  return text.length > MAX_STARTUP_MD
+    ? `${text.slice(0, MAX_STARTUP_MD)}\n… (startup info truncated by pi-acp-jetbrain)\n`
+    : text
 }
 
 function readNearestPackageJson(metaUrl: string): {

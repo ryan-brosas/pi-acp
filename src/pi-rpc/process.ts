@@ -93,10 +93,16 @@ export class PiRpcProcess {
   private eventHandlers: Array<(ev: PiRpcEvent) => void> = []
   private readonly preludeLines: string[] = []
   private readonly stderrTail: string[] = []
+  private readonly exitHandlers: Array<(code: number | null, signal: NodeJS.Signals | null) => void> = []
 
   /** Bounded tail of retained child stderr for diagnostics; the raw stream stays untouched. */
   stderrTailLines(limit = 40): string[] {
     return this.stderrTail.slice(-limit)
+  }
+
+  /** Register a handler invoked when the child process exits (P1-1 audit). */
+  onExit(handler: (code: number | null, signal: NodeJS.Signals | null) => void): void {
+    this.exitHandlers.push(handler)
   }
 
   private constructor(child: ChildProcessWithoutNullStreams, requestTimeoutMs: number) {
@@ -144,6 +150,7 @@ export class PiRpcProcess {
         p.reject(err)
       }
       this.pending.clear()
+      for (const h of this.exitHandlers) h(code, signal)
     })
 
     child.on('error', err => {
