@@ -895,4 +895,16 @@ describe('IntelliJ-first coding mode policy', () => {
     )
     assert.equal(socket.calls.length, 0)
   })
+  it('detects deeply nested out-of-root result paths', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('required', FULL_CATALOG)
+    socket.replyValue = {
+      content: [{ type: 'text', text: 'hits' }],
+      structuredContent: {
+        groups: [{ results: [{ matches: [{ filePath: '/other/repo/x.ts' }] }] }]
+      }
+    }
+    emitCatalog()
+    const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
+    await assert.rejects(() => read.execute('t24f', { filePath: 'src/a.ts' }), /outside|root/i)
+  })
 })

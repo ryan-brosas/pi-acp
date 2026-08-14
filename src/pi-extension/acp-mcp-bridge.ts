@@ -670,8 +670,10 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     const structured = result.details.structuredContent
     if (structured && typeof structured === 'object' && !Array.isArray(structured)) {
       const candidates: string[] = []
+      const budget = { nodes: 5000 }
       const collect = (value: unknown, depth: number): void => {
-        if (depth > 4) return
+        if (depth > 16 || budget.nodes <= 0) return
+        budget.nodes--
         if (typeof value === 'string') {
           candidates.push(value)
           return
