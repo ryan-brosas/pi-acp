@@ -33,7 +33,12 @@ The local IntelliJ integration is experimental: IntelliJ's installed ACP impleme
 
 ## Operating layer
 
-The repository ships an operating layer for pi: **9 prompt commands**, **100 skill files** (90 leaves in 10 packs), and **12 format templates**.
+The repository ships an operating layer for pi: **9 prompt commands**, **100 skill files** (10 pack routers + 86 leaves across 10 packs, plus 4 standalone skills), and **12 format templates** (in `.pi/templates/`).
+
+## CI & enforcement
+
+- **GitHub Actions**: `check.yml` runs `node scripts/check.mjs` (skill-pack, fabric, work-management, release-hygiene, and smoke-inventory validators plus `git diff --check`), then tests, lint, typecheck, and build on Node 20 and 24 for every push to `main` and every PR. `qodana_code_quality.yml` runs a Qodana Cloud scan (configured by `qodana.yaml`: starter profile, `qodana-jvm-community` linter) on push and PRs; it needs a `QODANA_TOKEN` repository secret scoped to the repository's Qodana Cloud project. `github-release.yml` and `npm-publish.yml` cover releases. The full `npm run smoke` matrix stays local (it spawns the `pi` binary); run `npm run smoke:full` before a release.
+- **Post-turn IDE inspection gate**: when the session's IDE bridge is available, the adapter runs IDE inspections (`lint_files` / `get_file_problems`, including the bundled `inspections/no-any.inspection.kts` rule) on the files changed during the turn, attaches findings to the turn, and writes a report to `.pi/work/ide-inspections/<session>/`. The gate degrades gracefully when IDE tools are unavailable and can be disabled with `PI_ACP_ENFORCE_IDE_INSPECT=0`.
 
 ## Prerequisites
 
@@ -44,7 +49,7 @@ npm install -g @earendil-works/pi-coding-agent
 ```
 
 - Node.js 20+ (the CI matrix runs Node 20 and 24)
-- `pi` v0.80.4+ installed and available on your `PATH` (the adapter runs the `pi` executable)
+- `pi` installed and available on your `PATH` (the adapter runs the `pi` executable; no minimum version is enforced)
 - Configure `pi` separately for your model providers/API keys
 
 ## Install
@@ -89,7 +94,7 @@ IntelliJ ships an ACP host; register `pi-acp-jetbrain` as an agent server in Int
 }
 ```
 
-`idea_mcp_allowed_tools` is a deny-all mask plus the named tools (see [Limitations](#limitations)); the profile above is the recommended read/build safe default — add only the tools you need. Omitting the key means the IDE allows everything (AllowAll), which is a deliberate security decision.
+`idea_mcp_allowed_tools` is a deny-all mask plus the named tools (see [Limitations](#limitations)); the profile above is a read/build-safe subset of the 40-tool day-to-day development profile — add only the tools you need. Omitting the key means the IDE allows everything (AllowAll), which is a deliberate security decision.
 
 IntelliJ passes its private IDE MCP server per chat; the bridge exposes the IDE's semantic tools to pi as `ide_<server>_<tool>` extension tools (see [Limitations](#limitations)). The same bridge is designed for any JetBrains IDE that ships ACP plus the integrated MCP server (IntelliJ IDEA, WebStorm, PyCharm, GoLand, PhpStorm, RubyMine, RustRover, Rider, CLion, DataGrip, DataSpell); per JetBrains documentation ACP and the integrated MCP server are available across these products. Tools are discovered dynamically, so product-specific capabilities surface per IDE and every tool stays optional.
 
@@ -156,6 +161,8 @@ Point IntelliJ to the built `dist/index.js`:
 
 - `PI_ACP_ENABLE_EMBEDDED_CONTEXT=true` advertises ACP `promptCapabilities.embeddedContext` support to the client.
 - `PI_ACP_DEBUG_BRIDGE=1` logs the sanitized `session/new.mcpServers` descriptor to stderr on every new session. IntelliJ pipes the adapter's stderr into `idea.log`, so this captures the exact descriptor the host sent (values redacted except `IJ_MCP_SERVER_PORT`/`IJ_MCP_SESSION_ID`).
+- `PI_ACP_PI_COMMAND=<path>` overrides the `pi` executable the adapter spawns (default `pi`).
+- `PI_ACP_ENFORCE_IDE_INSPECT=0` disables the post-turn IDE inspection gate (see [CI & enforcement](#ci--enforcement)).
 - `PI_ACP_SESSION_MAP=<path>` overrides where the adapter persists its session map (default `~/.pi/pi-acp/session-map.json`); the smoke matrix uses a per-run temporary path so dogfood never touches the real store (F-027).
 - Default: unset/any other value means `false`.
 - When disabled, compliant ACP clients should avoid sending embedded `resource` blocks. If they send them anyway, `pi-acp-jetbrain` still degrades gracefully by converting them into plain-text prompt context.
@@ -229,6 +236,10 @@ npm run dev        # run from src via tsx
 npm run build
 npm run lint
 npm run test
+npm run typecheck  # tsc --noEmit (CI runs this too)
+npm run format     # prettier --write
+npm run smoke      # stdio smoke tests; smoke:full before a release
+node scripts/check.mjs  # canonical repository check (validators + git diff --check)
 ```
 
 Project layout:
@@ -250,7 +261,7 @@ Project layout:
   - MCP text/images/resources and structured content map into Pi content/details; `isError` becomes a failed Pi tool.
   - Private IPC validates catalog identity, tool names, and schema hashes in per-tool registration acknowledgements and reports partial registration health.
   - Server-originated ACP MCP notifications are diagnosed; `tools/list_changed` requires a new session and unsupported server requests are rejected.
-- The IntelliJ allowlist is controlled by `~/.jetbrains/acp.json`. The current 40-tool profile includes controlled debugger start/control/breakpoint workflows while excluding terminal, database, universal execution, arbitrary debugger expression evaluation, and variable mutation. An explicit `idea_mcp_allowed_tools` list is a deny-all mask plus named tools; omitting it means AllowAll in the installed build and should be treated as a deliberate security/context decision.
+- The IntelliJ allowlist is controlled by `~/.jetbrains/acp.json`. The current 40-tool profile includes controlled debugger start/control/breakpoint workflows while excluding terminal, database, universal execution, arbitrary debugger expression evaluation, and variable mutation. An explicit `idea_mcp_allowed_tools` list is a deny-all mask plus named tools; omitting it means AllowAll in the installed build and should be treated as a deliberate security/context decision. Independently of the allowlist, the adapter deny-lists `execute_tool`, `xdebug_set_breakpoint`, `xdebug_start_debugger_session`, and `xdebug_control_session`; explicitly re-allow a reviewed tool with `PI_ACP_IDE_EXTRA_TOOLS` (comma-separated remote names).
 - The bridge uses an immutable per-session catalog. After changing IntelliJ MCP settings or the allowlist, start a new ACP chat.
 - Debugger tools (`xdebug_*`) are conditional: they register only while an IDE debug session is live; the registered catalog is otherwise stable for the chat. If debugger tools are absent from a fresh chat's tool list, start a debug session and begin a new chat (F-022).
 - After rebuilding the adapter, start a new chat: Node does not reload replaced files and IntelliJ reuses running agent processes. Verify the loaded bundle via `initialize.agentInfo._meta.piAcp.build` revision on a fresh PID (F-008).
