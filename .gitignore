@@ -21,6 +21,10 @@ dist
 .pi/MEMORY.md
 .pi/implementation-notes.md
 
+# Half-finished pnpm conversion experiment (repo publishes via npm)
+pnpm-lock.yaml
+pnpm-workspace.yaml
+
 # Local work pointer and per-work dotfiles stay untracked (AGENTS.md)
 .pi/work/.active
 .pi/work/*/.progress.md
