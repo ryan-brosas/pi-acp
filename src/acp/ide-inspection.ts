@@ -168,6 +168,9 @@ function normalizeInspectionResult(raw: unknown): IdeInspectionFile[] {
               ? record.issues
               : null
     if (arr) return arr.map(toFile).filter((f): f is IdeInspectionFile => f !== null)
+    // Single-file shape (e.g. get_file_problems → { filePath, errors: [...] }).
+    const single = toFile(data)
+    if (single) return [single]
   }
   return []
 }
