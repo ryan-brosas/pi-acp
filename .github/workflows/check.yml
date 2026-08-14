@@ -28,5 +28,4 @@ jobs:
       - run: npm run build
       # The full `npm run smoke` matrix stays local: it spawns the `pi` binary and
       # makes real model calls, which GitHub runners do not provision. Run
-      # `npm run smoke:full` locally before a release (see
-      # docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md, F-005).
+      # `npm run smoke:full` locally before a release.
