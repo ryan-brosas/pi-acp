@@ -1040,7 +1040,8 @@ export class PiAcpAgent implements ACPAgent {
       const outcome = await runEnforcedInspection({
         bridge: session.mcpBridge ?? undefined,
         cwd: session.cwd,
-        sessionId: session.sessionId
+        sessionId: session.sessionId,
+        extraFiles: [...session.touchedFilePaths]
       })
       const summary = inspectionSummary(outcome)
       if (summary) {

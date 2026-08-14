@@ -32,6 +32,10 @@ The bridge launches stdio MCP servers from the session working directory, discov
 
 Do not silently use IntelliJ AllowAll. The installed IntelliJ source shows omitted `idea_mcp_allowed_tools` means AllowAll, while an explicit list becomes deny-all plus explicit names. Keep terminal, database, universal execution, debugger launch/control, breakpoint mutation, and variable mutation outside the default profile unless deliberately reviewed.
 
+- The adapter applies a **default deny-list** on top of the IDE-side allowlist: `execute_tool` (universal execution) and `xdebug_set_breakpoint` / `xdebug_start_debugger_session` / `xdebug_control_session` (debugger launch/control, breakpoint mutation) are excluded from the session catalog. Re-allow a reviewed tool explicitly via `PI_ACP_IDE_EXTRA_TOOLS` (comma-separated remote names); exclusions surface as bridge diagnostics and never mark the catalog incomplete.
+- The installed IDE MCP server catalog does not expose run-console output reading, VCS actions beyond `get_repositories`/`git_status`, database tools, the HTTP client, profiler, or test-runner integration. These cannot be bridged until the server exposes them; use the local CLI (git, tests) for those surfaces.
+- The post-turn gate merges git status with turn-touched tool-call paths (`extraFiles`) so it still fires after the auto-commit watcher sweeps the tree, and retries `run_inspection_kts` once on a malformed result, recording a truncated raw-payload diagnostic when the retry also fails.
+
 - Do **not** implement ACP client-side FS/terminal delegation in MVP. Pi already reads/writes and executes locally.
 - Accept and bridge supported `mcpServers` descriptors through the session-owned IntelliJ/MCP adapter; preserve graceful degradation for unavailable servers.
 - Stream all pi assistant output as ACP `agent_message_chunk` initially.

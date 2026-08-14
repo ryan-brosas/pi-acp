@@ -321,6 +321,8 @@ export class PiAcpSession {
   // events may need to be implemented in pi in the future.
   private fileSnapshots = new Map<string, { path: string; oldText: string | null }>()
   private fileMutationToolCallIds = new Set<string>()
+  /** Paths touched by file-mutation tool calls this turn; feeds the inspection gate's extraFiles. */
+  readonly touchedFilePaths = new Set<string>()
   private bashToolCallIds = new Set<string>()
   private bashOutputSnapshots = new Map<string, string>()
 
@@ -775,6 +777,7 @@ export class PiAcpSession {
         if (isFileMutation) {
           this.fileMutationToolCallIds.add(toolCallId)
           const p = getToolPath(args)
+          if (p) this.touchedFilePaths.add(p)
           if (p) {
             try {
               const abs = isAbsolute(p) ? p : resolvePath(this.cwd, p)
