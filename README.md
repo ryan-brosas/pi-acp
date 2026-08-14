@@ -80,7 +80,7 @@ npx works too. Pin the version so a later start cannot fetch a different release
   "agent_servers": {
     "pi-acp-jetbrain": {
       "command": "npx",
-      "args": ["-y", "pi-acp-jetbrain@0.0.35"],
+      "args": ["-y", "pi-acp-jetbrain@0.0.36"],
       "env": {}
     }
   }
