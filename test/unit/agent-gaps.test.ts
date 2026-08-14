@@ -42,21 +42,33 @@ test('PiAcpAgent: initialize advertises fork/resume/close/providers capabilities
   assert.deepEqual((res.agentCapabilities as any).providers, {})
 })
 
-test('PiAcpAgent: unstable_forkSession copies the source file, forks at the leaf, and returns the new session', async () => {
+test('PiAcpAgent: unstable_forkSession loads the source session and forks at the last user message', async () => {
   const conn = new FakeAgentSideConnection()
   const root = mkdtempSync(join(tmpdir(), 'pi-acp-fork-'))
   const srcFile = join(root, 'src.jsonl')
   writeFileSync(srcFile, '{}' + '\n')
 
   const spawned: Record<string, unknown>[] = []
+  const forkCalls: string[] = []
+  const upserts: Array<Record<string, unknown>> = []
   const originalSpawn = PiRpcProcess.spawn
   ;(PiRpcProcess as unknown as Record<string, unknown>).spawn = async (params: Record<string, unknown>) => {
     spawned.push(params)
     return {
       onEvent: () => () => {},
-      getEntries: async () => ({ entries: [], leafId: 'leaf-9' }),
-      fork: async () => ({ text: 'Forked', cancelled: false }),
-      getState: async () => ({}),
+      getEntries: async () => ({
+        entries: [
+          { type: 'message', id: 'u1', parentId: null, timestamp: 't1', message: { role: 'user', content: 'hi' } },
+          { type: 'message', id: 'a1', parentId: 'u1', timestamp: 't2', message: { role: 'assistant', content: 'yo' } },
+          { type: 'message', id: 'u2', parentId: 'a1', timestamp: 't3', message: { role: 'user', content: 'again' } }
+        ],
+        leafId: 'u2'
+      }),
+      fork: async (entryId: string) => {
+        forkCalls.push(entryId)
+        return { text: 'Forked', cancelled: false }
+      },
+      getState: async () => ({ sessionId: 'forked-pi-id', sessionFile: '/tmp/pi-acp-fork/branched.jsonl' }),
       getAvailableModels: async () => ({ models: [{ provider: 'openai', id: 'gpt-4o' }] })
     }
   }
@@ -76,24 +88,70 @@ test('PiAcpAgent: unstable_forkSession copies the source file, forks at the leaf
     ;(agent as any).sessions = sessions as any
     ;(agent as any).store = {
       get: () => ({ cwd: root, sessionFile: srcFile }),
-      upsert: () => {}
+      upsert: (entry: Record<string, unknown>) => {
+        upserts.push(entry)
+      }
     }
 
     const res = await agent.unstable_forkSession({ sessionId: 'src-1', cwd: root, mcpServers: [] } as any)
 
-    assert.equal(typeof res.sessionId, 'string')
+    // The fork subprocess loads the SOURCE session file (never a copy).
     assert.equal(spawned.length, 1)
     const spawnParams = spawned[0] as Record<string, unknown>
     assert.equal(spawnParams.cwd, root)
-    assert.match(String(spawnParams.sessionPath), /src-fork-.*\.jsonl$/)
-    assert.ok((spawnParams.sessionPath as string).startsWith(srcFile.slice(0, -8)))
+    assert.equal(spawnParams.sessionPath, srcFile)
+    // Fork happens at the LAST user-message entry (pi RPC fork uses position "before").
+    assert.deepEqual(forkCalls, ['u2'])
+    // The new ACP session adopts pi's fresh branched session id/file.
+    assert.equal(res.sessionId, 'forked-pi-id')
+    assert.deepEqual(upserts, [{ sessionId: 'forked-pi-id', cwd: root, sessionFile: '/tmp/pi-acp-fork/branched.jsonl' }])
     assert.deepEqual((res._meta as any).piAcp.fork, {
       fromSessionId: 'src-1',
-      entryId: 'leaf-9',
+      entryId: 'u2',
       text: 'Forked',
-      cancelled: false
+      cancelled: false,
+      sessionFile: '/tmp/pi-acp-fork/branched.jsonl'
     })
-    assert.deepEqual(closed, [res.sessionId])
+    assert.deepEqual(closed, ['forked-pi-id'])
+  } finally {
+    PiRpcProcess.spawn = originalSpawn
+  }
+})
+
+test('PiAcpAgent: unstable_forkSession rejects a source without user messages and cleans up', async () => {
+  const conn = new FakeAgentSideConnection()
+  const root = mkdtempSync(join(tmpdir(), 'pi-acp-fork-empty-'))
+  const srcFile = join(root, 'src.jsonl')
+  writeFileSync(srcFile, '{}' + '\n')
+
+  const originalSpawn = PiRpcProcess.spawn
+  const disposed: string[] = []
+  ;(PiRpcProcess as unknown as Record<string, unknown>).spawn = async () => ({
+    onEvent: () => () => {},
+    getEntries: async () => ({ entries: [], leafId: null }),
+    dispose: () => {
+      disposed.push('proc')
+    }
+  })
+
+  try {
+    const agent = new PiAcpAgent(asAgentConn(conn), {} as any)
+    ;(agent as any).sessions = {
+      maybeGet: () => undefined,
+      getOrCreate: (sessionId: string) => ({ sessionId, touchedFilePaths: new Set() }),
+      closeSession: async () => {}
+    }
+    ;(agent as any).store = {
+      get: () => ({ cwd: root, sessionFile: srcFile }),
+      upsert: () => {}
+    }
+    ;(agent as any).startBridge = async () => ({ bridge: { dispose: async () => {} }, settings: { extensionPaths: [], env: {} } })
+
+    await assert.rejects(
+      agent.unstable_forkSession({ sessionId: 'src-1', cwd: root, mcpServers: [] } as any),
+      /no user messages to fork from/
+    )
+    assert.deepEqual(disposed, ['proc'])
   } finally {
     PiRpcProcess.spawn = originalSpawn
   }

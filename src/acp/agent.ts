@@ -61,7 +61,7 @@ import { toAvailableCommandsFromPiGetCommands } from './pi-commands.js'
 import { maybeAuthRequiredError } from './auth-required.js'
 import { runEnforcedInspection, inspectionSummary, type IdeInspectionOutcome } from './ide-inspection.js'
 import { isAbsolute } from 'node:path'
-import { existsSync, readFileSync, realpathSync, readdirSync, statSync, unlinkSync, copyFileSync } from 'node:fs'
+import { existsSync, readFileSync, realpathSync, readdirSync, statSync, unlinkSync } from 'node:fs'
 import type { AvailableCommand } from '@agentclientprotocol/sdk'
 import { join, dirname, basename, relative, sep } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -1102,26 +1102,15 @@ export class PiAcpAgent implements ACPAgent {
       throw RequestError.invalidParams(`Unknown sessionId: ${params.sessionId}`)
     }
 
-    // Forking copies the source session file so the new session branches
-    // independently; pi's `fork` branches within the loaded session.
-    const newSessionId = crypto.randomUUID()
-    const forkedFile = join(
-      dirname(source.sessionFile),
-      `${basename(source.sessionFile).replace(/\.jsonl$/i, '')}-fork-${newSessionId}.jsonl`
-    )
-
-    try {
-      copyFileSync(source.sessionFile, forkedFile)
-    } catch (e) {
-      throw RequestError.internalError(
-        {},
-        `failed to copy session file for fork: ${e instanceof Error ? e.message : String(e)}`
-      )
-    }
-
+    // pi's RPC `fork` branches the loaded session at a user-message entry into a
+    // NEW session file with a fresh session id, then rebinds the subprocess to the
+    // branch. We load the source session file in a dedicated pi subprocess and fork
+    // at the last user message so the new ACP session starts from the source's
+    // current state (the source file itself is never modified).
+    const bridgeCorrelationId = crypto.randomUUID()
     const { bridge, settings: bridgeSettings } = await this.startBridge(
       params.mcpServers ?? [],
-      newSessionId,
+      bridgeCorrelationId,
       params.cwd
     )
 
@@ -1129,18 +1118,13 @@ export class PiAcpAgent implements ACPAgent {
     try {
       proc = await PiRpcProcess.spawn({
         cwd: params.cwd,
-        sessionPath: forkedFile,
+        sessionPath: source.sessionFile,
         piCommand: process.env.PI_ACP_PI_COMMAND,
         extensionPaths: bridgeSettings.extensionPaths,
         env: bridgeSettings.env
       })
     } catch (e: unknown) {
       await bridge.dispose()
-      try {
-        unlinkSync(forkedFile)
-      } catch {
-        // best-effort cleanup
-      }
       const err = e as { name?: string; code?: string; message?: string }
       if (err.name === 'PiRpcSpawnError') {
         throw RequestError.internalError({ code: err.code }, String(err.message ?? e))
@@ -1148,50 +1132,78 @@ export class PiAcpAgent implements ACPAgent {
       throw e
     }
 
-    this.sessions.getOrCreate(newSessionId, {
-      cwd: params.cwd,
-      mcpServers: params.mcpServers ?? [],
-      conn: this.conn,
-      proc,
-      fileCommands: loadSlashCommands(params.cwd),
-      bridge
-    })
+    let sessionId: string | null = null
+    try {
+      const entriesData = (await proc.getEntries()) as { entries?: unknown } | null
+      const entries = Array.isArray(entriesData?.entries) ? entriesData.entries : []
+      const lastUserEntry = [...entries].reverse().find(entry => {
+        const e = entry as { type?: unknown; message?: { role?: unknown } } | null | undefined
+        return e?.type === 'message' && e?.message?.role === 'user'
+      }) as { id?: unknown } | null | undefined
+      const entryId = typeof lastUserEntry?.id === 'string' ? lastUserEntry.id : null
+      if (!entryId) {
+        throw RequestError.internalError({}, 'source session has no user messages to fork from (send a prompt first)')
+      }
 
-    if (bridgeSettings.extensionPaths.length > 0) {
-      await this.waitForBridgeReady(bridge, bridgeSettings)
-    }
+      const fork = await proc.fork(entryId)
+      if (fork.cancelled) {
+        throw RequestError.internalError({}, `pi cancelled the fork: ${fork.text || 'unknown reason'}`)
+      }
 
-    this.store.upsert({ sessionId: newSessionId, cwd: params.cwd, sessionFile: forkedFile })
-    this.lastSessionCwd = params.cwd
+      const state = (await proc.getState()) as { sessionId?: unknown; sessionFile?: unknown } | null
+      sessionId = typeof state?.sessionId === 'string' ? state.sessionId : crypto.randomUUID()
+      const sessionFile = typeof state?.sessionFile === 'string' ? state.sessionFile : null
 
-    // Fork at the source session's leaf entry so the new session starts from
-    // the source's current state.
-    const entries = (await proc.getEntries()) as { leafId?: string | null } | null
-    const leafId = entries && typeof entries.leafId === 'string' && entries.leafId ? entries.leafId : null
-    if (!leafId) {
-      await this.closeManagedSession(newSessionId)
-      throw RequestError.internalError({}, 'pi get_entries returned no leaf entry to fork from')
-    }
+      this.sessions.getOrCreate(sessionId, {
+        cwd: params.cwd,
+        mcpServers: params.mcpServers ?? [],
+        conn: this.conn,
+        proc,
+        fileCommands: loadSlashCommands(params.cwd),
+        bridge
+      })
 
-    const fork = await proc.fork(leafId)
-    await this.closeManagedSessionsExcept(newSessionId)
+      if (bridgeSettings.extensionPaths.length > 0) {
+        await this.waitForBridgeReady(bridge, bridgeSettings)
+      }
 
-    const { modes, configOptions } = await getSessionConfiguration(proc)
+      if (sessionFile) {
+        this.store.upsert({ sessionId, cwd: params.cwd, sessionFile })
+      }
+      this.lastSessionCwd = params.cwd
 
-    return {
-      sessionId: newSessionId,
-      modes,
-      configOptions,
-      _meta: {
-        piAcp: {
-          fork: {
-            fromSessionId: params.sessionId,
-            entryId: leafId,
-            text: fork.text || null,
-            cancelled: fork.cancelled
+      // Single-live-subprocess policy: release the source session's subprocess
+      // (its file is untouched; the fork lives in its own new file).
+      await this.closeManagedSessionsExcept(sessionId)
+
+      const { modes, configOptions } = await getSessionConfiguration(proc)
+
+      return {
+        sessionId,
+        modes,
+        configOptions,
+        _meta: {
+          piAcp: {
+            fork: {
+              fromSessionId: params.sessionId,
+              entryId,
+              text: fork.text || null,
+              cancelled: fork.cancelled,
+              ...(sessionFile ? { sessionFile } : {})
+            }
           }
         }
       }
+    } catch (e) {
+      // Own the failure: dispose the fork subprocess unless it was already
+      // registered as a managed session (whose dispose releases its bridge).
+      if (sessionId) {
+        await this.closeManagedSession(sessionId).catch(() => undefined)
+      } else {
+        proc.dispose()
+        await bridge.dispose().catch(() => undefined)
+      }
+      throw e
     }
   }
 
