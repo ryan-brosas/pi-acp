@@ -92,3 +92,26 @@ process.stdout.on('error', () => {
     // ignore
   }
 })
+
+// Last-resort crash handlers: log, dispose owned children best-effort, then exit
+// nonzero so the client can surface the failure (a dead-but-zero adapter would
+// look like an idle session).
+function exitOnCrash(kind: string, detail: unknown): void {
+  try {
+    const stack = (detail as { stack?: string } | null)?.stack
+    process.stderr.write(`pi-acp-jetbrain: ${kind}: ${stack ?? String(detail)}
+`)
+  } catch {
+    // ignore
+  }
+  const a = activeAgent
+  activeAgent = null
+  const timer = setTimeout(() => process.exit(1), 2_000)
+  timer.unref?.()
+  if (!a) return process.exit(1)
+  void Promise.resolve(a.dispose())
+    .catch(() => undefined)
+    .finally(() => process.exit(1))
+}
+process.on('uncaughtException', error => exitOnCrash('uncaught exception', error))
+process.on('unhandledRejection', reason => exitOnCrash('unhandled rejection', reason))

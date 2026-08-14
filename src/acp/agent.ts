@@ -1031,7 +1031,10 @@ export class PiAcpAgent implements ACPAgent {
         bridge: session.mcpBridge ?? undefined,
         cwd: session.cwd,
         sessionId: session.sessionId,
-        extraFiles: [...session.touchedFilePaths]
+        extraFiles: [...session.touchedFilePaths],
+        // Audit P2-4: let hosts move reports out of the project tree; the
+        // project-local default stays (smoke tooling reads it).
+        outputDir: process.env.PI_ACP_IDE_INSPECT_DIR
       })
       const summary = inspectionSummary(outcome)
       if (summary) {
