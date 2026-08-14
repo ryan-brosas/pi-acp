@@ -1052,4 +1052,12 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.equal(byPath.get('name .ts')?.kind, 'update')
     assert.equal(byPath.get('line\u000dfeed.ts')?.kind, 'update')
   })
+  it('preserves a quoted filename ending in a space', () => {
+    const patch = ['--- "a/trailing.ts "', '+++ "b/trailing.ts "'].join('\n')
+    const targets = parsePatchTargets(patch)
+    assert.deepEqual(
+      targets.map(t => t.kind + ':' + t.destination),
+      ['update:trailing.ts ']
+    )
+  })
 })

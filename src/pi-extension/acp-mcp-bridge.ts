@@ -1210,7 +1210,7 @@ export function parsePatchTargets(patch: string): PatchTarget[] {
       flush()
       p = result
     }
-    return p.trim()
+    return p
   }
   const lines = patch.split(/\r?\n/)
   if (lines[0]?.trim() === '*** Begin Patch') {
