@@ -1521,8 +1521,6 @@ async function getModelState(
   currentModelId: string
 } | null> {
   // Ask pi for available models.
-  let availableModels: AdvertisedModel[]
-
   const data =
     pre?.availableModels ??
     (await (async () => {
@@ -1534,7 +1532,7 @@ async function getModelState(
     })())
 
   const models: Array<Record<string, unknown>> = Array.isArray(data?.models) ? data.models : []
-  availableModels = models
+  const availableModels: AdvertisedModel[] = models
     .map(m => {
       const provider = String(m?.provider ?? '').trim()
       const id = String(m?.id ?? '').trim()
