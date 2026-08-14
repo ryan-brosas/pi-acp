@@ -938,17 +938,19 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
   // an active IDE coding mode is in effect so writes flow through the IDE tools
   // (ide_idea_apply_patch / create_new_file). The active-set policy already
   // filters native file tools; fabric_exec is the remaining bypass vector.
-  pi.on('tool_call', async event => {
-    if (ideMode === 'off' || ideState !== 'active') return undefined
-    if (event?.toolName !== 'fabric_exec') return undefined
-    const code = typeof event?.input?.code === 'string' ? event.input.code : ''
-    if (!/\b(?:schema\.commit|pi\.(?:write|edit))\s*\(/.test(code)) return undefined
-    return {
-      block: true,
-      reason:
-        'IntelliJ-first mode: direct Fabric/Schema file mutations are blocked; apply and validate changes with ide_idea_apply_patch or ide_idea_create_new_file via extensions.ide_*'
-    }
-  })
+  if (ideMode !== 'off') {
+    pi.on('tool_call', async event => {
+      if (ideState !== 'active') return undefined
+      if (event?.toolName !== 'fabric_exec') return undefined
+      const code = typeof event?.input?.code === 'string' ? event.input.code : ''
+      if (!/\b(?:schema\.commit|pi\.(?:write|edit))\s*\(/.test(code)) return undefined
+      return {
+        block: true,
+        reason:
+          'IntelliJ-first mode: direct Fabric/Schema file mutations are blocked; apply and validate changes with ide_idea_apply_patch or ide_idea_create_new_file via extensions.ide_*'
+      }
+    })
+  }
 
   pi.on('session_shutdown', () => {
     transitionIdeState('shutdown', 'session shutdown')
@@ -1421,6 +1423,7 @@ export function renderIdeCodingGuidance(
       parts.push('IntelliJ-first mode is active.')
       parts.push('Pi generates the code; IntelliJ applies and validates it.')
       parts.push('Native file tools (read, edit, write, grep, find, ls) are unavailable.')
+      parts.push('Direct Fabric/Schema file mutations (schema.commit, pi.write, pi.edit) are blocked; route mutations through the IDE tools.')
       const lines: string[] = []
       const read = name('read')
       const open = name('open')

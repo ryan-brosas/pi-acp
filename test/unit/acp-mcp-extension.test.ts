@@ -400,6 +400,34 @@ describe('IntelliJ-first coding mode policy', () => {
     )
     assert.equal(ideCall, undefined)
   })
+  it('blocks direct Fabric mutations in prefer mode and lets read-only code pass', async () => {
+    for (const mode of ['required', 'prefer']) {
+      const { rt, emitCatalog } = wireExtension(mode, FULL_CATALOG)
+      emitCatalog()
+      const gate = rt.handlers.get('tool_call')?.[0]
+      assert.ok(gate, `tool_call gate registered in ${mode}`)
+      const blocked = await gate(
+        { toolName: 'fabric_exec', input: { code: "await pi.write({ path: 'x.ts', text: 'x' })" } },
+        { hasUI: false }
+      )
+      assert.equal(blocked?.block, true, `${mode} should block pi.write`)
+      const allowed = await gate(
+        {
+          toolName: 'fabric_exec',
+          input: { code: "await pi.read('/x'); await extensions.ide_idea_lint_files({ files: [] })" }
+        },
+        { hasUI: false }
+      )
+      assert.equal(allowed, undefined, `${mode} should allow read-only fabric code`)
+    }
+  })
+
+  it('does not register the mutation gate when IntelliJ-first mode is off', async () => {
+    const { rt, emitCatalog } = wireExtension('off', FULL_CATALOG)
+    emitCatalog()
+    assert.equal(rt.handlers.get('tool_call')?.length ?? 0, 0)
+  })
+
   it('prefer removes native file tools only when the catalog is complete', async () => {
     const { rt, socket, emitCatalog } = wireExtension('prefer', FULL_CATALOG)
     assert.ok(rt.active.includes('read'))
