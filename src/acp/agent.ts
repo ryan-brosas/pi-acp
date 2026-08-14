@@ -199,12 +199,13 @@ export class PiAcpAgent implements ACPAgent {
     })
   }
 
-  private async cleanupFailedNewSession(sessionId: string, state?: any | null): Promise<void> {
+  private async cleanupFailedNewSession(sessionId: string, state?: Record<string, unknown> | null): Promise<void> {
     await this.closeManagedSession(sessionId)
 
+    const sessionFileValue = state?.sessionFile
     const sessionFile =
-      typeof state?.sessionFile === 'string' && state.sessionFile.trim()
-        ? state.sessionFile
+      typeof sessionFileValue === 'string' && sessionFileValue.trim()
+        ? sessionFileValue
         : this.store.get(sessionId)?.sessionFile
 
     if (typeof sessionFile === 'string' && sessionFile.trim()) {
@@ -271,10 +272,11 @@ export class PiAcpAgent implements ACPAgent {
           extensionPaths: bridgeSettings.extensionPaths,
           env: bridgeSettings.env
         })
-      } catch (e: any) {
+      } catch (e: unknown) {
         await bridge.dispose()
-        if (e?.name === 'PiRpcSpawnError') {
-          throw RequestError.internalError({ code: e?.code }, String(e?.message ?? e))
+        const err = e as { name?: string; code?: string; message?: string }
+        if (err.name === 'PiRpcSpawnError') {
+          throw RequestError.internalError({ code: err.code }, String(err.message ?? e))
         }
         throw e
       }
@@ -643,8 +645,8 @@ export class PiAcpAgent implements ACPAgent {
 
         try {
           await session.proc.setSessionName(name)
-        } catch (e: any) {
-          const msg = String(e?.message ?? e)
+        } catch (e: unknown) {
+          const msg = String(e instanceof Error ? e.message : e)
           const hint = /set_session_name/i.test(msg)
             ? ' This requires a newer pi version that supports `set_session_name` in RPC mode.'
             : ''

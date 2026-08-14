@@ -1,0 +1,17 @@
+{
+  "schema": "pi-acp.ide-inspection.v1",
+  "sessionId": "019ffea7-b2a6-7b56-bf1c-eb33fa536194",
+  "generatedAt": "2026-08-14T05:13:15.367Z",
+  "filesChecked": 1,
+  "errors": 0,
+  "warnings": 0,
+  "items": [],
+  "kts": [
+    {
+      "scriptPath": "inspections/no-any.inspection.kts",
+      "status": "malformed",
+      "filesRun": 1,
+      "problems": 0
+    }
+  ]
+}
