@@ -8,11 +8,14 @@
 import type { ExtensionAPI } from '@earendil-works/pi-coding-agent'
 import { Type, type TSchema } from 'typebox'
 import { createConnection, type Socket } from 'node:net'
+import { existsSync, realpathSync } from 'node:fs'
+import { isAbsolute, relative, resolve, sep, dirname } from 'node:path'
 import {
   BRIDGE_IPC_VERSION,
   type BridgeIpcMessage,
   type BridgeMcpResult,
   type BridgeTool,
+  type BridgeCatalog,
   type CatalogRegistration
 } from '../acp/mcp-types.js'
 
@@ -435,10 +438,42 @@ export default function acpMcpBridgeExtension(pi: ExtensionAPI): void {
 }
 
 function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRuntime = {}): void {
+  let ideMode: IdeCodingMode = 'off'
+  let ideState: IdeCodingState = 'disabled'
+  let capabilities: IdeCapabilityMap = new Map()
+  let projectRoot: string | undefined
+  const policyDiagnostics: string[] = []
+  const registeredIdeNames = new Set<string>()
+  const toolByExposedName = new Map<string, BridgeTool>()
+  let removedByPolicy: string[] = []
+
   const endpoint = runtime.endpoint ?? ENDPOINT
   const token = runtime.token ?? TOKEN
   const sessionId = runtime.sessionId ?? SESSION_ID
-  if (!endpoint || !token || !sessionId) return
+
+  const parsedMode = parseIdeCodingMode(process.env[IDE_MODE_ENV])
+  ideMode = parsedMode.mode
+  if (parsedMode.diagnostic !== undefined) policyDiagnostics.push(parsedMode.diagnostic)
+
+  if (ideMode !== 'off') {
+    pi.on(
+      'before_agent_start',
+      ((event: { systemPrompt: string }) => {
+        const guidance = renderIdeCodingGuidance(ideMode, ideState, capabilities, projectRoot)
+        if (guidance === '') return undefined
+        return { systemPrompt: `${event.systemPrompt}\n\n${guidance}` }
+      }) as never
+    )
+    if (ideMode === 'required') setPolicyFiltering(true)
+    if (!endpoint || !token || !sessionId) {
+      if (ideMode === 'prefer') ideState = 'native_fallback'
+      else ideState = 'required_unavailable'
+      pi.on('session_shutdown', () => releaseBridgeInstance(instanceScope, owner))
+      return
+    }
+  } else if (!endpoint || !token || !sessionId) {
+    return
+  }
 
   const instanceScope = runtime.instanceScope ?? globalThis
   const owner = Symbol('acp-mcp-bridge-owner')
@@ -479,44 +514,12 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
           label: tool.exposedName.replaceAll('_', ' '),
           description: toolDescription(tool),
           parameters: schema as never,
-          execute: (async (toolCallId: string, params: unknown, signal?: AbortSignal) => {
-            const id = toolCallId
-            return new Promise<PiMcpToolResult>((resolve, reject) => {
-              const onAbort = () => {
-                if (!pending.delete(id)) return
-                send({ type: 'cancel', id })
-                failed(new Error('IDE tool call cancelled'))
-              }
-              const done = (value: unknown) => {
-                try {
-                  const mapped = mcpResultToPiResult(value)
-                  signal?.removeEventListener('abort', onAbort)
-                  resolve(mapped)
-                } catch (error) {
-                  failed(error instanceof Error ? error : new Error(String(error)))
-                }
-              }
-              const failed = (error: Error) => {
-                signal?.removeEventListener('abort', onAbort)
-                reject(error)
-              }
-              pending.set(id, { resolve: done, reject: failed })
-              if (signal?.aborted) {
-                pending.delete(id)
-                failed(new Error('IDE tool call cancelled'))
-                return
-              }
-              signal?.addEventListener('abort', onAbort, { once: true })
-              send({
-                type: 'call',
-                id,
-                tool: tool.exposedName,
-                args: prepareToolArguments(tool, (params ?? {}) as Record<string, unknown>, projectPath)
-              })
-            })
-          }) as never
+          execute: (async (toolCallId: string, params: unknown, signal?: AbortSignal) =>
+            runtimeExecute(tool, toolCallId, params, signal)) as never
         })
         registration.registered.push({ exposedName: tool.exposedName, schemaHash: tool.schemaHash })
+        registeredIdeNames.add(tool.exposedName)
+        toolByExposedName.set(tool.exposedName, tool)
         if (conversionState.warnings.length > 0) {
           registration.diagnostics = [
             ...(registration.diagnostics ?? []),
@@ -537,8 +540,10 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
   function handleMessage(msg: IpcMessage): void {
     if (msg.type === 'hello_ack' && !registered) {
       registered = true
+      projectRoot = msg.catalog.projectPath
       const registration = registerTools(msg.catalog.tools, msg.catalog.projectPath)
       registration.catalogId = msg.catalog.catalogId
+      applyIdePolicy(msg.catalog, registration)
       send({ type: 'catalog_registered', registration })
       send({
         type: 'health',
@@ -599,11 +604,243 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
       const error = new Error('IDE bridge IPC disconnected; IDE tools unavailable')
       for (const [, call] of pending) call.reject(error)
       pending.clear()
+      if (ideMode === 'prefer') transitionIdeState('native_fallback', 'IPC disconnected')
+      else if (ideMode === 'required') transitionIdeState('required_unavailable', 'IPC disconnected')
     })
     sock.on('error', () => sock?.destroy())
   }
 
+  function callRemoteTool(
+    tool: BridgeTool,
+    args: Record<string, unknown>,
+    requestId: string,
+    signal?: AbortSignal
+  ): Promise<PiMcpToolResult> {
+    if (!sock || sock.destroyed || !registered) {
+      return Promise.reject(new Error('IDE bridge unavailable: IPC is disconnected'))
+    }
+    return new Promise<PiMcpToolResult>((resolve, reject) => {
+      const onAbort = () => {
+        if (!pending.delete(requestId)) return
+        send({ type: 'cancel', id: requestId })
+        failed(new Error('IDE tool call cancelled'))
+      }
+      const done = (value: unknown) => {
+        try {
+          let mapped = mcpResultToPiResult(value)
+          if (ideMode !== 'off') mapped = filterIdeResult(tool, mapped, ideMode, projectRoot)
+          signal?.removeEventListener('abort', onAbort)
+          resolve(mapped)
+        } catch (error) {
+          signal?.removeEventListener('abort', onAbort)
+          reject(error instanceof Error ? error : new Error(String(error)))
+        }
+      }
+      const failed = (error: Error) => {
+        signal?.removeEventListener('abort', onAbort)
+        reject(error)
+      }
+      pending.set(requestId, { resolve: done, reject: failed })
+      if (signal?.aborted) {
+        pending.delete(requestId)
+        failed(new Error('IDE tool call cancelled'))
+        return
+      }
+      signal?.addEventListener('abort', onAbort, { once: true })
+      let ok = false
+      try {
+        if (sock && !sock.destroyed) {
+          ok = sock.write(
+            JSON.stringify({ type: 'call', id: requestId, tool: tool.exposedName, args }) + '\n'
+          )
+        }
+      } catch {
+        ok = false
+      }
+      if (!ok) {
+        pending.delete(requestId)
+        signal?.removeEventListener('abort', onAbort)
+        failed(new Error('IDE bridge unavailable: IPC is disconnected'))
+      }
+    })
+  }
+
+  function filterIdeResult(
+    tool: BridgeTool,
+    result: PiMcpToolResult,
+    mode: IdeCodingMode,
+    root: string | undefined
+  ): PiMcpToolResult {
+    if (mode === 'off' || MUTATION_REMOTE_NAMES.has(tool.remoteName) || root === undefined) return result
+    const structured = result.details.structuredContent
+    if (!structured || typeof structured !== 'object' || Array.isArray(structured)) return result
+    let hit = false
+    for (const key of RESULT_PATH_KEYS) {
+      const value = (structured as Record<string, unknown>)[key]
+      const values = Array.isArray(value) ? value : typeof value === 'string' ? [value] : []
+      for (const entry of values) {
+        if (typeof entry !== 'string' || !isAbsolute(entry)) continue
+        if (!isInside(resolve(root), resolve(entry))) {
+          hit = true
+          break
+        }
+      }
+      if (hit) break
+    }
+    if (!hit) return result
+    if (mode === 'required') {
+      throw new McpToolError('IDE tool returned a path outside the project root', { code: 'out_of_root_result' })
+    }
+    result.details.composite = {
+      ...(result.details.composite as Record<string, unknown>),
+      outOfRootResult: 'annotated'
+    }
+    return result
+  }
+
+  function setPolicyFiltering(enabled: boolean): void {
+    if (ideMode === 'off') return
+    const current = pi.getActiveTools()
+    if (enabled) {
+      const removed = current.filter(name => NATIVE_FILE_TOOLS.has(name))
+      if (removed.length === 0) return
+      removedByPolicy = [...new Set([...removedByPolicy, ...removed])]
+      pi.setActiveTools(current.filter(name => !NATIVE_FILE_TOOLS.has(name)))
+    } else {
+      if (removedByPolicy.length === 0) return
+      const known = new Set(pi.getAllTools().map(tool => tool.name))
+      const restore = removedByPolicy.filter(name => known.has(name))
+      if (restore.length === 0) return
+      pi.setActiveTools([...current, ...restore])
+      removedByPolicy = removedByPolicy.filter(name => !restore.includes(name))
+    }
+  }
+
+  function activateIdeTools(enabled: boolean): void {
+    if (ideMode === 'off' || registeredIdeNames.size === 0) return
+    const current = pi.getActiveTools()
+    if (enabled) {
+      const missing = [...registeredIdeNames].filter(name => !current.includes(name))
+      if (missing.length > 0) pi.setActiveTools([...current, ...missing])
+    } else {
+      const next = current.filter(name => !registeredIdeNames.has(name))
+      if (next.length !== current.length) pi.setActiveTools(next)
+    }
+  }
+
+  function transitionIdeState(next: IdeCodingState, reason: string): void {
+    if (ideState === next) return
+    const prev = ideState
+    ideState = next
+    policyDiagnostics.push(`IDE coding mode: ${prev} -> ${next} (${reason})`)
+    switch (next) {
+      case 'active':
+        setPolicyFiltering(true)
+        activateIdeTools(true)
+        break
+      case 'native_fallback':
+        activateIdeTools(false)
+        setPolicyFiltering(false)
+        break
+      case 'required_unavailable':
+        activateIdeTools(false)
+        break
+      case 'shutdown':
+        activateIdeTools(false)
+        break
+      default:
+        break
+    }
+  }
+
+  function applyIdePolicy(catalog: BridgeCatalog, registration: CatalogRegistration): void {
+    if (ideMode === 'off') return
+    const registeredNames = new Set(registration.registered.map(item => item.exposedName))
+    const indexed = indexIdeCapabilities(catalog.tools, registeredNames)
+    capabilities = indexed.capabilities
+    for (const duplicate of indexed.duplicates) policyDiagnostics.push(`duplicate IDE capability mappings: ${duplicate}`)
+    if (indexed.missing.length > 0) {
+      policyDiagnostics.push(`missing required IDE capabilities: ${indexed.missing.join(', ')}`)
+    }
+    const availability = evaluateIdeAvailability(ideMode, indexed.capabilities)
+    transitionIdeState(availability.state, 'capability evaluation')
+    if (policyDiagnostics.length > 0) {
+      registration.diagnostics = [...(registration.diagnostics ?? []), ...policyDiagnostics]
+      policyDiagnostics.length = 0
+    }
+  }
+
+  function openPathKey(tool: BridgeTool): string {
+    const schema = tool.inputSchema as { properties?: Record<string, unknown> }
+    const properties = schema.properties ?? {}
+    for (const key of ['filePath', 'file_path', 'files', 'pathInProject', 'directoryPath']) {
+      if (Object.prototype.hasOwnProperty.call(properties, key)) return key
+    }
+    return 'filePath'
+  }
+
+  function executeMutationComposite(
+    tool: BridgeTool,
+    args: Record<string, unknown>,
+    toolCallId: string,
+    signal?: AbortSignal
+  ): Promise<PiMcpToolResult> {
+    if (projectRoot === undefined) {
+      return Promise.reject(new McpToolError('IntelliJ-first mode requires a project root', { code: 'missing_project_root' }))
+    }
+    const openName = capabilities.get('open')
+    const openTool = openName ? toolByExposedName.get(openName) : undefined
+    if (!openTool) {
+      return Promise.reject(
+        new McpToolError('IntelliJ-first mode requires open_file_in_editor for mutations', { code: 'missing_open_capability' })
+      )
+    }
+    let plan: MutationPlan
+    try {
+      plan = buildMutationPlan(tool, args, projectRoot)
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)))
+    }
+    const openKey = openPathKey(openTool)
+    return (async () => {
+      for (let i = 0; i < plan.preOpen.length; i++) {
+        await callRemoteTool(openTool, { [openKey]: plan.preOpen[i] }, `${toolCallId}:open:${i}`, signal)
+      }
+      const result = await callRemoteTool(tool, plan.mutationArgs, `${toolCallId}:mutate`, signal)
+      for (let i = 0; i < plan.postOpen.length; i++) {
+        try {
+          await callRemoteTool(openTool, { [openKey]: plan.postOpen[i] }, `${toolCallId}:open-created:${i}`, signal)
+        } catch (error) {
+          result.details.composite = {
+            ...(result.details.composite as Record<string, unknown>),
+            mutationSucceeded: true,
+            postOpenError: error instanceof Error ? error.message : String(error)
+          }
+        }
+      }
+      result.details.composite = {
+        ...(result.details.composite as Record<string, unknown>),
+        affectedPaths: [...plan.preOpen, ...plan.postOpen]
+      }
+      return result
+    })()
+  }
+
+  function runtimeExecute(
+    tool: BridgeTool,
+    toolCallId: string,
+    params: unknown,
+    signal?: AbortSignal
+  ): Promise<PiMcpToolResult> {
+    const args = (params ?? {}) as Record<string, unknown>
+    const prepared = prepareToolArguments(tool, args, projectRoot)
+    if (ideMode === 'off') return callRemoteTool(tool, prepared, toolCallId, signal)
+    if (MUTATION_REMOTE_NAMES.has(tool.remoteName)) return executeMutationComposite(tool, prepared, toolCallId, signal)
+    return callRemoteTool(tool, prepared, toolCallId, signal)
+  }
+
   pi.on('session_shutdown', () => {
+    transitionIdeState('shutdown', 'session shutdown')
     send({ type: 'shutdown', reason: 'session_shutdown' })
     sock?.destroy()
     sock = undefined
@@ -618,9 +855,31 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
   }
 }
 
-// ---------- IntelliJ-first coding mode (RED scaffolding) ----------
+// ---------- IntelliJ-first coding mode ----------
 
+const IDE_MODE_ENV = 'PI_ACP_IDE_MODE'
 const NATIVE_FILE_TOOLS = new Set(['read', 'edit', 'write', 'grep', 'find', 'ls'])
+
+const REQUIRED_CAPABILITIES: Array<{ key: IdeCapabilityKey; remoteNames: string[] }> = [
+  { key: 'read', remoteNames: ['read_file'] },
+  { key: 'open', remoteNames: ['open_file_in_editor'] },
+  { key: 'patch', remoteNames: ['apply_patch'] },
+  { key: 'create', remoteNames: ['create_new_file'] },
+  { key: 'search', remoteNames: ['skill_search', 'search_text'] },
+  { key: 'inspect', remoteNames: ['lint_files', 'get_file_problems'] }
+]
+const OPTIONAL_CAPABILITIES: Array<{ key: IdeCapabilityKey; remoteNames: string[] }> = [
+  { key: 'rename', remoteNames: ['rename_refactoring'] },
+  { key: 'reformat', remoteNames: ['reformat_file'] }
+]
+const MUTATION_REMOTE_NAMES = new Set(['apply_patch', 'rename_refactoring', 'reformat_file', 'create_new_file'])
+const PATH_KEYS = new Set(['filePath', 'file_path', 'pathInProject', 'files', 'paths', 'sourcePath', 'targetPath', 'oldPath', 'newPath', 'directoryPath', 'contextPath'])
+const RESULT_PATH_KEYS = new Set(['filePath', 'file_path', 'files', 'paths'])
+
+export type IdeCodingMode = 'off' | 'prefer' | 'required'
+export type IdeCodingState = 'disabled' | 'awaiting_catalog' | 'active' | 'native_fallback' | 'required_unavailable' | 'shutdown'
+export type IdeCapabilityKey = 'read' | 'open' | 'patch' | 'create' | 'search' | 'inspect' | 'rename' | 'reformat'
+export type IdeCapabilityMap = Map<IdeCapabilityKey, string>
 
 export type PatchTargetKind = 'add' | 'update' | 'delete' | 'move'
 
@@ -630,8 +889,82 @@ export interface PatchTarget {
   destination: string
 }
 
-export function parsePatchTargets(patch: string): PatchTarget[] {
-  return []
+export interface MutationPlan {
+  preOpen: string[]
+  mutationArgs: Record<string, unknown>
+  postOpen: string[]
+}
+
+export function parseIdeCodingMode(value: string | undefined): { mode: IdeCodingMode; diagnostic?: string } {
+  if (value === undefined || value === '' || value === 'off') return { mode: 'off' }
+  if (value === 'prefer') return { mode: 'prefer' }
+  if (value === 'required') return { mode: 'required' }
+  return { mode: 'required', diagnostic: `invalid PI_ACP_IDE_MODE value '${value}'; failing closed as required` }
+}
+
+export function indexIdeCapabilities(
+  tools: BridgeTool[],
+  registeredNames: ReadonlySet<string>
+): { capabilities: IdeCapabilityMap; missing: IdeCapabilityKey[]; duplicates: string[] } {
+  const capabilities: IdeCapabilityMap = new Map()
+  const missing: IdeCapabilityKey[] = []
+  const duplicates: string[] = []
+  const allGroups = [...REQUIRED_CAPABILITIES, ...OPTIONAL_CAPABILITIES]
+  for (const group of allGroups) {
+    let chosen: string | undefined
+    for (const remote of group.remoteNames) {
+      const match = tools.find(tool => tool.remoteName === remote && registeredNames.has(tool.exposedName))
+      if (match) {
+        chosen = match.exposedName
+        break
+      }
+    }
+    if (chosen === undefined) {
+      if (REQUIRED_CAPABILITIES.some(item => item.key === group.key)) missing.push(group.key)
+      continue
+    }
+    capabilities.set(group.key, chosen)
+  }
+  for (const group of allGroups) {
+    for (const remote of group.remoteNames) {
+      const matches = tools.filter(tool => tool.remoteName === remote && registeredNames.has(tool.exposedName))
+      if (matches.length > 1) duplicates.push(`${remote}: ${matches.map(match => match.exposedName).join(', ')}`)
+    }
+  }
+  return { capabilities, missing, duplicates }
+}
+
+export function evaluateIdeAvailability(
+  mode: IdeCodingMode,
+  capabilities: IdeCapabilityMap
+): { state: IdeCodingState; missing: IdeCapabilityKey[] } {
+  const missing = REQUIRED_CAPABILITIES.filter(group => !capabilities.has(group.key)).map(group => group.key)
+  if (missing.length === 0) return { state: 'active', missing }
+  return mode === 'prefer' ? { state: 'native_fallback', missing } : { state: 'required_unavailable', missing }
+}
+
+function isInside(root: string, candidate: string): boolean {
+  if (candidate === root) return true
+  const rel = relative(root, candidate)
+  return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel)
+}
+
+function tryRealpath(path: string): string | undefined {
+  try {
+    return realpathSync(path)
+  } catch {
+    return undefined
+  }
+}
+
+function nearestExistingAncestor(candidate: string): string | undefined {
+  let current = candidate
+  while (true) {
+    if (existsSync(current)) return current
+    const parent = dirname(current)
+    if (parent === current) return undefined
+    current = parent
+  }
 }
 
 export function normalizeProjectPath(
@@ -639,5 +972,223 @@ export function normalizeProjectPath(
   input: string,
   mutation: boolean
 ): { path: string } {
-  throw new Error('not implemented')
+  if (input === '') throw new Error('IDE path is empty')
+  const root = resolve(projectRoot)
+  let raw = input
+  if (raw.startsWith('@')) raw = raw.slice(1)
+  if (raw.includes('\0')) throw new Error(`IDE path contains NUL: ${input}`)
+  const candidate = isAbsolute(raw) ? raw : resolve(root, raw)
+  if (!isInside(root, candidate)) throw new Error(`IDE path escapes project root: ${input}`)
+  if (mutation) {
+    const realRoot = tryRealpath(root)
+    if (realRoot !== undefined) {
+      const existingAncestor = nearestExistingAncestor(candidate)
+      if (existingAncestor !== undefined) {
+        const real = tryRealpath(existingAncestor)
+        if (real !== undefined && !isInside(realRoot, real)) {
+          throw new Error(`IDE mutation path escapes project root through symlink: ${input}`)
+        }
+      }
+    }
+  }
+  const rel = relative(root, candidate)
+  return { path: rel.split(sep).join('/') }
+}
+
+export function parsePatchTargets(patch: string): PatchTarget[] {
+  const targets: PatchTarget[] = []
+  const seen = new Set<string>()
+  const add = (kind: PatchTargetKind, destination: string, source?: string) => {
+    if (destination === '' || destination === '/dev/null') return
+    const key = `${kind}:${source ?? ''}:${destination}`
+    if (seen.has(key)) return
+    seen.add(key)
+    targets.push({ kind, destination, source })
+  }
+  const stripPrefix = (value: string): string => {
+    if (value.startsWith('a/')) return value.slice(2)
+    if (value.startsWith('b/')) return value.slice(2)
+    return value
+  }
+  const lines = patch.split(/\r?\n/)
+  if (lines[0]?.trim() === '*** Begin Patch') {
+    let current: { kind: PatchTargetKind; destination: string; source?: string } | undefined
+    for (const line of lines) {
+      const trimmed = line.trim()
+      const update = /^\*\*\* Update File:\s*(.+)$/.exec(trimmed)
+      const addFile = /^\*\*\* Add File:\s*(.+)$/.exec(trimmed)
+      const del = /^\*\*\* Delete File:\s*(.+)$/.exec(trimmed)
+      const move = /^\*\*\* Move to:\s*(.+)$/.exec(trimmed)
+      if (update) {
+        if (current) add(current.kind, current.destination, current.source)
+        current = { kind: 'update', destination: update[1].trim() }
+      } else if (addFile) {
+        if (current) add(current.kind, current.destination, current.source)
+        current = { kind: 'add', destination: addFile[1].trim() }
+      } else if (del) {
+        if (current) add(current.kind, current.destination, current.source)
+        current = { kind: 'delete', destination: del[1].trim() }
+      } else if (move) {
+        if (!current) throw new Error('Codex patch Move to without a source section')
+        current = { kind: 'move', destination: move[1].trim(), source: current.destination }
+      }
+    }
+    if (current) add(current.kind, current.destination, current.source)
+    return targets
+  }
+  for (const line of lines) {
+    const trimmed = line.trim()
+    const oldHeader = /^---\s+(.+)$/.exec(trimmed)
+    const newHeader = /^\+\+\+\s+(.+)$/.exec(trimmed)
+    if (!oldHeader || !newHeader) continue
+    const oldPath = stripPrefix(oldHeader[1].trim())
+    const newPath = stripPrefix(newHeader[1].trim())
+    if (oldPath === '/dev/null' && newPath !== '/dev/null') add('add', newPath)
+    else if (newPath === '/dev/null' && oldPath !== '/dev/null') add('delete', oldPath)
+    else if (oldPath !== '/dev/null' && newPath !== '/dev/null') {
+      if (oldPath === newPath) add('update', newPath)
+      else add('move', newPath, oldPath)
+    }
+  }
+  return targets
+}
+
+function patchTextFromArgs(tool: BridgeTool, args: Record<string, unknown>): string | undefined {
+  const schema = tool.inputSchema as { properties?: Record<string, unknown> }
+  const properties = schema.properties ?? {}
+  for (const key of Object.keys(properties)) {
+    if (!/patch|diff|input|text/i.test(key)) continue
+    const value = args[key]
+    if (typeof value === 'string') return value
+  }
+  return undefined
+}
+
+function firstPathArg(tool: BridgeTool, args: Record<string, unknown>): string | undefined {
+  const schema = tool.inputSchema as { properties?: Record<string, unknown> }
+  const properties = schema.properties ?? {}
+  for (const key of Object.keys(properties)) {
+    if (!PATH_KEYS.has(key)) continue
+    const value = args[key]
+    if (typeof value === 'string') return value
+    if (Array.isArray(value)) {
+      const first = value.find(item => typeof item === 'string')
+      if (first !== undefined) return first as string
+    }
+  }
+  return undefined
+}
+
+function pathArgValues(tool: BridgeTool, args: Record<string, unknown>): string[] {
+  const schema = tool.inputSchema as { properties?: Record<string, unknown> }
+  const properties = schema.properties ?? {}
+  const values: string[] = []
+  for (const key of Object.keys(properties)) {
+    if (!PATH_KEYS.has(key)) continue
+    const value = args[key]
+    if (typeof value === 'string') values.push(value)
+    else if (Array.isArray(value)) for (const item of value) if (typeof item === 'string') values.push(item)
+  }
+  return values
+}
+
+function dedupe(values: string[]): string[] {
+  return [...new Set(values)]
+}
+
+export function buildMutationPlan(tool: BridgeTool, args: Record<string, unknown>, projectRoot: string): MutationPlan {
+  const preOpen: string[] = []
+  const postOpen: string[] = []
+  switch (tool.remoteName) {
+    case 'apply_patch': {
+      const patch = patchTextFromArgs(tool, args)
+      if (patch === undefined) throw new Error('apply_patch requires patch text')
+      const targets = parsePatchTargets(patch)
+      if (targets.length === 0) throw new Error('apply_patch patch contains no affected files')
+      for (const target of targets) {
+        if (target.kind === 'move' && target.source) {
+          preOpen.push(normalizeProjectPath(projectRoot, target.source, true).path)
+        }
+        const normalized = normalizeProjectPath(projectRoot, target.destination, target.kind !== 'delete')
+        preOpen.push(normalized.path)
+        if (target.kind !== 'delete') postOpen.push(normalized.path)
+      }
+      break
+    }
+    case 'rename_refactoring': {
+      const source = firstPathArg(tool, args)
+      if (source !== undefined) preOpen.push(normalizeProjectPath(projectRoot, source, true).path)
+      break
+    }
+    case 'reformat_file': {
+      for (const value of pathArgValues(tool, args)) preOpen.push(normalizeProjectPath(projectRoot, value, true).path)
+      break
+    }
+    case 'create_new_file': {
+      const target = firstPathArg(tool, args)
+      if (target !== undefined) postOpen.push(normalizeProjectPath(projectRoot, target, true).path)
+      break
+    }
+    default:
+      break
+  }
+  return { preOpen: dedupe(preOpen), mutationArgs: args, postOpen: dedupe(postOpen) }
+}
+
+export function renderIdeCodingGuidance(
+  mode: IdeCodingMode,
+  state: IdeCodingState,
+  capabilities: IdeCapabilityMap,
+  projectRoot: string | undefined
+): string {
+  if (mode === 'off' || state === 'disabled' || state === 'shutdown') return ''
+  const name = (key: IdeCapabilityKey): string | undefined => capabilities.get(key)
+  const parts: string[] = []
+  const header = `[pi-acp IntelliJ-first mode: ${state}]`
+  switch (state) {
+    case 'active': {
+      parts.push('IntelliJ-first mode is active.')
+      parts.push('Pi generates the code; IntelliJ applies and validates it.')
+      parts.push('Native file tools (read, edit, write, grep, find, ls) are unavailable.')
+      const lines: string[] = []
+      const read = name('read')
+      const open = name('open')
+      const search = name('search')
+      const patch = name('patch')
+      const create = name('create')
+      const inspect = name('inspect')
+      const rename = name('rename')
+      const reformat = name('reformat')
+      if (read) lines.push(`read files with ${read}`)
+      if (open) lines.push(`open files in the IDE with ${open}`)
+      if (search) lines.push(`search the project with ${search}`)
+      if (patch) lines.push(`apply patches with ${patch}`)
+      if (create) lines.push(`create files with ${create}`)
+      if (inspect) lines.push(`run IDE diagnostics with ${inspect}`)
+      if (rename) lines.push(`use semantic rename via ${rename} instead of textual edits`)
+      if (reformat) lines.push(`reformat via ${reformat}`)
+      if (lines.length > 0) parts.push(`Use the registered IDE tools: ${lines.join('; ')}.`)
+      parts.push('Mutations automatically open affected files in the IDE.')
+      if (projectRoot) parts.push(`Paths are relative to the project root: ${projectRoot}`)
+      parts.push('Use bash for Git, tests, builds, and diagnostics. Do not use bash to modify source files.')
+      break
+    }
+    case 'awaiting_catalog': {
+      if (mode === 'required') parts.push('IntelliJ-first mode is required and waiting for the IDE catalog. Native file tools stay disabled.')
+      else parts.push('IntelliJ-first mode is preferred but the IDE catalog is not ready yet. Native file tools remain available temporarily.')
+      break
+    }
+    case 'native_fallback': {
+      parts.push('IDE IPC is unavailable or incomplete. IDE tools were removed from the active set; only native tools removed by this policy were restored.')
+      parts.push('Do not call stale IDE tool names.')
+      break
+    }
+    case 'required_unavailable': {
+      parts.push('Required IntelliJ capabilities are unavailable. Native filesystem tools remain disabled. The task is blocked until a new healthy ACP/IDE session is started.')
+      break
+    }
+    default:
+      return ''
+  }
+  return `${header}\n${parts.join('\n')}`
 }
