@@ -13,9 +13,8 @@ function buildAgent(opts: {
   proc?: Record<string, unknown>
   sessions?: Record<string, unknown>
 }) {
-  const conn = opts.conn ?? new FakeAgentSideConnection()
-  const agent = new PiAcpAgent(asAgentConn(conn), {} as any)
-  void conn
+  const _conn = opts.conn ?? new FakeAgentSideConnection()
+  const agent = new PiAcpAgent(asAgentConn(_conn), {} as any)
   ;(agent as any).sessions = opts.sessions ?? {
     maybeGet: () => undefined,
     getOrCreate: () => ({ sessionId: 'new', touchedFilePaths: new Set() }),
@@ -27,11 +26,11 @@ function buildAgent(opts: {
     get: () => opts.stored ?? null,
     upsert: () => {}
   }
-  return { agent, conn }
+  return { agent, conn: _conn }
 }
 
 test('PiAcpAgent: initialize advertises fork/resume/close/providers capabilities', async () => {
-  const { agent, conn } = buildAgent({})
+  const { agent } = buildAgent({})
   const res = await agent.initialize({ protocolVersion: 1, clientCapabilities: {} } as any)
   assert.deepEqual((res.agentCapabilities as any).sessionCapabilities, {
     list: {},
