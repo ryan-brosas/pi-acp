@@ -751,6 +751,44 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
 
   function setPolicyFiltering(enabled: boolean): void {
     if (ideMode === 'off') return
+    try {
+      applyPolicyFiltering(enabled)
+      deferredPolicyAttempts = 0
+    } catch (error) {
+      if (!isRuntimeNotReady(error)) throw error
+      schedulePolicyWhenReady(() => setPolicyFiltering(enabled))
+    }
+  }
+
+  // pi's loader throws `Extension runtime not initialized` for runtime action
+  // methods while extensions are still loading. IPC frames (and socket close)
+  // can arrive in that window when a nested pi inherits a live adapter's IPC
+  // env; defer the policy transition instead of crashing (F-036).
+  const RUNTIME_NOT_READY_RE = /runtime not initialized|during extension loading/i
+  let deferredPolicyRun: (() => void) | undefined
+  let deferredPolicyAttempts = 0
+  const MAX_DEFERRED_POLICY_ATTEMPTS = 500
+
+  function isRuntimeNotReady(error: unknown): boolean {
+    return error instanceof Error && RUNTIME_NOT_READY_RE.test(error.message)
+  }
+
+  function schedulePolicyWhenReady(run: () => void): void {
+    deferredPolicyRun = run
+    if (deferredPolicyAttempts >= MAX_DEFERRED_POLICY_ATTEMPTS) {
+      deferredPolicyRun = undefined
+      return
+    }
+    deferredPolicyAttempts += 1
+    setImmediate(() => {
+      const next = deferredPolicyRun
+      deferredPolicyRun = undefined
+      if (next !== undefined) next()
+    })
+  }
+
+  function applyPolicyFiltering(enabled: boolean): void {
+    if (ideMode === 'off') return
     const current = pi.getActiveTools()
     if (enabled) {
       const removed = current.filter(name => NATIVE_FILE_TOOLS.has(name))
@@ -768,6 +806,17 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
   }
 
   function activateIdeTools(enabled: boolean): void {
+    if (ideMode === 'off' || registeredIdeNames.size === 0) return
+    try {
+      applyIdeToolActivation(enabled)
+      deferredPolicyAttempts = 0
+    } catch (error) {
+      if (!isRuntimeNotReady(error)) throw error
+      schedulePolicyWhenReady(() => activateIdeTools(enabled))
+    }
+  }
+
+  function applyIdeToolActivation(enabled: boolean): void {
     if (ideMode === 'off' || registeredIdeNames.size === 0) return
     const current = pi.getActiveTools()
     if (enabled) {

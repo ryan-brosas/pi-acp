@@ -215,12 +215,18 @@ import { join } from 'node:path'
 import { parsePatchTargets } from '../../src/pi-extension/acp-mcp-bridge.js'
 
 function makeFakeRuntime(
-  initialActive: string[] = ['read', 'edit', 'write', 'grep', 'find', 'ls', 'bash', 'my_ext_tool']
+  initialActive: string[] = ['read', 'edit', 'write', 'grep', 'find', 'ls', 'bash', 'my_ext_tool'],
+  opts: { runtimeNotReady?: boolean } = {}
 ) {
   const handlers = new Map<string, Array<(event: any, ctx: any) => any>>()
   const all = new Set<string>(initialActive)
   let active = [...initialActive]
   const registered: any[] = []
+  let runtimeReady = !opts.runtimeNotReady
+  const ensureRuntimeReady = () => {
+    if (runtimeReady) return
+    throw new Error('Extension runtime not initialized. Action methods cannot be called during extension loading.')
+  }
   const pi = {
     on(event: string, handler: (event: any, ctx: any) => unknown) {
       const list = handlers.get(event) ?? []
@@ -231,9 +237,16 @@ function makeFakeRuntime(
       all.add(def.name)
       registered.push(def)
     },
-    getActiveTools: () => [...active],
-    getAllTools: () => [...all].map(name => ({ name })),
+    getActiveTools: () => {
+      ensureRuntimeReady()
+      return [...active]
+    },
+    getAllTools: () => {
+      ensureRuntimeReady()
+      return [...all].map(name => ({ name }))
+    },
     setActiveTools(names: string[]) {
+      ensureRuntimeReady()
       active = [...names]
     }
   }
@@ -243,6 +256,9 @@ function makeFakeRuntime(
     registered,
     get active() {
       return [...active]
+    },
+    set ready(value: boolean) {
+      runtimeReady = value
     }
   }
 }
@@ -320,9 +336,10 @@ function wireExtension(
   mode: string | undefined,
   catalogTools: any[],
   initialActive?: string[],
-  projectPath = '/workspace/project'
+  projectPath = '/workspace/project',
+  opts: { runtimeNotReady?: boolean } = {}
 ) {
-  const rt = makeFakeRuntime(initialActive)
+  const rt = makeFakeRuntime(initialActive, opts)
   const socket = new FakeIdeSocket()
   const prevMode = process.env.PI_ACP_IDE_MODE
   if (mode === undefined) delete process.env.PI_ACP_IDE_MODE
@@ -1166,5 +1183,15 @@ describe('IntelliJ-first coding mode policy', () => {
     emitCatalog()
     const read = rt.registered.find((t: any) => t.name === 'ide_idea_read_file')
     await assert.rejects(() => read.execute('t34a', { filePath: 'src/a.ts' }), /outside|root/i)
+  })
+  it('defers policy filtering until the pi runtime is ready instead of crashing during extension loading', async () => {
+    const { rt, socket } = wireExtension('required', FULL_CATALOG, undefined, '/workspace/project', {
+      runtimeNotReady: true
+    })
+    assert.doesNotThrow(() => socket.destroy())
+    rt.ready = true
+    await new Promise(resolve => setImmediate(resolve))
+    await new Promise(resolve => setImmediate(resolve))
+    assert.deepEqual(rt.active, ['bash', 'my_ext_tool'])
   })
 })
