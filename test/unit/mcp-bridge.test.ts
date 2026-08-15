@@ -160,25 +160,7 @@ describe('AcpMcpBridge', () => {
     assert.equal(bridge.tools.length, 1)
     assert.equal(bridge.tools[0].exposedName, 'ide_intellij_open_file_in_editor')
 
-    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
-    const lines = createInterface({ input: sock })
-    const iterator = lines[Symbol.asyncIterator]()
-    const nextMessage = async (): Promise<any> => {
-      const next = await iterator.next()
-      if (next.done) throw new Error('IPC socket closed before the expected message')
-      return JSON.parse(next.value)
-    }
-    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-    sock.write(
-      JSON.stringify({
-        type: 'hello',
-        version: BRIDGE_IPC_VERSION,
-        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
-        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
-      }) + '\n'
-    )
-    const helloAck = await nextMessage()
-    assert.equal(helloAck.type, 'hello_ack')
+    const { sock, lines, nextMessage, helloAck } = await connectIpc(settings)
     assert.equal(helloAck.catalog.projectPath, process.cwd())
     const registration = {
       type: 'catalog_registered',
@@ -285,25 +267,7 @@ describe('AcpMcpBridge', () => {
       runtimeTimeoutMs: 200
     })
     const settings = await bridge.start()
-    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
-    const lines = createInterface({ input: sock })
-    const iterator = lines[Symbol.asyncIterator]()
-    const nextMessage = async (): Promise<any> => {
-      const next = await iterator.next()
-      if (next.done) throw new Error('IPC socket closed before the expected message')
-      return JSON.parse(next.value)
-    }
-    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-    sock.write(
-      JSON.stringify({
-        type: 'hello',
-        version: BRIDGE_IPC_VERSION,
-        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
-        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
-      }) + '\n'
-    )
-    const helloAck = await nextMessage()
-    assert.equal(helloAck.type, 'hello_ack')
+    const { sock, lines, nextMessage, helloAck } = await connectIpc(settings)
     sock.write(
       JSON.stringify({
         type: 'catalog_registered',
@@ -331,24 +295,7 @@ describe('AcpMcpBridge', () => {
       runtimeTimeoutMs: 20
     })
     const settings = await bridge.start()
-    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
-    const lines = createInterface({ input: sock })
-    const iterator = lines[Symbol.asyncIterator]()
-    const nextMessage = async (): Promise<any> => {
-      const next = await iterator.next()
-      if (next.done) throw new Error('IPC socket closed before the expected message')
-      return JSON.parse(next.value)
-    }
-    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-    sock.write(
-      JSON.stringify({
-        type: 'hello',
-        version: BRIDGE_IPC_VERSION,
-        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
-        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
-      }) + '\n'
-    )
-    assert.equal((await nextMessage()).type, 'hello_ack')
+    const { sock, lines, nextMessage } = await connectIpc(settings)
     sock.write(
       JSON.stringify({ type: 'call', id: 'timeout-call', tool: 'ide_intellij_open_file_in_editor', args: {} }) + '\n'
     )
@@ -417,24 +364,7 @@ describe('AcpMcpBridge', () => {
   it('reports registration failures separately from discovered tools', async () => {
     const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'partial-registration')
     const settings = await bridge.start()
-    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
-    const lines = createInterface({ input: sock })
-    const iterator = lines[Symbol.asyncIterator]()
-    const nextMessage = async (): Promise<any> => {
-      const next = await iterator.next()
-      if (next.done) throw new Error('IPC socket closed before the expected message')
-      return JSON.parse(next.value)
-    }
-    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-    sock.write(
-      JSON.stringify({
-        type: 'hello',
-        version: BRIDGE_IPC_VERSION,
-        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
-        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
-      }) + '\n'
-    )
-    const helloAck = await nextMessage()
+    const { sock, lines, nextMessage, helloAck } = await connectIpc(settings)
     const registrationPromise = bridge.waitForRegistration(1_000)
     sock.write(
       JSON.stringify({
@@ -502,26 +432,7 @@ describe('AcpMcpBridge', () => {
     const conn = new FakeConn()
     const bridge = new AcpMcpBridge(conn as any, [acpServer('srv-1', 'IntelliJ')], 'call-session')
     const settings = await bridge.start()
-    const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
-    const lines = createInterface({ input: sock })
-    const iterator = lines[Symbol.asyncIterator]()
-    const nextMessage = async (): Promise<any> => {
-      const next = await iterator.next()
-      if (next.done) throw new Error('IPC socket closed before the expected message')
-      return JSON.parse(next.value)
-    }
-
-    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-    sock.write(
-      JSON.stringify({
-        type: 'hello',
-        version: BRIDGE_IPC_VERSION,
-        token: settings.env.PI_ACP_MCP_IPC_TOKEN,
-        sessionId: settings.env.PI_ACP_MCP_SESSION_ID
-      }) + '\n'
-    )
-    const helloAck = await nextMessage()
-    assert.equal(helloAck.type, 'hello_ack')
+    const { sock, lines, nextMessage, helloAck } = await connectIpc(settings)
     sock.write(
       JSON.stringify({
         type: 'catalog_registered',
@@ -766,25 +677,7 @@ describe('McpIpcServer handshake', () => {
         )
       )
 
-      const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
-      const lines = createInterface({ input: sock })
-      const iterator = lines[Symbol.asyncIterator]()
-      const nextMessage = async (): Promise<any> => {
-        const next = await iterator.next()
-        if (next.done) throw new Error('IPC socket closed before the expected message')
-        return JSON.parse(next.value)
-      }
-      await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-      sock.write(
-        JSON.stringify({
-          type: 'hello',
-          version: BRIDGE_IPC_VERSION,
-          token: settings.env.PI_ACP_MCP_IPC_TOKEN,
-          sessionId: settings.env.PI_ACP_MCP_SESSION_ID
-        }) + '\n'
-      )
-      const ack = await nextMessage()
-      assert.equal(ack.type, 'hello_ack')
+      const { sock, lines, nextMessage } = await connectIpc(settings)
 
       const registrationPromise = bridge.waitForRegistration(1_000)
       sock.write(
@@ -901,24 +794,7 @@ describe('McpIpcServer handshake', () => {
     const settings = await bridge.start()
     try {
       assert.deepEqual(bridge.appliedMutationPaths, [])
-      const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
-      const lines = createInterface({ input: sock })
-      const iterator = lines[Symbol.asyncIterator]()
-      const nextMessage = async (): Promise<any> => {
-        const next = await iterator.next()
-        if (next.done) throw new Error('IPC socket closed before the expected message')
-        return JSON.parse(next.value)
-      }
-      await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-      sock.write(
-        JSON.stringify({
-          type: 'hello',
-          version: BRIDGE_IPC_VERSION,
-          token: settings.env.PI_ACP_MCP_IPC_TOKEN,
-          sessionId: 'ledger-session'
-        }) + '\n'
-      )
-      assert.equal((await nextMessage()).type, 'hello_ack')
+      const { sock, lines, nextMessage } = await connectIpc(settings, 'ledger-session')
       sock.write(JSON.stringify({ type: 'mutations_applied', paths: ['src/a.ts', 'src/b.ts'] }) + '\n')
       const deadline = Date.now() + 5_000
       while (bridge.appliedMutationPaths.length < 2 && Date.now() < deadline) {
