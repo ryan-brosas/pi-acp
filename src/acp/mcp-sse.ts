@@ -149,7 +149,7 @@ export class SseMcpClient {
       this.#closed = true
       this.#controller.abort()
       this.#failPending(new SseMcpError('close', 'MCP SSE server closed'))
-      await Promise.race([this.#streamDone ?? Promise.resolve(), new Promise(resolve => setTimeout(resolve, 500))])
+      await Promise.race([this.#streamDone ?? await Promise.resolve(), new Promise(resolve => setTimeout(resolve, 500))])
     })()
     return this.#closePromise
   }
