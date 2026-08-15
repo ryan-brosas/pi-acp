@@ -5,9 +5,10 @@
 // non-trigger or over-budget hidden-leaf descriptions, catalog-router parity breaks,
 // router word-budget overflow, and manifest drift.
 // Warns on leaves exceeding the leaf word threshold. Pass [root] to validate another tree.
-import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
 import { join, dirname, basename, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { findSkillFiles } from './lib/validate-common.mjs'
 
 const root = process.argv[2] ? resolve(process.argv[2]) : fileURLToPath(new URL('..', import.meta.url))
 const skillsRoot = join(root, '.pi', 'skills')
@@ -43,15 +44,6 @@ const listedNames = text => {
   return names
 }
 
-function walk(dir) {
-  const found = []
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const full = join(dir, entry.name)
-    if (entry.isDirectory()) found.push(...walk(full))
-    else if (entry.isFile() && entry.name === 'SKILL.md') found.push(full)
-  }
-  return found
-}
 
 function parse(file) {
   const text = readFileSync(file, 'utf8')
@@ -137,7 +129,7 @@ for (const pack of packs) {
   if (!Array.isArray(pack.members)) fail(`pack ${pack.id} missing members array`)
 }
 
-const discovered = walk(skillsRoot).map(parse)
+const discovered = findSkillFiles(skillsRoot).map(parse)
 const routers = discovered.filter(
   s => dirname(dirname(s.file)) === skillsRoot && basename(dirname(s.file)).startsWith('pack-')
 )
