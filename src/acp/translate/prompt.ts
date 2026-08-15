@@ -36,7 +36,7 @@ export function promptToPiMessage(blocks: ContentBlock[]): {
 
       case 'resource': {
         // Clients should not send this if embeddedContext=false, but be resilient.
-        const r: any = (b as any).resource
+        const r = (b as { resource?: { uri?: unknown; text?: unknown; mimeType?: unknown; blob?: unknown } }).resource
         const uri = typeof r?.uri === 'string' ? r.uri : '(unknown)'
 
         if (typeof r?.text === 'string') {

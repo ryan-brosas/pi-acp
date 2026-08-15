@@ -10,10 +10,14 @@ export function toolResultToText(result: unknown): string {
   }
 
   // pi tool results generally look like: { content: [{type:"text", text:"..."}], details: {...} }
-  const content = (result as any).content
+  const content = (result as { content?: unknown }).content
   if (Array.isArray(content)) {
     const texts = content
-      .map((c: any) => (c?.type === 'text' && typeof c.text === 'string' ? c.text : ''))
+      .map((c: unknown) => {
+        const block = c as { type?: unknown; text?: unknown } | null
+        const text = block?.type === 'text' ? block.text : undefined
+        return typeof text === 'string' ? text : ''
+      })
       .filter(Boolean)
     if (texts.length) return texts.join('')
   }

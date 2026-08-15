@@ -242,7 +242,10 @@ function pickFallbackTitleFromHead(path: string): string | null {
           const content = obj?.message?.content
           if (typeof content === 'string') return content.slice(0, 80)
           if (Array.isArray(content)) {
-            const t = content.find((c: any) => c?.type === 'text' && typeof c?.text === 'string')
+            const t = content.find((c): c is { text?: unknown } => {
+              const block = c as { type?: unknown; text?: unknown } | null
+              return block?.type === 'text' && typeof block?.text === 'string'
+            })
             if (t?.text) return String(t.text).slice(0, 80)
           }
         }

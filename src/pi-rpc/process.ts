@@ -117,7 +117,7 @@ export class PiRpcProcess {
     const rl = readline.createInterface({ input: child.stdout })
     rl.on('line', line => {
       if (!line.trim()) return
-      let msg: any
+      let msg: Record<string, unknown> | null = null
       try {
         msg = JSON.parse(line)
       } catch {
@@ -198,7 +198,7 @@ export class PiRpcProcess {
           cleanup()
           resolve()
         }
-        const onError = (err: any) => {
+        const onError = (err: Error) => {
           cleanup()
           reject(err)
         }
@@ -210,8 +210,11 @@ export class PiRpcProcess {
         child.once('spawn', onSpawn)
         child.once('error', onError)
       })
-    } catch (e: any) {
-      const code = typeof e?.code === 'string' ? e.code : undefined
+    } catch (error: unknown) {
+      const code =
+        typeof error === 'object' && error !== null && 'code' in error && typeof error.code === 'string'
+          ? error.code
+          : undefined
       if (code === 'ENOENT') {
         throw new PiRpcSpawnError(
           `Could not start pi: executable not found (command: ${cmd}). Pi needs to be installed before it can run in ACP clients. Install it via \`npm install -g @earendil-works/pi-coding-agent\` or ensure \`pi\` is on your PATH. Then try again.`,
@@ -368,7 +371,7 @@ export class PiRpcProcess {
   async exportHtml(outputPath?: string): Promise<{ path: string }> {
     const res = await this.request({ type: 'export_html', outputPath }, 120_000)
     if (!res.success) throw new Error(`pi export_html failed: ${res.error ?? JSON.stringify(res.data)}`)
-    const data: any = res.data
+    const data = res.data as { path?: unknown } | null
     return { path: String(data?.path ?? '') }
   }
 

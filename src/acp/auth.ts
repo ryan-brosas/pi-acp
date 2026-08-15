@@ -13,7 +13,7 @@ export const PI_SETUP_METHOD_ID = 'pi_terminal_login'
 export function getAuthMethods(opts?: { supportsTerminalAuthMeta?: boolean }): AuthMethod[] {
   const supportsTerminalAuthMeta = opts?.supportsTerminalAuthMeta ?? true
 
-  const method: any = {
+  const method: Record<string, unknown> = {
     id: PI_SETUP_METHOD_ID,
     name: 'Launch pi in the terminal',
     description: 'Start pi in an interactive terminal to configure API keys or login',
