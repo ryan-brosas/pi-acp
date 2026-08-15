@@ -1,0 +1,206 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/README.md</file>
+  <line>40</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/README.md" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>Did you mean 'IntelliJ IDEA'?</description>
+  <highlighted_element>IntelliJ IDE</highlighted_element>
+  <language>Markdown</language>
+  <offset>3</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>62</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>Did you mean 'she'll'?</description>
+  <highlighted_element>shell</highlighted_element>
+  <language>Markdown</language>
+  <offset>15</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>798</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>File types are usually capitalized</description>
+  <highlighted_element>JSONL</highlighted_element>
+  <language>Markdown</language>
+  <offset>29</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>1238</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>The standard spelling is 'GPT-5'</description>
+  <highlighted_element>gpt-5</highlighted_element>
+  <language>Markdown</language>
+  <offset>122</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs</file>
+  <line>120</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>File types are usually capitalized</description>
+  <highlighted_element>JSONL</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>42</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/smoke-cancel.mjs</file>
+  <line>18</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/smoke-cancel.mjs" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>Did you mean 'proof' (noun) instead of prove (verb)?</description>
+  <highlighted_element>prove</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>39</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/smoke-lifecycle.mjs</file>
+  <line>25</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/smoke-lifecycle.mjs" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>File types are usually capitalized</description>
+  <highlighted_element>JSONL</highlighted_element>
+  <language>JavaScript</language>
+  <offset>44</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/validate-smoke-inventory.mjs</file>
+  <line>1</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/validate-smoke-inventory.mjs" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>The noun should probably be in the singular form.</description>
+  <highlighted_element>scripts</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>55</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>403</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>A determiner may be missing.</description>
+  <highlighted_element>(best</highlighted_element>
+  <language>TypeScript</language>
+  <offset>55</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>871</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>A comma is probably missing here.</description>
+  <highlighted_element>now</highlighted_element>
+  <language>TypeScript</language>
+  <offset>15</offset>
+  <length>3</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>872</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>File types are usually capitalized</description>
+  <highlighted_element>html</highlighted_element>
+  <language>TypeScript</language>
+  <offset>34</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>872</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>File types are usually capitalized</description>
+  <highlighted_element>JSONL</highlighted_element>
+  <language>TypeScript</language>
+  <offset>57</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-sse.ts</file>
+  <line>163</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-sse.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>This word is normally spelled with a hyphen.</description>
+  <highlighted_element>standard bearer</highlighted_element>
+  <language>TypeScript</language>
+  <offset>57</offset>
+  <length>15</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/session.ts</file>
+  <line>172</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/session.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>Use a comma before 'and' if it connects two independent clauses (unless they are closely connected and short).</description>
+  <highlighted_element>and</highlighted_element>
+  <language>TypeScript</language>
+  <offset>50</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/usage.ts</file>
+  <line>12</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/usage.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>If a new sentence starts here, add a space and start with an uppercase letter.</description>
+  <highlighted_element>usage</highlighted_element>
+  <language>TypeScript</language>
+  <offset>76</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/component/session-list-and-load.test.ts</file>
+  <line>77</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/component/session-list-and-load.test.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>File types are usually capitalized</description>
+  <highlighted_element>jsonl</highlighted_element>
+  <language>JavaScript</language>
+  <offset>45</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/component/session-thinking-modes.test.ts</file>
+  <line>19</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/component/session-thinking-modes.test.ts" />
+  <problem_class id="GrazieInspection" severity="GRAMMAR_ERROR" attribute_key="GRAMMAR_ERROR">Grammar</problem_class>
+  <description>A comma is probably missing here.</description>
+  <highlighted_element>now</highlighted_element>
+  <language>TypeScript</language>
+  <offset>9</offset>
+  <length>3</length>
+</problem>
+</problems>

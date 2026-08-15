@@ -1,0 +1,374 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>1587</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method unstable_setSessionModel</description>
+  <highlighted_element>unstable_setSessionModel</highlighted_element>
+  <language>JavaScript</language>
+  <offset>8</offset>
+  <length>24</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/session.ts</file>
+  <line>197</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/session.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method closeAllExcept</description>
+  <highlighted_element>closeAllExcept</highlighted_element>
+  <language>JavaScript</language>
+  <offset>2</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/component/agent-steering-followup-modes.test.ts</file>
+  <line>10</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/component/agent-steering-followup-modes.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method maybeGet</description>
+  <highlighted_element>maybeGet</highlighted_element>
+  <language>JavaScript</language>
+  <offset>2</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/component/session-queue-cancel.test.ts</file>
+  <line>85</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/component/session-queue-cancel.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused property cancelAll</description>
+  <highlighted_element>cancelAll</highlighted_element>
+  <language>JavaScript</language>
+  <offset>19</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/helpers/fakes.ts</file>
+  <line>21</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/helpers/fakes.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method requestPermission</description>
+  <highlighted_element>requestPermission</highlighted_element>
+  <language>JavaScript</language>
+  <offset>8</offset>
+  <length>17</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/helpers/fakes.ts</file>
+  <line>72</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/helpers/fakes.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method stderrTailLines</description>
+  <highlighted_element>stderrTailLines</highlighted_element>
+  <language>JavaScript</language>
+  <offset>2</offset>
+  <length>15</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/helpers/fakes.ts</file>
+  <line>76</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/helpers/fakes.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method sendExtensionUiResponse</description>
+  <highlighted_element>sendExtensionUiResponse</highlighted_element>
+  <language>JavaScript</language>
+  <offset>8</offset>
+  <length>23</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/helpers/fakes.ts</file>
+  <line>88</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/helpers/fakes.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method getMessages</description>
+  <highlighted_element>getMessages</highlighted_element>
+  <language>JavaScript</language>
+  <offset>8</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>124</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method destroy</description>
+  <highlighted_element>destroy</highlighted_element>
+  <language>JavaScript</language>
+  <offset>4</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>142</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function registerTool</description>
+  <highlighted_element>registerTool</highlighted_element>
+  <language>JavaScript</language>
+  <offset>4</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>236</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function registerTool</description>
+  <highlighted_element>registerTool</highlighted_element>
+  <language>JavaScript</language>
+  <offset>4</offset>
+  <length>12</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>241</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused property getActiveTools</description>
+  <highlighted_element>getActiveTools</highlighted_element>
+  <language>JavaScript</language>
+  <offset>4</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>245</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused property getAllTools</description>
+  <highlighted_element>getAllTools</highlighted_element>
+  <language>JavaScript</language>
+  <offset>4</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>249</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setActiveTools</description>
+  <highlighted_element>setActiveTools</highlighted_element>
+  <language>JavaScript</language>
+  <offset>4</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/builtin-commands.test.ts</file>
+  <line>10</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/builtin-commands.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method maybeGet</description>
+  <highlighted_element>maybeGet</highlighted_element>
+  <language>JavaScript</language>
+  <offset>2</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>13</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method maybeGet</description>
+  <highlighted_element>maybeGet</highlighted_element>
+  <language>JavaScript</language>
+  <offset>2</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>51</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setStartupInfo</description>
+  <highlighted_element>setStartupInfo</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>52</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function sendStartupInfoIfPending</description>
+  <highlighted_element>sendStartupInfoIfPending</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>24</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>169</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setThinkingLevel</description>
+  <highlighted_element>setThinkingLevel</highlighted_element>
+  <language>JavaScript</language>
+  <offset>12</offset>
+  <length>16</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-restore.test.ts</file>
+  <line>17</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-restore.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method maybeGet</description>
+  <highlighted_element>maybeGet</highlighted_element>
+  <language>JavaScript</language>
+  <offset>2</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-env.test.ts</file>
+  <line>50</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-env.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setStartupInfo</description>
+  <highlighted_element>setStartupInfo</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-env.test.ts</file>
+  <line>53</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-env.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function sendStartupInfoIfPending</description>
+  <highlighted_element>sendStartupInfoIfPending</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>24</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>8</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method create</description>
+  <highlighted_element>create</highlighted_element>
+  <language>JavaScript</language>
+  <offset>8</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>11</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method closeAllExcept</description>
+  <highlighted_element>closeAllExcept</highlighted_element>
+  <language>JavaScript</language>
+  <offset>2</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>11</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused method closeAllExcept</description>
+  <highlighted_element>closeAllExcept</highlighted_element>
+  <language>JavaScript</language>
+  <offset>2</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>50</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function getCommands</description>
+  <highlighted_element>getCommands</highlighted_element>
+  <language>JavaScript</language>
+  <offset>14</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>50</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function getCommands</description>
+  <highlighted_element>getCommands</highlighted_element>
+  <language>JavaScript</language>
+  <offset>14</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>54</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setStartupInfo</description>
+  <highlighted_element>setStartupInfo</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>54</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setStartupInfo</description>
+  <highlighted_element>setStartupInfo</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>55</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function sendStartupInfoIfPending</description>
+  <highlighted_element>sendStartupInfoIfPending</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>24</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>55</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function sendStartupInfoIfPending</description>
+  <highlighted_element>sendStartupInfoIfPending</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>24</length>
+</problem>
+</problems>

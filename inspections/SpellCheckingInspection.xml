@@ -1,0 +1,4082 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/.cgcignore</file>
+  <line>15</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/.cgcignore" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pycache'</description>
+  <highlighted_element>pycache</highlighted_element>
+  <language>TEXT</language>
+  <offset>2</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/.prettierignore</file>
+  <line>20</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/.prettierignore" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Lockfiles'</description>
+  <highlighted_element>Lockfiles</highlighted_element>
+  <language>TEXT</language>
+  <offset>2</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/.veda/sessions/review-audit/response.yaml</file>
+  <line>6</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/.veda/sessions/review-audit/response.yaml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'unpushed'</description>
+  <highlighted_element>unpushed</highlighted_element>
+  <language>yaml</language>
+  <offset>69</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/.veda/sessions/review-audit/response.yaml</file>
+  <line>12</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/.veda/sessions/review-audit/response.yaml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'unpushed'</description>
+  <highlighted_element>unpushed</highlighted_element>
+  <language>yaml</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/.veda/sessions/review-audit/response.yaml</file>
+  <line>14</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/.veda/sessions/review-audit/response.yaml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>yaml</language>
+  <offset>418</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/.veda/sessions/review-audit2/response.yaml</file>
+  <line>10</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/.veda/sessions/review-audit2/response.yaml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'anying'</description>
+  <highlighted_element>anying</highlighted_element>
+  <language>yaml</language>
+  <offset>65</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/.veda/sessions/review-pi-package-activation/response.yaml</file>
+  <line>12</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/.veda/sessions/review-pi-package-activation/response.yaml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>yaml</language>
+  <offset>965</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/.veda/sessions/review-pi-package-activation/response.yaml</file>
+  <line>14</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/.veda/sessions/review-pi-package-activation/response.yaml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>yaml</language>
+  <offset>442</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/AGENTS.md</file>
+  <line>18</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/AGENTS.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opencode'</description>
+  <highlighted_element>opencode</highlighted_element>
+  <language>Markdown</language>
+  <offset>37</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/LICENSE</file>
+  <line>3</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/LICENSE" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Sergii'</description>
+  <highlighted_element>Sergii</highlighted_element>
+  <language>TEXT</language>
+  <offset>19</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/LICENSE</file>
+  <line>3</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/LICENSE" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Kozak'</description>
+  <highlighted_element>Kozak</highlighted_element>
+  <language>TEXT</language>
+  <offset>26</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/STATUS.md</file>
+  <line>89</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/STATUS.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>Markdown</language>
+  <offset>19</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/STATUS.md</file>
+  <line>99</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/STATUS.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'sigstore'</description>
+  <highlighted_element>sigstore</highlighted_element>
+  <language>Markdown</language>
+  <offset>48</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/STATUS.md</file>
+  <line>109</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/STATUS.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>Markdown</language>
+  <offset>13</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>55</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>Markdown</language>
+  <offset>16</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>81</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>Markdown</language>
+  <offset>48</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>344</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>Markdown</language>
+  <offset>24</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>673</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>Markdown</language>
+  <offset>47</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>1177</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>Markdown</language>
+  <offset>94</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>1178</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>Markdown</language>
+  <offset>111</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>1189</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>Markdown</language>
+  <offset>45</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>1234</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>Markdown</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>1242</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>Markdown</language>
+  <offset>55</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>1242</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>Markdown</language>
+  <offset>256</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md</file>
+  <line>1244</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-14-jetbrains-acp-dogfood-findings.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>Markdown</language>
+  <offset>94</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-15-pi-acp-extension-dogfood-stability.md</file>
+  <line>58</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-15-pi-acp-extension-dogfood-stability.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>Markdown</language>
+  <offset>28</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/ide-inspection-enforcement-research.md</file>
+  <line>50</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/ide-inspection-enforcement-research.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'intellij'</description>
+  <highlighted_element>intellij</highlighted_element>
+  <language>Markdown</language>
+  <offset>118</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/ide-inspection-enforcement-research.md</file>
+  <line>206</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/ide-inspection-enforcement-research.md" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'WARNINGs'</description>
+  <highlighted_element>WARNINGs</highlighted_element>
+  <language>Markdown</language>
+  <offset>109</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/eslint.config.js</file>
+  <line>3</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/eslint.config.js" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tseslint'</description>
+  <highlighted_element>tseslint</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>7</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>8</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pycache'</description>
+  <highlighted_element>pycache</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>9</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pycache'</description>
+  <highlighted_element>pycache</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>20</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Lockfiles'</description>
+  <highlighted_element>Lockfiles</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>21</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Lockfiles'</description>
+  <highlighted_element>Lockfiles</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>32</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'unpushed'</description>
+  <highlighted_element>unpushed</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>33</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'unpushed'</description>
+  <highlighted_element>unpushed</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>44</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'unpushed'</description>
+  <highlighted_element>unpushed</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>45</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'unpushed'</description>
+  <highlighted_element>unpushed</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>56</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>57</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>68</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'anying'</description>
+  <highlighted_element>anying</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>69</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'anying'</description>
+  <highlighted_element>anying</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>80</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>81</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>92</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>93</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>104</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opencode'</description>
+  <highlighted_element>opencode</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>105</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opencode'</description>
+  <highlighted_element>opencode</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>116</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Sergii'</description>
+  <highlighted_element>Sergii</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>117</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Sergii'</description>
+  <highlighted_element>Sergii</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>128</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Kozak'</description>
+  <highlighted_element>Kozak</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>129</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Kozak'</description>
+  <highlighted_element>Kozak</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>140</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>141</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>152</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'sigstore'</description>
+  <highlighted_element>sigstore</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>153</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'sigstore'</description>
+  <highlighted_element>sigstore</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>164</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>165</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>176</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>188</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>200</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>201</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>212</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>224</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>225</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>236</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>237</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>248</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>249</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>260</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>261</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>272</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>273</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>284</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>285</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>296</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>297</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'inspo'</description>
+  <highlighted_element>inspo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>308</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>309</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'gitignored'</description>
+  <highlighted_element>gitignored</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>320</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'intellij'</description>
+  <highlighted_element>intellij</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>332</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'WARNINGs'</description>
+  <highlighted_element>WARNINGs</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>333</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'WARNINGs'</description>
+  <highlighted_element>WARNINGs</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>344</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tseslint'</description>
+  <highlighted_element>tseslint</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>345</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tseslint'</description>
+  <highlighted_element>tseslint</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>356</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Sergii'</description>
+  <highlighted_element>Sergii</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>357</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Sergii'</description>
+  <highlighted_element>Sergii</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>368</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Kozak'</description>
+  <highlighted_element>Kozak</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>369</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Kozak'</description>
+  <highlighted_element>Kozak</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>380</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>381</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>392</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>393</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>404</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pousr'</description>
+  <highlighted_element>pousr</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>405</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pousr'</description>
+  <highlighted_element>pousr</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>428</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'baprs'</description>
+  <highlighted_element>baprs</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>429</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'baprs'</description>
+  <highlighted_element>baprs</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>440</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>441</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>452</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>453</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>464</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>465</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>476</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>477</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>488</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>489</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>500</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>501</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>512</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>513</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>524</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>525</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>536</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>537</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>548</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>549</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>560</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>561</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>572</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opencode'</description>
+  <highlighted_element>opencode</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>573</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opencode'</description>
+  <highlighted_element>opencode</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>584</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>585</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>596</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opensrc'</description>
+  <highlighted_element>opensrc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>597</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opensrc'</description>
+  <highlighted_element>opensrc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>608</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>609</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>620</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>621</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>632</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>633</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>644</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>645</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>656</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'webclaw'</description>
+  <highlighted_element>webclaw</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>657</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'webclaw'</description>
+  <highlighted_element>webclaw</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>668</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'webclaw'</description>
+  <highlighted_element>webclaw</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>669</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'webclaw'</description>
+  <highlighted_element>webclaw</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>680</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>681</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>692</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>693</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>704</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>705</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>716</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>717</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>728</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'grepsearch'</description>
+  <highlighted_element>grepsearch</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>729</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'grepsearch'</description>
+  <highlighted_element>grepsearch</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>740</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'superpi'</description>
+  <highlighted_element>superpi</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>741</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'superpi'</description>
+  <highlighted_element>superpi</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>752</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>753</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>764</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'autocompact'</description>
+  <highlighted_element>autocompact</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>765</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'autocompact'</description>
+  <highlighted_element>autocompact</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>776</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'handshaken'</description>
+  <highlighted_element>handshaken</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>777</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'handshaken'</description>
+  <highlighted_element>handshaken</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>788</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'autocompact'</description>
+  <highlighted_element>autocompact</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>789</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'autocompact'</description>
+  <highlighted_element>autocompact</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>800</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>801</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>812</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>813</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>824</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'exts'</description>
+  <highlighted_element>exts</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>825</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'exts'</description>
+  <highlighted_element>exts</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>836</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pkgs'</description>
+  <highlighted_element>pkgs</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>837</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pkgs'</description>
+  <highlighted_element>pkgs</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>848</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>872</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>873</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>884</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>885</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>896</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>897</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>908</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>909</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>920</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>921</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>932</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>933</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>944</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>945</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>956</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>957</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>968</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'openrouter'</description>
+  <highlighted_element>openrouter</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>969</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'openrouter'</description>
+  <highlighted_element>openrouter</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>980</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>981</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>992</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>993</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1004</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1005</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1016</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1017</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1028</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'subdir'</description>
+  <highlighted_element>subdir</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1029</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'subdir'</description>
+  <highlighted_element>subdir</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1040</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Subdir'</description>
+  <highlighted_element>Subdir</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1041</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Subdir'</description>
+  <highlighted_element>Subdir</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1052</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1053</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1064</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1065</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1076</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1077</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1088</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1089</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1100</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'ascii'</description>
+  <highlighted_element>ascii</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1112</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'ascii'</description>
+  <highlighted_element>ascii</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1124</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'ascii'</description>
+  <highlighted_element>ascii</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1136</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1137</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1148</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1149</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1160</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1161</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1172</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1173</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1184</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1185</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1196</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1197</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1208</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1209</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1220</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1221</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1232</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1233</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1244</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cwds'</description>
+  <highlighted_element>cwds</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1245</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cwds'</description>
+  <highlighted_element>cwds</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1256</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1268</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1269</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1280</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1281</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1292</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1293</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1304</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1305</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1316</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'claude'</description>
+  <highlighted_element>claude</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1328</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1329</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1340</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1341</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1352</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1353</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1364</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1365</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1376</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1377</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1388</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1389</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1400</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cmds'</description>
+  <highlighted_element>cmds</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1401</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cmds'</description>
+  <highlighted_element>cmds</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1412</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cmds'</description>
+  <highlighted_element>cmds</highlighted_element>
+  <language>XML</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml</file>
+  <line>1413</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/inspection/SpellCheckingInspection.xml" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cmds'</description>
+  <highlighted_element>cmds</highlighted_element>
+  <language>XML</language>
+  <offset>23</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/package.json</file>
+  <line>6</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/package.json" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Sergii'</description>
+  <highlighted_element>Sergii</highlighted_element>
+  <language>JSON</language>
+  <offset>13</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/package.json</file>
+  <line>6</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/package.json" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Kozak'</description>
+  <highlighted_element>Kozak</highlighted_element>
+  <language>JSON</language>
+  <offset>20</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/package.json</file>
+  <line>48</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/package.json" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>JSON</language>
+  <offset>14</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/package.json</file>
+  <line>78</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/package.json" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>JSON</language>
+  <offset>5</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/auto-commit.mjs</file>
+  <line>13</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/auto-commit.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pousr'</description>
+  <highlighted_element>pousr</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>41</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/auto-commit.mjs</file>
+  <line>14</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/auto-commit.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'AKIA'</description>
+  <highlighted_element>AKIA</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>43</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/auto-commit.mjs</file>
+  <line>15</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/auto-commit.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'baprs'</description>
+  <highlighted_element>baprs</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>41</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/dogfood-ide.mjs</file>
+  <line>52</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/dogfood-ide.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>61</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/dogfood-ide.mjs</file>
+  <line>56</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/dogfood-ide.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>40</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/dogfood-ide.mjs</file>
+  <line>60</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/dogfood-ide.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'etimes'</description>
+  <highlighted_element>etimes</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>16</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/fixtures/fake-mcp-stdio.mjs</file>
+  <line>24</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/fixtures/fake-mcp-stdio.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>8</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/fixtures/fake-mcp-stdio.mjs</file>
+  <line>36</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/fixtures/fake-mcp-stdio.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>13</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/fixtures/fake-mcp-stdio.mjs</file>
+  <line>43</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/fixtures/fake-mcp-stdio.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>8</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/fixtures/fake-mcp-stdio.mjs</file>
+  <line>50</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/fixtures/fake-mcp-stdio.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>6</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs</file>
+  <line>194</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>47</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs</file>
+  <line>194</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>80</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs</file>
+  <line>202</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>45</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs</file>
+  <line>202</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/lib/acp-smoke.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>74</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/probe-skill-routing.mjs</file>
+  <line>55</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/probe-skill-routing.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opencode'</description>
+  <highlighted_element>opencode</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>42</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/probe-skill-routing.mjs</file>
+  <line>66</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/probe-skill-routing.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>70</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/probe-skill-routing.mjs</file>
+  <line>67</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/probe-skill-routing.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'opensrc'</description>
+  <highlighted_element>opensrc</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>65</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/smoke-startupinfo.mjs</file>
+  <line>36</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/smoke-startupinfo.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>14</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/smoke-startupinfo.mjs</file>
+  <line>40</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/smoke-startupinfo.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'startupinfo'</description>
+  <highlighted_element>startupinfo</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>28</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/sync-skill-manifest.mjs</file>
+  <line>57</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/sync-skill-manifest.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>61</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/sync-skill-manifest.mjs</file>
+  <line>57</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/sync-skill-manifest.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'websearch'</description>
+  <highlighted_element>websearch</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>84</offset>
+  <length>9</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/sync-skill-manifest.mjs</file>
+  <line>69</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/sync-skill-manifest.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'webclaw'</description>
+  <highlighted_element>webclaw</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>11</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/sync-skill-manifest.mjs</file>
+  <line>71</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/sync-skill-manifest.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'webclaw'</description>
+  <highlighted_element>webclaw</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>10</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/validate-pi-fabric.mjs</file>
+  <line>69</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/validate-pi-fabric.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>JavaScript</language>
+  <offset>33</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/validate-pi-fabric.mjs</file>
+  <line>77</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/validate-pi-fabric.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>21</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/validate-pi-fabric.mjs</file>
+  <line>77</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/validate-pi-fabric.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>53</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/validate-pi-fabric.mjs</file>
+  <line>78</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/validate-pi-fabric.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'prewalk'</description>
+  <highlighted_element>prewalk</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>29</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/validate-skill-packs.mjs</file>
+  <line>23</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/validate-skill-packs.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'grepsearch'</description>
+  <highlighted_element>grepsearch</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>73</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/scripts/validate-skill-packs.mjs</file>
+  <line>23</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/scripts/validate-skill-packs.mjs" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'superpi'</description>
+  <highlighted_element>superpi</highlighted_element>
+  <language>ECMAScript 6</language>
+  <offset>84</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>77</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>70</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>102</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'autocompact'</description>
+  <highlighted_element>autocompact</highlighted_element>
+  <language>TypeScript</language>
+  <offset>13</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>207</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'handshaken'</description>
+  <highlighted_element>handshaken</highlighted_element>
+  <language>TypeScript</language>
+  <offset>10</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>989</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'autocompact'</description>
+  <highlighted_element>autocompact</highlighted_element>
+  <language>TypeScript</language>
+  <offset>19</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>1651</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>99</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>1681</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>82</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>2217</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'exts'</description>
+  <highlighted_element>exts</highlighted_element>
+  <language>TypeScript</language>
+  <offset>10</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/agent.ts</file>
+  <line>2230</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/agent.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'pkgs'</description>
+  <highlighted_element>pkgs</highlighted_element>
+  <language>TypeScript</language>
+  <offset>12</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-bridge.ts</file>
+  <line>130</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-bridge.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>TypeScript</language>
+  <offset>31</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-bridge.ts</file>
+  <line>179</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-bridge.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word '#cwd'</description>
+  <highlighted_element>#cwd</highlighted_element>
+  <language>TypeScript</language>
+  <offset>11</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-json-rpc.ts</file>
+  <line>10</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-json-rpc.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>2</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-sse.ts</file>
+  <line>102</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-sse.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>22</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-sse.ts</file>
+  <line>129</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-sse.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>25</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-sse.ts</file>
+  <line>289</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-sse.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>8</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-stdio.ts</file>
+  <line>153</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-stdio.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>18</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-stdio.ts</file>
+  <line>209</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-stdio.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>12</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-stdio.ts</file>
+  <line>223</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-stdio.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>20</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/mcp-stdio.ts</file>
+  <line>271</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/mcp-stdio.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>10</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/providers.ts</file>
+  <line>6</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/providers.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'openrouter'</description>
+  <highlighted_element>openrouter</highlighted_element>
+  <language>TypeScript</language>
+  <offset>2</offset>
+  <length>10</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/session.ts</file>
+  <line>316</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/session.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>TypeScript</language>
+  <offset>55</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/session.ts</file>
+  <line>678</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/session.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>TypeScript</language>
+  <offset>27</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/session.ts</file>
+  <line>678</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/session.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>TypeScript</language>
+  <offset>61</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/session.ts</file>
+  <line>678</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/session.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>TypeScript</language>
+  <offset>95</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/slash-commands.ts</file>
+  <line>38</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/slash-commands.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'subdir'</description>
+  <highlighted_element>subdir</highlighted_element>
+  <language>TypeScript</language>
+  <offset>70</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/acp/slash-commands.ts</file>
+  <line>49</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/acp/slash-commands.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'Subdir'</description>
+  <highlighted_element>Subdir</highlighted_element>
+  <language>TypeScript</language>
+  <offset>17</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/build-info.ts</file>
+  <line>3</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/build-info.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>TypeScript</language>
+  <offset>3</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/build-info.ts</file>
+  <line>21</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/build-info.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'tsup'</description>
+  <highlighted_element>tsup</highlighted_element>
+  <language>TypeScript</language>
+  <offset>30</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/pi-rpc/process.ts</file>
+  <line>38</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/pi-rpc/process.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>103</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/src/pi-rpc/process.ts</file>
+  <line>327</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/src/pi-rpc/process.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>81</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/component/session-diff.test.ts</file>
+  <line>120</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/component/session-diff.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'ascii'</description>
+  <highlighted_element>ascii</highlighted_element>
+  <language>TypeScript</language>
+  <offset>67</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/component/session-diff.test.ts</file>
+  <line>124</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/component/session-diff.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'ascii'</description>
+  <highlighted_element>ascii</highlighted_element>
+  <language>TypeScript</language>
+  <offset>38</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/component/session-diff.test.ts</file>
+  <line>139</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/component/session-diff.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'ascii'</description>
+  <highlighted_element>ascii</highlighted_element>
+  <language>TypeScript</language>
+  <offset>41</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/component/session-events.test.ts</file>
+  <line>402</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/component/session-events.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'toolcall'</description>
+  <highlighted_element>toolcall</highlighted_element>
+  <language>TypeScript</language>
+  <offset>13</offset>
+  <length>8</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>704</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>TypeScript</language>
+  <offset>45</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>705</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>TypeScript</language>
+  <offset>48</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>763</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>TypeScript</language>
+  <offset>45</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>764</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>TypeScript</language>
+  <offset>48</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>883</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>TypeScript</language>
+  <offset>45</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>884</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>TypeScript</language>
+  <offset>48</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>954</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>TypeScript</language>
+  <offset>45</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts</file>
+  <line>955</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/acp-mcp-extension.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'piap'</description>
+  <highlighted_element>piap</highlighted_element>
+  <language>TypeScript</language>
+  <offset>48</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/agent-gaps.test.ts</file>
+  <line>165</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/agent-gaps.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cwds'</description>
+  <highlighted_element>cwds</highlighted_element>
+  <language>TypeScript</language>
+  <offset>77</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/default-ide-deny-list.test.ts</file>
+  <line>14</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/default-ide-deny-list.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xdebug'</description>
+  <highlighted_element>xdebug</highlighted_element>
+  <language>TypeScript</language>
+  <offset>19</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/entrypoint-shutdown.test.ts</file>
+  <line>43</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/entrypoint-shutdown.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>21</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/entrypoint-shutdown.test.ts</file>
+  <line>46</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/entrypoint-shutdown.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>21</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/helpers/fake-sse-server.ts</file>
+  <line>125</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/helpers/fake-sse-server.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>24</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/mcp-bridge.test.ts</file>
+  <line>102</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/mcp-bridge.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'jsonrpc'</description>
+  <highlighted_element>jsonrpc</highlighted_element>
+  <language>TypeScript</language>
+  <offset>65</offset>
+  <length>7</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/providers.test.ts</file>
+  <line>9</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/providers.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'claude'</description>
+  <highlighted_element>claude</highlighted_element>
+  <language>TypeScript</language>
+  <offset>34</offset>
+  <length>6</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>88</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>20</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>88</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>45</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>182</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>12</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>185</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>37</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>186</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>98</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>192</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'xhigh'</description>
+  <highlighted_element>xhigh</highlighted_element>
+  <language>TypeScript</language>
+  <offset>24</offset>
+  <length>5</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/slash-commands.test.ts</file>
+  <line>22</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/slash-commands.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cmds'</description>
+  <highlighted_element>cmds</highlighted_element>
+  <language>TypeScript</language>
+  <offset>8</offset>
+  <length>4</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/slash-commands.test.ts</file>
+  <line>30</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/slash-commands.test.ts" />
+  <problem_class id="SpellCheckingInspection" severity="TYPO" attribute_key="TYPO">Spelling</problem_class>
+  <description>Typo: In word 'cmds'</description>
+  <highlighted_element>cmds</highlighted_element>
+  <language>TypeScript</language>
+  <offset>8</offset>
+  <length>4</length>
+</problem>
+</problems>
