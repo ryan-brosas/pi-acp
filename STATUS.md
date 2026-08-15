@@ -16,6 +16,7 @@
 ## Next steps
 
 - Start a fresh IntelliJ chat after the next dist rebuild and complete the F-033 checklist (new PID, build revision match, cancel/restore/shutdown).
+- In the fresh chat, dogfood the enforced IntelliJ-first path: edits must go through `ide_idea_apply_patch`/`ide_idea_create_new_file`; a direct `pi.write`/`schema.commit` inside `fabric_exec` must be blocked by the tool_call gate, and any file changed without an IDE mutation event must surface as a `Mutation provenance` violation.
 - Note: `docs/` is gitignored — findings docs are local-only evidence.
 
 ## Commands
