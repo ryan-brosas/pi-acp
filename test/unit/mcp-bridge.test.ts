@@ -628,16 +628,6 @@ describe('McpIpcServer handshake', () => {
     const registration = server.waitForRegistration(1000)
 
     const { sock, received } = await connectRaw(ep)
-    let buf = ''
-    sock.on('data', (d: Buffer) => {
-      buf += d.toString()
-      let i: number
-      while ((i = buf.indexOf('\n')) >= 0) {
-        received.push(JSON.parse(buf.slice(0, i)))
-        buf = buf.slice(i + 1)
-      }
-    })
-    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
     sock.write(
       JSON.stringify({ type: 'hello', version: BRIDGE_IPC_VERSION, token: ep.token, sessionId: ep.sessionId }) + '\n'
     )
