@@ -447,6 +447,33 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
   const toolByExposedName = new Map<string, BridgeTool>()
   let removedByPolicy: string[] = []
 
+  // pi's loader throws `Extension runtime not initialized` for runtime action
+  // methods while extensions are still loading. IPC frames (and socket close)
+  // can arrive in that window when a nested pi inherits a live adapter's IPC
+  // env; defer the policy transition instead of crashing (F-036).
+  const RUNTIME_NOT_READY_RE = /runtime not initialized|during extension loading/i
+  let deferredPolicyRun: (() => void) | undefined
+  let deferredPolicyAttempts = 0
+  const MAX_DEFERRED_POLICY_ATTEMPTS = 500
+
+  function isRuntimeNotReady(error: unknown): boolean {
+    return error instanceof Error && RUNTIME_NOT_READY_RE.test(error.message)
+  }
+
+  function schedulePolicyWhenReady(run: () => void): void {
+    deferredPolicyRun = run
+    if (deferredPolicyAttempts >= MAX_DEFERRED_POLICY_ATTEMPTS) {
+      deferredPolicyRun = undefined
+      return
+    }
+    deferredPolicyAttempts += 1
+    setImmediate(() => {
+      const next = deferredPolicyRun
+      deferredPolicyRun = undefined
+      if (next !== undefined) next()
+    })
+  }
+
   const endpoint = runtime.endpoint ?? ENDPOINT
   const token = runtime.token ?? TOKEN
   const sessionId = runtime.sessionId ?? SESSION_ID
@@ -758,33 +785,6 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
       if (!isRuntimeNotReady(error)) throw error
       schedulePolicyWhenReady(() => setPolicyFiltering(enabled))
     }
-  }
-
-  // pi's loader throws `Extension runtime not initialized` for runtime action
-  // methods while extensions are still loading. IPC frames (and socket close)
-  // can arrive in that window when a nested pi inherits a live adapter's IPC
-  // env; defer the policy transition instead of crashing (F-036).
-  const RUNTIME_NOT_READY_RE = /runtime not initialized|during extension loading/i
-  let deferredPolicyRun: (() => void) | undefined
-  let deferredPolicyAttempts = 0
-  const MAX_DEFERRED_POLICY_ATTEMPTS = 500
-
-  function isRuntimeNotReady(error: unknown): boolean {
-    return error instanceof Error && RUNTIME_NOT_READY_RE.test(error.message)
-  }
-
-  function schedulePolicyWhenReady(run: () => void): void {
-    deferredPolicyRun = run
-    if (deferredPolicyAttempts >= MAX_DEFERRED_POLICY_ATTEMPTS) {
-      deferredPolicyRun = undefined
-      return
-    }
-    deferredPolicyAttempts += 1
-    setImmediate(() => {
-      const next = deferredPolicyRun
-      deferredPolicyRun = undefined
-      if (next !== undefined) next()
-    })
   }
 
   function applyPolicyFiltering(enabled: boolean): void {
