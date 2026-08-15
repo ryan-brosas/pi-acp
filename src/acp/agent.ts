@@ -1247,10 +1247,11 @@ export class PiAcpAgent implements ACPAgent {
     } catch (e) {
       // Own the failure: dispose the fork subprocess unless it was already
       // registered as a managed session (whose dispose releases its bridge).
-      // noinspection IfStatementCanBeSimplified - WebStorm's dataflow wrongly
-      // concludes the try cannot throw once sessionId is assigned; the
-      // post-registration awaits (bridge readiness, session release, config) can
-      // throw, and those paths must dispose through the managed session.
+      // WebStorm's dataflow wrongly concludes the try cannot throw once
+      // sessionId is assigned; the post-registration awaits (bridge readiness,
+      // session release, config) can throw, so the managed-session cleanup
+      // branch must stay.
+      // noinspection IfStatementCanBeSimplifiedJS
       if (sessionId) {
         await this.closeManagedSession(sessionId).catch(() => undefined)
       } else {
