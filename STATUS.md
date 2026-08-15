@@ -20,6 +20,27 @@
   in-code; the IDE `lint_files` tool ignores `// noinspection` comments.
 - Verified: 299/299 tests, ESLint, typecheck, build, canonical check, prettier.
 
+## 2026-08-15 inspection-export sweep (second pass)
+
+The full WebStorm Inspections panel was exported to `inspection/` (211 findings:
+28 Annotator errors, 32 unused-global-symbol warnings, 17 grammar, 13 style,
+2 markdown-table, 118 spelling, 1 pointless-boolean).
+
+- Fixed the 28 Annotator errors: the IDE misparsed an intentionally abbreviated
+  ```ts snippet (`types.gen.d.ts` excerpt with U+2026 ellipses) in the research
+  doc; fence changed to ```text. Verified `errors: []` on the file.
+- Removed 5 genuinely dead symbols: `StdioMcpClient.requestWithId` (superseded by
+  `request()`), `findPiSessionFile` (unused wrapper), `Session.bridgeTools` getter
+  (superseded by `bridgeRegisteredTools`), `PiRpcProcess.consumePreludeLines` and
+  `switchSession` (never called). Typecheck + 43 targeted tests + IDE lint clean.
+- Documented as inspection false positives / intentional (no code change): the
+  `unstable_*` agent methods and `Session.closeAllExcept` (dynamic/duck-typed
+  dispatch), 25 test-helper findings (structural interface implementations),
+  the Grazie grammar/style suggestions (cosmetic; "IntelliJ IDE" is intentional —
+  the adapter also serves WebStorm), all 118 spelling findings (intentional
+  terms/paths/names, none in committed prose), the 2 markdown-table weak warnings
+  (tables are valid CommonMark), and the known agent.ts:1255 false positive.
+
 ## Latest validation (2026-08-15)
 
 - Tests 293/293 (plus audit-regression additions), lint, typecheck, build, canonical check: PASS.
