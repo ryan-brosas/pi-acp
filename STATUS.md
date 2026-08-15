@@ -95,6 +95,37 @@ Goal: a clean Whole Project → Inspect Code run, not just zero errors.
 
 ## Latest validation (2026-08-15)
 
+## 2026-08-15 second export disposition ("it's not 0")
+
+User re-ran Inspect Code; the export landed in a NEW dir `inspirations/` (a
+typo-variant of the export path), which was unignored and unexcluded. Findings:
+145 (down from 421) with NO node_modules/dist/inspection recursion. Disposition:
+
+- **8 `JSUnusedGlobalSymbols`** — the `proc:` object-literal `noinspection`
+  comments do NOT bind (property-level comments are ignored); moved all 4 to the
+  statement level (`const session = {`), the proven pattern (same as the
+  working `const pi = {` in acp-mcp-extension.test.ts).
+- **125 SpellChecking** — every flagged token is covered by the 41-word project
+  dictionary (jsonrpc, xdebug, xhigh, tsup, …); the dictionary file is valid but
+  the IDE had not loaded it yet (project reload needed).
+- **9 GrazieInspection + 1 GrazieStyle + 2 Markdown tables** — all fixed:
+  JSONL capitalization false-positives reworded ("session log"/"JSON Lines"),
+  "(best effort)" → "on a best-effort basis", "every scripts/" reworded,
+  docs prose/table width-aligned to the README format.
+- **Scope leak** — `docs/` (19) and `.veda` (6) findings persist because the
+  `.iml` excludeFolder entries (docs, .veda, …) only take effect after the
+  project reloads; node_modules/dist never appear (default JS exclusions).
+- **Watcher hazard** — the auto-commit watcher had committed the volatile
+  `inspirations/*.xml` exports; untracked via `git rm --cached` and deleted;
+  `.gitignore` (`inspirations/`) and the `.iml` now cover the export dir.
+
+Verified: 299/299 tests, lint, typecheck, prettier, canonical check;
+`lint_files` clean on all changed files.
+
+**User action required:** File → Reload All from Disk (or reopen the project)
+so the `.iml` exclusions and project dictionary load, then re-run Whole Project
+→ Inspect Code — expect 0 findings.
+
 - Tests 293/293 (plus audit-regression additions), lint, typecheck, build, canonical check: PASS.
 - `v0.0.37` published via GitHub Actions (`Publish Package` on the `v0.0.37` tag, run `31858905710`), signed provenance in sigstore log `2471995135`; GitHub release created.
 - Audit remediation: session-map writes are serialized across adapter processes (dependency-free sibling lock with stale recovery); the MCP `clientInfo` version now mirrors the package version; protocol-boundary `any` declarations narrowed to typed access; README/STATUS refreshed.
