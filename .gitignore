@@ -27,3 +27,4 @@ CLAUDE.md
 .cgcignore
 docs/
 inspection/
+inspections/*.xml

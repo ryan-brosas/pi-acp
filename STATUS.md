@@ -41,6 +41,33 @@ The full WebStorm Inspections panel was exported to `inspection/` (211 findings:
   terms/paths/names, none in committed prose), the 2 markdown-table weak warnings
   (tables are valid CommonMark), and the known agent.ts:1255 false positive.
 
+## 2026-08-15 inspection final run (inspections/)
+
+Re-scan after the dead-code removals: **421 findings, 0 errors** — the 28
+Annotator errors are cleared (fence fix verified; `get_file_problems` →
+`errors: []`; no Annotator.xml in the export).
+
+- 340 spelling: 222 are the scan flagging the OLD gitignored
+  `inspection/SpellCheckingInspection.xml` export itself (meta-noise); the
+  ~90 tracked-file hits are the documented intentional terms.
+- 31 unused symbols: 2 documented dynamic-dispatch false positives
+  (`unstable_setSessionModel`, `closeAllExcept`) + 29 structural test-helper
+  interface impls; the 5 dead symbols removed earlier are gone from the list.
+- 17+13 Grazie grammar/style: cosmetic suggestions (unchanged).
+- 11 CheckTagEmptyBody + 6 HttpUrlsUsage: all on the gitignored
+  `inspection/.descriptions.xml` (the scan now covers ignored files) — meta.
+- 2 markdown-table + 1 pointless-boolean: known false positives.
+
+`inspections/` (plural) is the new export plus the user's custom inspection
+gate: `README.md` + `no-any.inspection.kts` stay tracked (repo content for the
+post-turn gate); the `.xml` exports are ignored like `inspection/`.
+
+Note: WebStorm's `run_inspection_kts` bridge cannot currently register
+`localInspection` scripts — even the IDE's own generated template returns
+`No inspection created after compilation` — so the gate surfaces a
+`custom inspections degraded` diagnostic until the WebStorm KTS runtime
+supports it (expected to work under IntelliJ/Qodana per the README).
+
 ## Latest validation (2026-08-15)
 
 - Tests 293/293 (plus audit-regression additions), lint, typecheck, build, canonical check: PASS.
