@@ -331,11 +331,6 @@ describe('AcpMcpBridge', () => {
     const methods = conn.calls.map(c => c.method)
     assert.ok(methods.includes('mcp/connect'))
     assert.equal(conn.calls.find(c => c.method === 'mcp/message')?.params.method, 'initialize')
-    assert.equal(
-      conn.calls.find(c => c.method === 'mcp/message' && c.params?.method === 'initialize')?.params?.params?.clientInfo
-        ?.version,
-      buildInfo.packageVersion
-    )
     assert.ok(conn.calls.some(c => c.method === 'mcp/message' && c.params.method === 'tools/list'))
     assert.deepEqual(conn.notifications[0], {
       method: 'mcp/message',
@@ -351,6 +346,11 @@ describe('AcpMcpBridge', () => {
     assert.equal(tools[0].exposedName, 'ide_intellij_open_file_in_editor')
     assert.equal(tools[0].remoteName, 'open_file_in_editor')
     await bridge.dispose()
+    assert.equal(
+      conn.calls.find(c => c.method === 'mcp/message' && c.params?.method === 'initialize')?.params?.params?.clientInfo
+        ?.version,
+      buildInfo.packageVersion
+    )
     assert.equal(bridge.lifecycle, 'closed')
     await assert.rejects(() => bridge.start(), /already closed/)
   })

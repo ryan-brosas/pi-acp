@@ -15,6 +15,7 @@ import {
 import { McpIpcServer } from './mcp-ipc.js'
 import { StdioMcpClient, StdioMcpError, type JsonRpcId } from './mcp-stdio.js'
 import { SseMcpClient, SseMcpError, type JsonRpcNotification } from './mcp-sse.js'
+import { buildInfo } from '../build-info.js'
 
 const MCP_PROTOCOL_VERSION = '2025-03-26'
 const DEFAULT_DISCOVERY_TIMEOUT_MS = 10_000
@@ -274,7 +275,7 @@ export class AcpMcpBridge {
         {
           protocolVersion: MCP_PROTOCOL_VERSION,
           capabilities: {},
-          clientInfo: { name: 'pi-acp-jetbrain', version: '0.0.33' }
+          clientInfo: { name: 'pi-acp-jetbrain', version: buildInfo.packageVersion }
         },
         this.#discoveryTimeoutMs
       ),
@@ -449,7 +450,7 @@ export class AcpMcpBridge {
               params: {
                 protocolVersion: MCP_PROTOCOL_VERSION,
                 capabilities: {},
-                clientInfo: { name: 'pi-acp-jetbrain', version: '0.0.33' }
+                clientInfo: { name: 'pi-acp-jetbrain', version: buildInfo.packageVersion }
               }
             }),
             this.#discoveryTimeoutMs
