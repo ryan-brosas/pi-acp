@@ -39,7 +39,7 @@ const unquote = s =>
   (s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'")) ? s.slice(1, -1) : s
 const listedNames = text => {
   const names = new Set()
-  for (const m of text.matchAll(/^\s*[-|]\s*([a-z0-9][a-z0-9-]*)\s*(?::|\|)/gm)) names.add(m[1])
+  for (const m of text.matchAll(/^\s*[-|]\s*([a-z0-9][a-z0-9-]*)\s*[:|]/gm)) names.add(m[1])
   return names
 }
 

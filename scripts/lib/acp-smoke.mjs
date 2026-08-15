@@ -11,6 +11,7 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { setTimeout as setNodeTimeout } from 'node:timers'
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000
 const DEFAULT_DEADLINE_MS = 120_000
@@ -110,7 +111,7 @@ export class SmokeHarness {
   }
 
   distHash() {
-    return createHash('sha256').update(readFileSync(this.dist)).digest('hex').slice(0, 12)
+    return createHash('sha256').update(readFileSync(this.dist, 'utf8')).digest('hex').slice(0, 12)
   }
 
   start() {
@@ -135,10 +136,10 @@ export class SmokeHarness {
     this.child.on('exit', (code, signal) => {
       this.exitInfo = { code, signal }
     })
-    this.deadlineTimer = setTimeout(() => {
+    this.deadlineTimer = setNodeTimeout(() => {
       this._failAll(`harness deadline (${this.deadlineMs}ms) exceeded`)
     }, this.deadlineMs)
-    this.deadlineTimer.unref?.()
+    this.deadlineTimer.unref()
     return this
   }
 
@@ -179,7 +180,7 @@ export class SmokeHarness {
     if (!this.child) throw new Error('harness not started')
     if (this.pending.has(id)) throw new Error(`duplicate request id ${id}`)
     return new Promise((resolvePromise, reject) => {
-      const timer = setTimeout(() => {
+      const timer = setNodeTimeout(() => {
         this.pending.delete(id)
         reject(
           new SmokeError(
@@ -188,7 +189,7 @@ export class SmokeHarness {
           )
         )
       }, timeoutMs)
-      timer.unref?.()
+      timer.unref()
       this.pending.set(id, { resolve: resolvePromise, reject, timer, method })
       const payload = params === undefined ? { jsonrpc: '2.0', id, method } : { jsonrpc: '2.0', id, method, params }
       this.child.stdin.write(JSON.stringify(payload) + '\n')
@@ -236,11 +237,11 @@ export class SmokeHarness {
       const finish = () => {
         if (interval) clearInterval(interval)
       }
-      const timer = setTimeout(() => {
+      const timer = setNodeTimeout(() => {
         finish()
         reject(new Error(`waitForUpdate timed out after ${timeoutMs}ms`))
       }, timeoutMs)
-      timer.unref?.()
+      timer.unref()
       interval = setInterval(() => {
         const found = this.updates.find(predicate)
         if (found) {

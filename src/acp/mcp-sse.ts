@@ -244,10 +244,11 @@ export class SseMcpClient {
       }
       this.#handleMessage(message)
     }
+    let streamFailure: unknown
     try {
       while (true) {
         const { done, value } = await reader.read()
-        if (done) throw new SseMcpError('close', 'MCP SSE stream ended unexpectedly')
+        if (done) break
         buffer += decoder.decode(value, { stream: true })
         // The SSE spec permits CRLF, LF, or CR line endings; IntelliJ sends CRLF.
         buffer = buffer.replace(/\r\n|\r/g, '\n')
@@ -259,12 +260,19 @@ export class SseMcpClient {
         }
       }
     } catch (error) {
-      if (!this.#closed) {
-        this.#closed = true
-        this.#failPending(error instanceof Error ? error : new Error(String(error)))
-      }
-      throw error
+      streamFailure = error
     }
+    const error =
+      streamFailure === undefined
+        ? new SseMcpError('close', 'MCP SSE stream ended unexpectedly')
+        : streamFailure instanceof Error
+          ? streamFailure
+          : new Error(String(streamFailure))
+    if (!this.#closed) {
+      this.#closed = true
+      this.#failPending(error)
+    }
+    throw error
   }
 
   #handleMessage(message: JsonRpcMessage): void {

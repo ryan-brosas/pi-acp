@@ -36,9 +36,8 @@ function detectSecrets(paths) {
       continue
     }
     if (!stat.isFile() || stat.size > maxScannedBytes) continue
-    const content = readFileSync(absolutePath)
-    if (content.includes(0)) continue
-    const text = content.toString('utf8')
+    const text = readFileSync(absolutePath, 'utf8')
+    if (text.includes('\0')) continue
     for (const candidate of secretPatterns) {
       if (candidate.pattern.test(text)) findings.push(`${path}: ${candidate.name}`)
     }

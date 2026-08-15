@@ -33,7 +33,7 @@ if (build.status !== 0) {
 }
 console.log(
   `dogfood-report: fresh build (dist ${createHash('sha256')
-    .update(readFileSync(join(root, 'dist', 'index.js')))
+    .update(readFileSync(join(root, 'dist', 'index.js'), 'utf8'))
     .digest('hex')
     .slice(0, 12)})`
 )
@@ -70,7 +70,7 @@ let distSha256 = null
 let buildRevision = null
 if (existsSync(join(root, 'dist', 'index.js'))) {
   distSha256 = createHash('sha256')
-    .update(readFileSync(join(root, 'dist', 'index.js')))
+    .update(readFileSync(join(root, 'dist', 'index.js'), 'utf8'))
     .digest('hex')
 }
 const firstOk = results.find(r => r.ok && /build [0-9a-f]{6,}/.test(r.summary))

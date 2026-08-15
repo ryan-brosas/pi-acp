@@ -294,6 +294,7 @@ test('PiAcpAgent: prompt includes cumulative usage when pi reports session stats
     const res = await agent.prompt({ sessionId: 's-1', prompt: [{ type: 'text', text: 'hi' }] } as any)
 
     assert.equal(res.stopReason, 'end_turn')
+    assert.deepEqual(promptCalls, ['hi'])
     assert.deepEqual((res as any).usage, {
       totalTokens: 15,
       inputTokens: 10,
