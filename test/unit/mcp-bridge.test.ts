@@ -709,19 +709,7 @@ describe('McpIpcServer handshake', () => {
   it('rejects wrong tokens', async () => {
     const server = await McpIpcServer.start('ipc-test2')
     const ep = server.endpoint()
-    const sock = createConnection(ep.endpoint)
-    const received: any[] = []
-    sock.setEncoding('utf8')
-    let buf = ''
-    sock.on('data', (d: Buffer) => {
-      buf += d.toString()
-      let i: number
-      while ((i = buf.indexOf('\n')) >= 0) {
-        received.push(JSON.parse(buf.slice(0, i)))
-        buf = buf.slice(i + 1)
-      }
-    })
-    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    const { sock, received } = await connectRaw(ep)
     sock.write(
       JSON.stringify({ type: 'hello', version: BRIDGE_IPC_VERSION, token: 'wrong', sessionId: ep.sessionId }) + '\n'
     )
@@ -734,19 +722,7 @@ describe('McpIpcServer handshake', () => {
   it('rejects messages before authentication', async () => {
     const server = await McpIpcServer.start('ipc-test3')
     const ep = server.endpoint()
-    const sock = createConnection(ep.endpoint)
-    const received: any[] = []
-    sock.setEncoding('utf8')
-    let buf = ''
-    sock.on('data', (d: Buffer) => {
-      buf += d.toString()
-      let i: number
-      while ((i = buf.indexOf('\n')) >= 0) {
-        received.push(JSON.parse(buf.slice(0, i)))
-        buf = buf.slice(i + 1)
-      }
-    })
-    await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+    const { sock, received } = await connectRaw(ep)
     sock.write(JSON.stringify({ type: 'call', id: '1', tool: 'ide_x', args: {} }) + '\n')
     await new Promise<void>(resolve => setTimeout(resolve, 100))
     assert.ok(received.some((m: any) => m.type === 'error' && m.code === 'unauthorized'))
