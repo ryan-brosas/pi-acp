@@ -60,6 +60,8 @@ jobs:
           git push origin "v${{ github.event.inputs.version }}"
 
       - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance
 
       - name: Create GitHub release
