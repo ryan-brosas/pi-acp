@@ -883,42 +883,40 @@ describe('McpIpcServer handshake', () => {
     }
   })
 
-  it('records IDE-applied mutation paths reported by the pi extension', { timeout: 15_000 }, async () => {
-    it('records IDE-applied mutation paths reported by the pi extension', async () => {
-      const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'ledger-session')
-      const settings = await bridge.start()
-      try {
-        assert.deepEqual(bridge.appliedMutationPaths, [])
-        const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
-        const lines = createInterface({ input: sock })
-        const iterator = lines[Symbol.asyncIterator]()
-        const nextMessage = async (): Promise<any> => {
-          const next = await iterator.next()
-          if (next.done) throw new Error('IPC socket closed before the expected message')
-          return JSON.parse(next.value)
-        }
-        await new Promise<void>(resolve => sock.on('connect', () => resolve()))
-        sock.write(
-          JSON.stringify({
-            type: 'hello',
-            version: BRIDGE_IPC_VERSION,
-            token: settings.env.PI_ACP_MCP_IPC_TOKEN,
-            sessionId: 'ledger-session'
-          }) + '\n'
-        )
-        assert.equal((await nextMessage()).type, 'hello_ack')
-        sock.write(JSON.stringify({ type: 'mutations_applied', paths: ['src/a.ts', 'src/b.ts'] }) + '\n')
-        const deadline = Date.now() + 5_000
-        while (bridge.appliedMutationPaths.length < 2 && Date.now() < deadline) {
-          await new Promise(resolve => setTimeout(resolve, 20))
-        }
-        assert.deepEqual(bridge.appliedMutationPaths, ['src/a.ts', 'src/b.ts'])
-        lines.close()
-        sock.destroy()
-      } finally {
-        await bridge.dispose()
+  it('records IDE-applied mutation paths reported by the pi extension', async () => {
+    const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'ledger-session')
+    const settings = await bridge.start()
+    try {
+      assert.deepEqual(bridge.appliedMutationPaths, [])
+      const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+      const lines = createInterface({ input: sock })
+      const iterator = lines[Symbol.asyncIterator]()
+      const nextMessage = async (): Promise<any> => {
+        const next = await iterator.next()
+        if (next.done) throw new Error('IPC socket closed before the expected message')
+        return JSON.parse(next.value)
       }
-    })
+      await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+      sock.write(
+        JSON.stringify({
+          type: 'hello',
+          version: BRIDGE_IPC_VERSION,
+          token: settings.env.PI_ACP_MCP_IPC_TOKEN,
+          sessionId: 'ledger-session'
+        }) + '\n'
+      )
+      assert.equal((await nextMessage()).type, 'hello_ack')
+      sock.write(JSON.stringify({ type: 'mutations_applied', paths: ['src/a.ts', 'src/b.ts'] }) + '\n')
+      const deadline = Date.now() + 5_000
+      while (bridge.appliedMutationPaths.length < 2 && Date.now() < deadline) {
+        await new Promise(resolve => setTimeout(resolve, 20))
+      }
+      assert.deepEqual(bridge.appliedMutationPaths, ['src/a.ts', 'src/b.ts'])
+      lines.close()
+      sock.destroy()
+    } finally {
+      await bridge.dispose()
+    }
   })
 
   it('keeps bridge diagnostics scoped to the bridge instance', async () => {
