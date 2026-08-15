@@ -8,6 +8,7 @@ import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, statSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { isAdapterProcessArgs } from './lib/adapter-process.mjs'
 
 const root = resolve(process.cwd())
 const home = homedir()
@@ -54,10 +55,10 @@ const distMtime = existsSync(distPath) ? statSync(distPath).mtime : null
 const nowMs = Date.now()
 const ps = spawnSync('ps', ['-eo', 'pid,etimes,args'], { encoding: 'utf8', timeout: 10_000 })
 for (const line of (ps.stdout ?? '').split('\n')) {
-  if (!line.includes('dist/index.js') && !line.includes('pi-acp')) continue
   const m = line.match(/^\s*(\d+)\s+(\d+)\s+(.+)$/)
   if (!m) continue
   const [, pid, etimes, args] = m
+  if (!isAdapterProcessArgs(args)) continue
   const remote = !args.includes(root)
   const startedMs = nowMs - Number(etimes) * 1000
   if (remote) {
