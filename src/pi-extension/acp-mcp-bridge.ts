@@ -621,7 +621,12 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         } catch {
           continue
         }
-        handleMessage(msg)
+        try {
+          handleMessage(msg)
+        } catch (error) {
+          if (!isRuntimeNotReady(error)) throw error
+          schedulePolicyWhenReady(() => handleMessage(msg))
+        }
       }
     })
     sock.on('close', () => {

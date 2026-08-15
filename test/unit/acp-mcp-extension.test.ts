@@ -234,6 +234,7 @@ function makeFakeRuntime(
       handlers.set(event, list)
     },
     registerTool(def: { name: string }) {
+      ensureRuntimeReady()
       all.add(def.name)
       registered.push(def)
     },
@@ -1193,5 +1194,16 @@ describe('IntelliJ-first coding mode policy', () => {
     await new Promise(resolve => setImmediate(resolve))
     await new Promise(resolve => setImmediate(resolve))
     assert.deepEqual(rt.active, ['bash', 'my_ext_tool'])
+  })
+  it('defers catalog registration when hello_ack arrives during extension loading', async () => {
+    const { rt, socket, emitCatalog } = wireExtension('off', FULL_CATALOG, undefined, '/workspace/project', {
+      runtimeNotReady: true
+    })
+    assert.doesNotThrow(() => emitCatalog())
+    assert.equal(rt.registered.length, 0)
+    rt.ready = true
+    await new Promise(resolve => setImmediate(resolve))
+    await new Promise(resolve => setImmediate(resolve))
+    assert.equal(rt.registered.length, FULL_CATALOG.length)
   })
 })
