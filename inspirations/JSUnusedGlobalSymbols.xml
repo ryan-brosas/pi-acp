@@ -1,0 +1,98 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>53</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setStartupInfo</description>
+  <highlighted_element>setStartupInfo</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>54</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function sendStartupInfoIfPending</description>
+  <highlighted_element>sendStartupInfoIfPending</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>24</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/session-config-options.test.ts</file>
+  <line>172</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/session-config-options.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setThinkingLevel</description>
+  <highlighted_element>setThinkingLevel</highlighted_element>
+  <language>JavaScript</language>
+  <offset>12</offset>
+  <length>16</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-env.test.ts</file>
+  <line>52</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-env.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setStartupInfo</description>
+  <highlighted_element>setStartupInfo</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-env.test.ts</file>
+  <line>55</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-env.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function sendStartupInfoIfPending</description>
+  <highlighted_element>sendStartupInfoIfPending</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>24</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>52</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function getCommands</description>
+  <highlighted_element>getCommands</highlighted_element>
+  <language>JavaScript</language>
+  <offset>14</offset>
+  <length>11</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>56</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function setStartupInfo</description>
+  <highlighted_element>setStartupInfo</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>14</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts</file>
+  <line>57</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/unit/startup-info-project-packages.test.ts" />
+  <problem_class id="JSUnusedGlobalSymbols" severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unused global symbol</problem_class>
+  <description>Unused function sendStartupInfoIfPending</description>
+  <highlighted_element>sendStartupInfoIfPending</highlighted_element>
+  <language>JavaScript</language>
+  <offset>6</offset>
+  <length>24</length>
+</problem>
+</problems>
