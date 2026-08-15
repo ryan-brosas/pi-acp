@@ -330,7 +330,3 @@ export function findPiSession(sessionId: string): PiSessionListItem | null {
   const all = listPiSessions()
   return all.find(s => s.sessionId === sessionId) ?? null
 }
-
-export function findPiSessionFile(sessionId: string): string | null {
-  return findPiSession(sessionId)?.sessionFile ?? null
-}

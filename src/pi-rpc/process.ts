@@ -296,15 +296,6 @@ export class PiRpcProcess {
     return this.child.exitCode !== null || this.child.signalCode !== null
   }
 
-  /**
-   * Human-readable stdout lines emitted before RPC NDJSON begins (e.g. Context/Skills/Extensions info).
-   * Themes are typically noisy/less useful for ACP, so callers can filter as needed.
-   */
-  consumePreludeLines(): string[] {
-    const lines = this.preludeLines.splice(0, this.preludeLines.length)
-    return lines
-  }
-
   async prompt(message: string, images: unknown[] = []): Promise<void> {
     const res = await this.request({ type: 'prompt', message, images })
     if (!res.success) throw new Error(`pi prompt failed: ${res.error ?? JSON.stringify(res.data)}`)
@@ -375,11 +366,6 @@ export class PiRpcProcess {
     if (!res.success) throw new Error(`pi export_html failed: ${res.error ?? JSON.stringify(res.data)}`)
     const data = res.data as { path?: unknown } | null
     return { path: String(data?.path ?? '') }
-  }
-
-  async switchSession(sessionPath: string): Promise<void> {
-    const res = await this.request({ type: 'switch_session', sessionPath })
-    if (!res.success) throw new Error(`pi switch_session failed: ${res.error ?? JSON.stringify(res.data)}`)
   }
   async fork(entryId: string): Promise<{ text: string; cancelled: boolean }> {
     const res = await this.request({ type: 'fork', entryId })

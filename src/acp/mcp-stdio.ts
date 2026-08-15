@@ -148,17 +148,6 @@ export class StdioMcpClient {
     return this.#request(method, params, timeoutMs, requestId, onRequestId)
   }
 
-  async requestWithId(
-    method: string,
-    params: unknown,
-    timeoutMs: number,
-    onRequestId?: (id: JsonRpcId) => void
-  ): Promise<{ id: JsonRpcId; result: unknown }> {
-    const id = this.#nextId++
-    const result = await this.#request(method, params, timeoutMs, id, onRequestId)
-    return { id, result }
-  }
-
   notify(method: string, params: unknown): void {
     if (this.#closed) return
     this.#write({ jsonrpc: '2.0', method, params })

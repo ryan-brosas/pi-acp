@@ -438,10 +438,6 @@ export class PiAcpSession {
     return this.bridge?.status
   }
 
-  get bridgeTools() {
-    return this.bridge?.tools ?? []
-  }
-
   get bridgeRegisteredTools() {
     const registered = new Set((this.bridge?.registration?.registered ?? []).map(item => item.exposedName))
     return (this.bridge?.tools ?? []).filter(tool => registered.has(tool.exposedName))
