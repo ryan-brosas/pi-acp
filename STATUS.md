@@ -27,7 +27,22 @@
   crashing: `setPolicyFiltering`/`activateIdeTools` retry until the runtime is ready, and the
   `hello_ack` branch probes readiness before registering tools. Covered by two unit tests
   (`defers policy filtering until the pi runtime is ready...`, `defers catalog registration
-when hello_ack arrives during extension loading`).
+  when hello_ack arrives during extension loading`).
+
+## F-037: Qodana was analyzing the wrong language (fixed)
+
+- `qodana.yaml` pinned `qodana-jvm-community` (the free JVM linter), so CI pulled the JVM image
+  and reported "0 problem detected" against this TypeScript repo (run `31858985179`). No JS/TS
+  community linter exists (docs list only jvm/python community images); switched to the WebStorm-
+  based `qodana-js`, which requires `QODANA_TOKEN` (already wired in the workflow). Next Qodana
+  run will analyze TypeScript for real.
+- Local proxy for the same engine: `ide_idea_lint_files` across `src/` (28 files) found 8 real
+  findings; fixed the duplicated JSON-RPC settlement block shared by `mcp-sse.ts`/`mcp-stdio.ts`
+  via a new `src/acp/mcp-json-rpc.ts` helper (`settlePendingJsonRpcResponse`, 3 unit tests) and
+  marked the four immutable `McpIpcServer` identity fields `readonly`. Remaining findings are
+  intentional (rethrow-after-bookkeeping SSE reader, infinite read loop, fire-and-forget cancel
+  notification, simplifiable catch-if in `agent.ts`). 197 "Unterminated statement" warnings are
+  Prettier `semi: false` false positives. Test `any` debt (102) deferred.
 - In the fresh chat, dogfood the enforced IntelliJ-first path: edits must go through `ide_idea_apply_patch`/`ide_idea_create_new_file`; a direct `pi.write`/`schema.commit` inside `fabric_exec` must be blocked by the tool_call gate, and any file changed without an IDE mutation event must surface as a `Mutation provenance` violation.
 - Note: `docs/` is gitignored — findings docs are local-only evidence.
 
