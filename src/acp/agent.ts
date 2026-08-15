@@ -1184,7 +1184,6 @@ export class PiAcpAgent implements ACPAgent {
     let sessionId: string | null = null
     let entryId: string | null = null
     let forkCancelledText: string | null = null
-    let registered = false
     try {
       const entriesData = (await proc.getEntries()) as { entries?: unknown } | null
       const entries = Array.isArray(entriesData?.entries) ? entriesData.entries : []
@@ -1211,7 +1210,6 @@ export class PiAcpAgent implements ACPAgent {
             fileCommands: loadSlashCommands(params.cwd),
             bridge
           })
-          registered = true
 
           if (bridgeSettings.extensionPaths.length > 0) {
             await this.waitForBridgeReady(bridge, bridgeSettings)
@@ -1249,7 +1247,11 @@ export class PiAcpAgent implements ACPAgent {
     } catch (e) {
       // Own the failure: dispose the fork subprocess unless it was already
       // registered as a managed session (whose dispose releases its bridge).
-      if (registered) {
+      // noinspection IfStatementCanBeSimplified - WebStorm's dataflow wrongly
+      // concludes the try cannot throw once sessionId is assigned; the
+      // post-registration awaits (bridge readiness, session release, config) can
+      // throw, and those paths must dispose through the managed session.
+      if (sessionId) {
         await this.closeManagedSession(sessionId).catch(() => undefined)
       } else {
         proc.dispose()
