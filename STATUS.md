@@ -27,7 +27,7 @@
   crashing: `setPolicyFiltering`/`activateIdeTools` retry until the runtime is ready, and the
   `hello_ack` branch probes readiness before registering tools. Covered by two unit tests
   (`defers policy filtering until the pi runtime is ready...`, `defers catalog registration
-  when hello_ack arrives during extension loading`).
+when hello_ack arrives during extension loading`).
 - In the fresh chat, dogfood the enforced IntelliJ-first path: edits must go through `ide_idea_apply_patch`/`ide_idea_create_new_file`; a direct `pi.write`/`schema.commit` inside `fabric_exec` must be blocked by the tool_call gate, and any file changed without an IDE mutation event must surface as a `Mutation provenance` violation.
 - Note: `docs/` is gitignored — findings docs are local-only evidence.
 
