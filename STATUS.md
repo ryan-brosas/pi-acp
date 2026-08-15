@@ -51,6 +51,17 @@ when hello_ack arrives during extension loading`).
 - `npm test` · `npm run lint` · `npm run typecheck` · `npm run build`
 - `npm run dogfood:report` · `npm run dogfood:ide`
 
+## Release status (2026-08-15)
+
+- `v0.0.38` is prepared and pushed: version bump (`11b22bc`), STATUS formatting (`14e0c9f`),
+  tag `v0.0.38` (`c0d157eaa`), 20 commits pushed, working tree clean.
+- CI release battery passes on the tag (run `31870730409`: version-match, npm-ci, build,
+  tests 299/299); the publish step is gated on the `NPM_TOKEN` repo secret, which was deleted
+  after the v0.0.37 publish (only `QODANA_TOKEN` remains). npm latest is still `0.0.37`.
+- Resume when the maintainer re-adds the token: `gh secret set NPM_TOKEN`, then re-trigger
+  via `git push origin :v0.0.38 && git push origin v0.0.38` (tag path also creates the
+  GitHub release) or `gh workflow run "Publish Package"` (npm only).
+
 ## Gotchas
 
 - A rebuilt `dist` does not reload already-running IntelliJ-owned adapter processes.
