@@ -1182,6 +1182,8 @@ export class PiAcpAgent implements ACPAgent {
     }
 
     let sessionId: string | null = null
+    let entryId: string | null = null
+    let forkCancelledText: string | null = null
     try {
       const entriesData = (await proc.getEntries()) as { entries?: unknown } | null
       const entries = Array.isArray(entriesData?.entries) ? entriesData.entries : []
@@ -1189,56 +1191,55 @@ export class PiAcpAgent implements ACPAgent {
         const e = entry as { type?: unknown; message?: { role?: unknown } } | null | undefined
         return e?.type === 'message' && e?.message?.role === 'user'
       }) as { id?: unknown } | null | undefined
-      const entryId = typeof lastUserEntry?.id === 'string' ? lastUserEntry.id : null
-      if (!entryId) {
-        throw RequestError.internalError({}, 'source session has no user messages to fork from (send a prompt first)')
-      }
+      entryId = typeof lastUserEntry?.id === 'string' ? lastUserEntry.id : null
 
-      const fork = await proc.fork(entryId)
-      if (fork.cancelled) {
-        throw RequestError.internalError({}, `pi cancelled the fork: ${fork.text || 'unknown reason'}`)
-      }
+      if (entryId) {
+        const fork = await proc.fork(entryId)
+        if (fork.cancelled) {
+          forkCancelledText = fork.text || 'unknown reason'
+        } else {
+          const state = (await proc.getState()) as { sessionId?: unknown; sessionFile?: unknown } | null
+          sessionId = typeof state?.sessionId === 'string' ? state.sessionId : crypto.randomUUID()
+          const sessionFile = typeof state?.sessionFile === 'string' ? state.sessionFile : null
 
-      const state = (await proc.getState()) as { sessionId?: unknown; sessionFile?: unknown } | null
-      sessionId = typeof state?.sessionId === 'string' ? state.sessionId : crypto.randomUUID()
-      const sessionFile = typeof state?.sessionFile === 'string' ? state.sessionFile : null
+          this.sessions.getOrCreate(sessionId, {
+            cwd: params.cwd,
+            mcpServers: params.mcpServers ?? [],
+            conn: this.conn,
+            proc,
+            fileCommands: loadSlashCommands(params.cwd),
+            bridge
+          })
 
-      this.sessions.getOrCreate(sessionId, {
-        cwd: params.cwd,
-        mcpServers: params.mcpServers ?? [],
-        conn: this.conn,
-        proc,
-        fileCommands: loadSlashCommands(params.cwd),
-        bridge
-      })
+          if (bridgeSettings.extensionPaths.length > 0) {
+            await this.waitForBridgeReady(bridge, bridgeSettings)
+          }
 
-      if (bridgeSettings.extensionPaths.length > 0) {
-        await this.waitForBridgeReady(bridge, bridgeSettings)
-      }
+          if (sessionFile) {
+            this.store.upsert({ sessionId, cwd: params.cwd, sessionFile })
+          }
+          this.lastSessionCwd = params.cwd
 
-      if (sessionFile) {
-        this.store.upsert({ sessionId, cwd: params.cwd, sessionFile })
-      }
-      this.lastSessionCwd = params.cwd
+          // Single-live-subprocess policy: release the source session's subprocess
+          // (its file is untouched; the fork lives in its own new file).
+          await this.closeManagedSessionsExcept(sessionId)
 
-      // Single-live-subprocess policy: release the source session's subprocess
-      // (its file is untouched; the fork lives in its own new file).
-      await this.closeManagedSessionsExcept(sessionId)
+          const { modes, configOptions } = await getSessionConfiguration(proc)
 
-      const { modes, configOptions } = await getSessionConfiguration(proc)
-
-      return {
-        sessionId,
-        modes,
-        configOptions,
-        _meta: {
-          piAcp: {
-            fork: {
-              fromSessionId: params.sessionId,
-              entryId,
-              text: fork.text || null,
-              cancelled: fork.cancelled,
-              ...(sessionFile ? { sessionFile } : {})
+          return {
+            sessionId,
+            modes,
+            configOptions,
+            _meta: {
+              piAcp: {
+                fork: {
+                  fromSessionId: params.sessionId,
+                  entryId,
+                  text: fork.text || null,
+                  cancelled: fork.cancelled,
+                  ...(sessionFile ? { sessionFile } : {})
+                }
+              }
             }
           }
         }
@@ -1254,6 +1255,15 @@ export class PiAcpAgent implements ACPAgent {
       }
       throw e
     }
+
+    // The fork never started or pi cancelled it; sessionId stays null on both
+    // paths, so dispose the fork subprocess and bridge before surfacing the error.
+    proc.dispose()
+    await bridge.dispose().catch(() => undefined)
+    if (entryId === null) {
+      throw RequestError.internalError({}, 'source session has no user messages to fork from (send a prompt first)')
+    }
+    throw RequestError.internalError({}, `pi cancelled the fork: ${forkCancelledText}`)
   }
 
   async resumeSession(params: ResumeSessionRequest): Promise<ResumeSessionResponse> {

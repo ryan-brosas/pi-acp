@@ -15,7 +15,6 @@ if (!existsSync(fabricPath)) {
   console.log('[skip] .pi/fabric.json is not in this checkout; fabric contract checks run in the development tree')
   process.exit(0)
 } else {
-  /** @type {Record<string, any> | null} */
   let cfg
   try {
     cfg = JSON.parse(readFileSync(fabricPath, 'utf8'))
@@ -25,12 +24,15 @@ if (!existsSync(fabricPath)) {
   if (cfg) {
     if (cfg.fullCodeMode === true) ok('fullCodeMode = true')
     else fail('fullCodeMode must be true for the Pi Fabric execution surface')
+    /** @type {{ memoryLimitBytes?: number }} */
     const executor = cfg.executor || {}
     if (executor.memoryLimitBytes === 4294967295) ok('executor.memoryLimitBytes uses the QuickJS ceiling')
     else fail('executor.memoryLimitBytes must be 4294967295 or the guest may reject the config')
+    /** @type {{ mode?: string; trustedCommands?: Record<string, unknown> }} */
     const s = cfg.schema || {}
     if (s.mode === 'enforce' || s.mode === 'audit') ok('schema.mode = ' + s.mode)
     else fail('schema.mode must be enforce or audit, got ' + s.mode)
+    /** @type {{ command?: string; args?: unknown[]; shell?: boolean; timeoutMs?: number }} */
     const cc = (s.trustedCommands && s.trustedCommands['canonical-check']) || {}
     if (
       cc.command === 'node' &&
