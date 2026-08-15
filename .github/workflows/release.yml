@@ -59,18 +59,7 @@ jobs:
           git push origin HEAD:main
           git push origin "v${{ github.event.inputs.version }}"
 
-      - name: Ensure npm publish credential configured
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [ -z "$NPM_TOKEN" ]; then
-            echo "NPM_TOKEN secret is missing - add an npm access token with write access to pi-acp-jetbrain (maintainer: ryanjoserbrosas@gmail.com)"
-            exit 1
-          fi
-
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance
 
       - name: Create GitHub release
