@@ -627,9 +627,7 @@ describe('McpIpcServer handshake', () => {
     const handshake = server.waitForHandshake()
     const registration = server.waitForRegistration(1000)
 
-    const sock = createConnection(ep.endpoint)
-    const received: any[] = []
-    sock.setEncoding('utf8')
+    const { sock, received } = await connectRaw(ep)
     let buf = ''
     sock.on('data', (d: Buffer) => {
       buf += d.toString()
