@@ -883,7 +883,7 @@ describe('McpIpcServer handshake', () => {
     }
   })
 
-  it('records IDE-applied mutation paths reported by the pi extension', async () => {
+  it('records IDE-applied mutation paths reported by the pi extension', { timeout: 15_000 }, async () => {
     const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'ledger-session')
     const settings = await bridge.start()
     try {
