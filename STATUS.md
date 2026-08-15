@@ -72,7 +72,7 @@ supports it (expected to work under IntelliJ/Qodana per the README).
 
 Goal: a clean Whole Project → Inspect Code run, not just zero errors.
 
-- WebStorm scope fixed (local, `.idea/`, gitignored): `pi-acp.iml` now
+- WebStorm scope fixed (local, `.idea/`, gitignored): `.idea/pi-acp.iml` now
   excludes `.git`, `.idea`, `.junie`, `.pi`, `.qodana-local`, `.veda`, `dist`,
   `docs`, `inspection`, `inspections`, `node_modules`, `untitled`;
   `.idea/dictionaries/pi_acp.xml` registers 42 legitimate project terms
@@ -93,9 +93,7 @@ Goal: a clean Whole Project → Inspect Code run, not just zero errors.
   `lint_files` clean on all changed files (the two large files return partial
   `problems:[]` with `timedOut:true` — tool deadline; all changes comment-only).
 
-## Latest validation (2026-08-15)
-
-## 2026-08-15 second export disposition ("it's not 0")
+## Latest validation (2026-08-15): second export disposition ("it's not 0")
 
 User re-ran Inspect Code; the export landed in a NEW dir `inspirations/` (a
 typo-variant of the export path), which was unignored and unexcluded. Findings:

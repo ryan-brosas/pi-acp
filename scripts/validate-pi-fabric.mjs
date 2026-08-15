@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url'
 import { createReporter } from './lib/validate-common.mjs'
 
 const root = process.argv[2] ? resolve(process.argv[2]) : fileURLToPath(new URL('..', import.meta.url))
-const { ok, fail, failCount } = createReporter()
+const reporter = createReporter()
+const { ok, fail } = reporter
 
 // 1. Runtime configuration (.pi/fabric.json)
 const fabricPath = join(root, '.pi', 'fabric.json')
@@ -151,5 +152,5 @@ const ignorePath = join(root, '.gitignore')
 if (existsSync(ignorePath) && readFileSync(ignorePath, 'utf8').includes('.veda/')) ok('.veda/ is ignored')
 else fail('.gitignore must ignore local Veda sessions with .veda/')
 
-console.log(failCount ? 'pi-fabric contract: FAIL' : 'pi-fabric contract: ok')
-process.exit(failCount ? 1 : 0)
+console.log(reporter.failCount ? 'pi-fabric contract: FAIL' : 'pi-fabric contract: ok')
+process.exit(reporter.failCount ? 1 : 0)

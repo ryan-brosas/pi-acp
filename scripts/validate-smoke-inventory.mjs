@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url'
 import { createReporter } from './lib/validate-common.mjs'
 
 const root = process.argv[2] ? resolve(process.argv[2]) : fileURLToPath(new URL('..', import.meta.url))
-const { ok, fail, failCount } = createReporter()
+const reporter = createReporter()
+const { ok, fail } = reporter
 
 const probes = readdirSync(join(root, 'scripts'))
   .filter(n => /^smoke-[a-z0-9-]+\.mjs$/.test(n))
@@ -31,7 +32,7 @@ for (const f of probes) {
 if (probes.length < 5) fail(`expected at least 5 smoke probes, found ${probes.length}`)
 if (probes.length === 0) fail('no smoke probes found')
 
-if (failCount) {
+if (reporter.failCount) {
   console.log('smoke-inventory contract: FAIL')
   process.exit(1)
 }
