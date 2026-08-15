@@ -238,7 +238,7 @@ export class PiRpcProcess {
     // that is created lazily. Create the parent dir up-front to avoid later parse errors
     // when we call commands like export_html.
     try {
-      const state = (await proc.getState()) as any
+      const state = (await proc.getState()) as { sessionFile?: unknown } | null
       const sessionFile = typeof state?.sessionFile === 'string' ? state.sessionFile : null
       if (sessionFile) {
         const { mkdirSync } = await import('node:fs')
