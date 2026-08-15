@@ -27,11 +27,11 @@ test('PiAcpSession: cancel clears queued prompts', async () => {
 
   assert.equal(proc.abortCount, 1)
 
-  // queued prompts should resolve as cancelled
+  // Queued prompts should resolve as canceled.
   assert.equal(await second, 'cancelled')
   assert.equal(await third, 'cancelled')
 
-  // finish first prompt as cancelled after abort
+  // Finish the first prompt as canceled after abort.
   proc.emit({ type: 'agent_start' })
   proc.emit({ type: 'turn_end' })
   proc.emit({ type: 'agent_end' })

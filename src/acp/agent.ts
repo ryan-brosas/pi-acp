@@ -400,7 +400,7 @@ export class PiAcpAgent implements ACPAgent {
     const enableSkillCommands = getEnableSkillCommands(params.cwd)
 
     // MCP bridge: connect client-provided ACP or stdio MCP servers and
-    // prepare the pi subprocess to expose their tools (best effort).
+    // prepare the Pi subprocess to expose their tools (best effort).
     // The IPC session id is a bridge-internal correlation value (pipe naming,
     // hello validation). The ACP session id only exists after pi spawns, so we
     // generate one here and keep it stable for the pi subprocess env.
@@ -868,8 +868,8 @@ export class PiAcpAgent implements ACPAgent {
       }
 
       if (cmd === 'export') {
-        // For now we always export into the session cwd and do not accept a user-provided path.
-        // IMPORTANT: pi's export_html reads the session JSONL file. If it doesn't exist yet
+        // For now, we always export into the session cwd and do not accept a user-provided path.
+        // IMPORTANT: Pi's `export_html` reads the session JSONL file. If it doesn't exist yet
         // (no messages) or is empty, pi throws and RPC mode emits an uncorrelated parse error
         // (no id), which would otherwise hang our request. So we guard here.
         const state = (await session.proc.getState()) as any
@@ -1251,7 +1251,7 @@ export class PiAcpAgent implements ACPAgent {
       // sessionId is assigned; the post-registration awaits (bridge readiness,
       // session release, config) can throw, so the managed-session cleanup
       // branch must stay.
-      // noinspection IfStatementCanBeSimplifiedJS
+      // noinspection PointlessBooleanExpressionJS
       if (sessionId) {
         await this.closeManagedSession(sessionId).catch(() => undefined)
       } else {
@@ -1261,7 +1261,7 @@ export class PiAcpAgent implements ACPAgent {
       throw e
     }
 
-    // The fork never started or pi cancelled it; sessionId stays null on both
+    // The fork never started or Pi canceled it; sessionId stays null on both
     // paths, so dispose the fork subprocess and bridge before surfacing the error.
     proc.dispose()
     await bridge.dispose().catch(() => undefined)

@@ -1,5 +1,5 @@
 // Smoke: session/cancel on the built adapter. Uses a real, long model turn so the
-// cancel lands mid-turn; asserts stopReason 'cancelled', no late agent_message_chunk
+// cancel lands mid-turn; asserts the cancellation stopReason, no late agent_message_chunk
 // after cancel, and that a follow-up prompt still completes (F-018, F-017).
 import { SmokeHarness, assert } from './lib/acp-smoke.mjs'
 
@@ -15,7 +15,7 @@ try {
   const sessionId = created.sessionId
 
   // Baseline: startup info itself is delivered as an agent_message_chunk, so only
-  // chunks arriving after session/new prove the model turn is streaming (P1-5 audit).
+  // Treat chunks arriving after session/new as proof that the model turn is streaming (P1-5 audit).
   const baseline = h.updates.filter(u => u?.sessionUpdate === 'agent_message_chunk').length
 
   const slow = h.expectResult(
@@ -52,7 +52,7 @@ try {
 
   // The session must still accept and complete a new turn. Note: pi's abort lets the
   // in-flight generation finish in the background, so the follow-up can wait as long as
-  // the cancelled turn would have run (pi-side semantics; observed ~74s for a long essay).
+  // the canceled turn would have run (pi-side semantics; observed ~74s for a long essay).
   const again = await h.expectResult(
     4,
     'session/prompt',

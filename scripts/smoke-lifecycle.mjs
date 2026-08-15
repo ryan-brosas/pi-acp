@@ -22,7 +22,7 @@ try {
   sessionId = created?.sessionId
   assert(typeof sessionId === 'string' && sessionId.length > 0, 'missing sessionId')
 
-  // Seed the session first so pi's session JSONL exists before listing (F-019).
+  // Seed the session first so Pi's session JSONL exists before listing (F-019).
   const seeded = await h1.expectResult(
     3,
     'session/prompt',

@@ -117,7 +117,7 @@ export class SmokeHarness {
   start() {
     if (this.child) return this
     // F-027: default dogfood runs against an isolated agent dir so neither the
-    // adapter session map nor pi session JSONL touches the real user store.
+    // adapter session map nor Pi session JSONL touches the real user store.
     this.env = { ...process.env }
     if (this.isolate) {
       this.isolation = createIsolatedAgentEnv()

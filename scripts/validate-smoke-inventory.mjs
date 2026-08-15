@@ -1,4 +1,4 @@
-// Validates the smoke matrix inventory (F-026): every scripts/smoke-*.mjs probe
+// Validates the smoke-test inventory (F-026): every scripts/smoke-*.mjs probe
 // must be reachable from a package.json script and must own its deadlines via the
 // shared harness (which also provides isolation, redaction, and shutdown).
 import { readdirSync, readFileSync } from 'node:fs'

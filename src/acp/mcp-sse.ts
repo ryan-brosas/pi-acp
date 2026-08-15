@@ -160,8 +160,8 @@ export class SseMcpClient {
   /**
    * IntelliJ's private MCP session runs in restricted mode: every request must
    * carry the per-chat token the IDE ships as the IJ_MCP_AUTH_TOKEN descriptor
-   * env var. The server reads that header directly; the standard bearer
-   * Authorization form is sent as well for servers that accept either.
+   * environment variable. The server reads that header directly. The standard
+   * `Authorization: Bearer ...` form is also sent for servers that accept either.
    */
   #authHeaders(): Record<string, string> {
     if (!this.#authToken) return {}

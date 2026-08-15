@@ -9,8 +9,8 @@ interface PiSessionStatsTokens {
 }
 
 /**
- * Maps pi's `get_session_stats` payload to the UNSTABLE ACP PromptResponse.usage
- * object. Returns null when pi reports no usable token numbers, so callers can
+ * Maps Pi's `get_session_stats` payload to the `usage` field of ACP's unstable
+ * `PromptResponse`. Returns null when Pi reports no usable token numbers, so callers can
  * omit the field entirely instead of emitting zeros.
  */
 export function sessionStatsToAcpUsage(stats: unknown): Usage | null {

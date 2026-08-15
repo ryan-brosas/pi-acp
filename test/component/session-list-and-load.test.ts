@@ -74,7 +74,7 @@ test('PiAcpAgent: listSessions lists pi sessions and loadSession replays history
     const originalSpawn = PiRpcProcess.spawn
 
     ;(PiRpcProcess as any).spawn = async (params: any) => {
-      // ensure loadSession resolves to some jsonl that ends with our expected filename
+      // Ensure loadSession resolves to JSONL that ends with our expected filename.
       assert.ok(typeof params.sessionPath === 'string')
       assert.ok(params.sessionPath.endsWith('/0000_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jsonl'))
 

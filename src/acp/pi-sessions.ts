@@ -289,7 +289,7 @@ export function listPiSessions(): PiSessionListItem[] {
       // ignore
     }
 
-    // If the session was named early and grew large, it may fall outside of the tail window.
+    // If the session was named early and grew large, it may fall outside the tail window.
     if (!title) {
       title = scanSessionInfoNameFromFile(file)
     }

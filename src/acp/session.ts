@@ -169,7 +169,7 @@ export class SessionManager {
 
   /**
    * Dispose a session's underlying pi process and remove it from the manager.
-   * Used when clients explicitly reload a session and we want a fresh pi subprocess.
+   * Used when clients explicitly reload a session, and we want a fresh Pi subprocess.
    */
   close(sessionId: string): void {
     void this.closeSession(sessionId).catch(() => undefined)
@@ -388,7 +388,7 @@ export class PiAcpSession {
   }
 
   /**
-   * Best-effort attempt to send startup info outside of a prompt turn.
+   * Best-effort attempt to send startup info outside a prompt turn.
    * Some clients (e.g. Zed) may only render agent messages once the UI is ready;
    * callers can invoke this shortly after session/new returns.
    */
@@ -607,7 +607,7 @@ export class PiAcpSession {
     // The prompt RPC only acknowledges acceptance; retry, compaction, or queued
     // continuations may emit multiple `agent_end` events before `agent_settled`.
     this.proc.prompt(t.message, t.images).catch(err => {
-      // If the subprocess errors before we get `agent_settled`, treat as error unless cancelled.
+      // If the subprocess errors before we get `agent_settled`, treat as error unless canceled.
       // Also ensure we flush any already-enqueued updates first.
       void this.flushEmits().finally(() => {
         // If this looks like an auth/config issue, surface AUTH_REQUIRED so clients can offer terminal login.

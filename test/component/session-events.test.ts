@@ -228,7 +228,7 @@ test('PiAcpSession: routes input through elicitation and cancels editor with a v
 
   await flush()
 
-  // input goes through the elicitation form (user cancelled); editor stays cancelled.
+  // Input goes through the elicitation form (user canceled); the editor stays canceled.
   assert.equal(conn.elicitationRequests.length, 1)
   assert.deepEqual(proc.extensionUiResponses, [
     { id: 'ui-4', cancelled: true },

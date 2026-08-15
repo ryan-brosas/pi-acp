@@ -116,12 +116,12 @@ type RemoteToolsPage = { tools?: RemoteTool[]; nextCursor?: string }
 /**
  * Session-owned ACP MCP bridge.
  *
- * IntelliJ currently supplies its private MCP server as a stdio descriptor,
- * but the IntelliJ launcher script forwards the command to the already-running
- * IDE and exits 0, so the bridge falls back to the IDE's in-process SSE
- * endpoint when the descriptor carries `IJ_MCP_SERVER_PORT`. The draft ACP
- * MCP transport remains supported for other hosts. All transports use the
- * same bounded, immutable per-session catalog and Pi IPC adapter.
+ * IntelliJ currently supplies its private MCP server as a stdio descriptor.
+ * Its launcher forwards the command to the already-running IDE and exits 0.
+ * When the descriptor carries `IJ_MCP_SERVER_PORT`, the bridge uses the IDE's
+ * in-process SSE endpoint. The draft ACP MCP transport remains supported for
+ * other hosts. All transports use the same bounded, immutable per-session
+ * catalog and Pi IPC adapter.
  */
 
 /**

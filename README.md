@@ -37,7 +37,7 @@ Slash commands load file-based prompts from pi and a set of built-ins: `/compact
 
 The local tree carries pi developer tooling: 9 prompt commands, 100 skill files (90 leaves in 10 packs), and 12 format templates under `.pi/`. These checks run in the development tree and skip on clean CI checkouts.
 
-## IntelliJ IDE bridge
+## JetBrains IDE bridge
 
 IntelliJ sends its built-in MCP server descriptor with each chat. The adapter exposes those IDE tools to pi as `ide_<server>_<tool>` extension tools.
 
