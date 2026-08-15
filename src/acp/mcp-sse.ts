@@ -1,24 +1,6 @@
-export type JsonRpcId = number | string
-export type JsonRpcNotification = {
-  method: string
-  params?: unknown
-  id?: JsonRpcId
-}
-
-type JsonRpcMessage = {
-  jsonrpc?: string
-  id?: JsonRpcId | null
-  method?: string
-  params?: unknown
-  result?: unknown
-  error?: { code?: number; message?: string; data?: unknown }
-}
-
-type PendingRequest = {
-  resolve: (value: unknown) => void
-  reject: (error: Error) => void
-  timer: ReturnType<typeof setTimeout>
-}
+import type { JsonRpcId, JsonRpcNotification, JsonRpcMessage, PendingJsonRpcRequest } from './mcp-json-rpc.js'
+export type { JsonRpcId, JsonRpcNotification } from './mcp-json-rpc.js'
+import { settlePendingJsonRpcResponse } from './mcp-json-rpc.js'
 
 export type SseMcpPhase =
   | 'connect'
@@ -54,7 +36,7 @@ export class SseMcpClient {
   readonly #baseUrl: string
   readonly #authToken: string | undefined
   readonly #controller = new AbortController()
-  readonly #pending = new Map<string, PendingRequest>()
+  readonly #pending = new Map<string, PendingJsonRpcRequest>()
   readonly #onNotification: ((message: JsonRpcNotification) => void) | undefined
   #messageUrl: string | undefined
   #closed = false
@@ -299,18 +281,7 @@ export class SseMcpClient {
       }).catch(() => undefined)
       return
     }
-    if (message.id === undefined || message.id === null) return
-
-    const key = String(message.id)
-    const pending = this.#pending.get(key)
-    if (!pending) return
-    clearTimeout(pending.timer)
-    this.#pending.delete(key)
-    if (message.error) {
-      pending.reject(new Error(message.error.message ?? `MCP error ${message.error.code ?? 'unknown'}`))
-    } else {
-      pending.resolve(message.result)
-    }
+    if (!settlePendingJsonRpcResponse(message, this.#pending)) return
   }
 
   async #post(message: JsonRpcMessage): Promise<JsonRpcMessage | undefined> {

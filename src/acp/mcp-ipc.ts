@@ -71,10 +71,10 @@ function validateCatalogRegistration(catalog: BridgeCatalog, registration: Catal
 }
 export class McpIpcServer {
   #server: Server | undefined
-  #endpoint: string
-  #dir: string
-  #token: string
-  #sessionId: string
+  readonly #endpoint: string
+  readonly #dir: string
+  readonly #token: string
+  readonly #sessionId: string
   #catalog: BridgeCatalog = { tools: [] }
   #client: Socket | undefined
   #buffer = ''

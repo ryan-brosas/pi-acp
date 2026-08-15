@@ -3,27 +3,9 @@ import { createInterface, type Interface } from 'node:readline'
 import { basename } from 'node:path'
 import type { McpServerStdio } from '@agentclientprotocol/sdk'
 
-export type JsonRpcId = number | string
-export type JsonRpcNotification = {
-  method: string
-  params?: unknown
-  id?: JsonRpcId
-}
-
-type JsonRpcMessage = {
-  jsonrpc?: string
-  id?: JsonRpcId | null
-  method?: string
-  params?: unknown
-  result?: unknown
-  error?: { code?: number; message?: string; data?: unknown }
-}
-
-type PendingRequest = {
-  resolve: (value: unknown) => void
-  reject: (error: Error) => void
-  timer: ReturnType<typeof setTimeout>
-}
+import type { JsonRpcId, JsonRpcNotification, JsonRpcMessage, PendingJsonRpcRequest } from './mcp-json-rpc.js'
+export type { JsonRpcId, JsonRpcNotification } from './mcp-json-rpc.js'
+import { settlePendingJsonRpcResponse } from './mcp-json-rpc.js'
 
 export type StdioMcpPhase =
   | 'spawn'
@@ -94,7 +76,7 @@ function exitError(code: number | null, signal: NodeJS.Signals | null, stderr: s
 export class StdioMcpClient {
   readonly #child: ChildProcessWithoutNullStreams
   readonly #lines: Interface
-  readonly #pending = new Map<string, PendingRequest>()
+  readonly #pending = new Map<string, PendingJsonRpcRequest>()
   readonly #exit: Promise<void>
   #stderrTail = ''
   #nextId = 1
@@ -306,18 +288,7 @@ export class StdioMcpClient {
       }
       return
     }
-    if (message.id === undefined || message.id === null) return
-
-    const key = String(message.id)
-    const pending = this.#pending.get(key)
-    if (!pending) return
-    clearTimeout(pending.timer)
-    this.#pending.delete(key)
-    if (message.error) {
-      pending.reject(new Error(message.error.message ?? `MCP error ${message.error.code ?? 'unknown'}`))
-    } else {
-      pending.resolve(message.result)
-    }
+    if (!settlePendingJsonRpcResponse(message, this.#pending)) return
   }
 
   #failPending(error: Error): void {
