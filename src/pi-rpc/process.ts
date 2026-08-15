@@ -65,7 +65,9 @@ type PiRpcResponse = {
 }
 
 type PiExtensionUiResponse =
-  { id: string; value: string } | { id: string; confirmed: boolean } | { id: string; cancelled: true }
+  | { id: string; value: string }
+  | { id: string; confirmed: boolean }
+  | { id: string; cancelled: true }
 
 export type PiRpcEvent = Record<string, unknown>
 
