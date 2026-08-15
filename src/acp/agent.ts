@@ -1247,11 +1247,11 @@ export class PiAcpAgent implements ACPAgent {
     } catch (e) {
       // Own the failure: dispose the fork subprocess unless it was already
       // registered as a managed session (whose dispose releases its bridge).
-      if (sessionId) {
-        await this.closeManagedSession(sessionId).catch(() => undefined)
-      } else {
+      if (!sessionId) {
         proc.dispose()
         await bridge.dispose().catch(() => undefined)
+      } else {
+        await this.closeManagedSession(sessionId).catch(() => undefined)
       }
       throw e
     }
