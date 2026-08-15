@@ -6,25 +6,31 @@ import { join } from 'node:path'
 import { PiAcpSession } from '../../src/acp/session.js'
 import { FakeAgentSideConnection, FakePiRpcProcess, asAgentConn } from '../helpers/fakes.js'
 
-test('PiAcpSession: emits agent_message_chunk for text_delta', async () => {
-  const conn = new FakeAgentSideConnection()
-  const proc = new FakePiRpcProcess()
+const flush = () => new Promise(resolve => setTimeout(resolve, 0))
 
-  new PiAcpSession({
+function makeSession(conn: FakeAgentSideConnection, proc: FakePiRpcProcess, cwd = process.cwd()) {
+  return new PiAcpSession({
     sessionId: 's1',
-    cwd: process.cwd(),
+    cwd,
     mcpServers: [],
     proc: proc as any,
     conn: asAgentConn(conn),
     fileCommands: []
   })
+}
+
+test('PiAcpSession: emits agent_message_chunk for text_delta', async () => {
+  const conn = new FakeAgentSideConnection()
+  const proc = new FakePiRpcProcess()
+
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'message_update',
     assistantMessageEvent: { type: 'text_delta', delta: 'hi' }
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.sessionId, 's1')
@@ -38,21 +44,14 @@ test('PiAcpSession: emits agent_thought_chunk for thinking_delta', async () => {
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'message_update',
     assistantMessageEvent: { type: 'thinking_delta', delta: 'thinking...' }
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.sessionId, 's1')
@@ -66,14 +65,7 @@ test('PiAcpSession: emits tool_call + tool_call_update + completes', async () =>
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'tool_execution_start', toolCallId: 't1', toolName: 'bash', args: { command: 'ls' } })
   proc.emit({
@@ -88,7 +80,7 @@ test('PiAcpSession: emits tool_call + tool_call_update + completes', async () =>
     result: { content: [{ type: 'text', text: 'done' }] }
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 3)
 
@@ -128,18 +120,11 @@ test('PiAcpSession: emits tool locations from pi path args', async () => {
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'tool_execution_start', toolCallId: 't1', toolName: 'read', args: { path: 'src/acp/session.ts' } })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
@@ -151,14 +136,7 @@ test('PiAcpSession: handles extension select via ACP permission request', async 
   conn.nextPermissionResponse = { outcome: { outcome: 'selected', optionId: 'choice-1' } }
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'extension_ui_request',
@@ -168,7 +146,7 @@ test('PiAcpSession: handles extension select via ACP permission request', async 
     options: ['Alpha', 'Beta']
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.permissionRequests.length, 1)
   assert.deepEqual(conn.permissionRequests[0], {
@@ -193,14 +171,7 @@ test('PiAcpSession: handles extension confirm via ACP permission request', async
   conn.nextPermissionResponse = { outcome: { outcome: 'selected', optionId: 'no' } }
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'extension_ui_request',
@@ -210,7 +181,7 @@ test('PiAcpSession: handles extension confirm via ACP permission request', async
     message: 'All messages will be lost.'
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.permissionRequests.length, 1)
   assert.deepEqual((conn.permissionRequests[0] as any).options, [
@@ -225,18 +196,11 @@ test('PiAcpSession: sends cancelled response when ACP confirm is cancelled', asy
   conn.nextPermissionResponse = { outcome: { outcome: 'cancelled' } }
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'extension_ui_request', id: 'ui-5', method: 'confirm', title: 'Continue?' })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-5', cancelled: true }])
 })
@@ -246,19 +210,12 @@ test('PiAcpSession: routes input through elicitation and cancels editor with a v
   conn.nextElicitationResponse = { action: 'cancel' }
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'extension_ui_request', id: 'ui-3', method: 'input', title: 'Enter name' })
   proc.emit({ type: 'extension_ui_request', id: 'ui-4', method: 'editor', title: 'Edit text' })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   // input goes through the elicitation form (user cancelled); editor stays cancelled.
   assert.equal(conn.elicitationRequests.length, 1)
@@ -274,18 +231,11 @@ test('PiAcpSession: emits agent_message_chunk for auto_retry_start with attempt/
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'auto_retry_start', attempt: 2, maxAttempts: 5, delayMs: 2400 })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.deepEqual(conn.updates[0]!.update, {
@@ -298,18 +248,11 @@ test('PiAcpSession: formats a positive sub-second auto_retry_start delay as wait
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'auto_retry_start', attempt: 1, maxAttempts: 3, delayMs: 1 })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.deepEqual(conn.updates[0]!.update, {
@@ -322,18 +265,11 @@ test('PiAcpSession: falls back to a generic retry message when auto_retry_start 
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'auto_retry_start', attempt: 'oops', maxAttempts: null, delayMs: 'bad' } as any)
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.deepEqual(conn.updates[0]!.update, {
@@ -346,14 +282,7 @@ test('PiAcpSession: omits raw errorMessage content from surfaced auto_retry_star
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'auto_retry_start',
@@ -363,7 +292,7 @@ test('PiAcpSession: omits raw errorMessage content from surfaced auto_retry_star
     errorMessage: 'provider overloaded: 529'
   } as any)
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.update.sessionUpdate, 'agent_message_chunk')
@@ -375,18 +304,11 @@ test('PiAcpSession: emits agent_message_chunk for auto_retry_end', async () => {
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'auto_retry_end' } as any)
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.deepEqual(conn.updates[0]!.update, {
@@ -399,18 +321,11 @@ test('PiAcpSession: emits agent_message_chunk for auto_compaction_start', async 
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'auto_compaction_start' } as any)
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.deepEqual(conn.updates[0]!.update, {
@@ -423,18 +338,11 @@ test('PiAcpSession: emits agent_message_chunk for auto_compaction_end', async ()
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'auto_compaction_end' } as any)
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.deepEqual(conn.updates[0]!.update, {
@@ -450,20 +358,13 @@ test('PiAcpSession: preserves ordering when auto_retry_start is interleaved with
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'message_update', assistantMessageEvent: { type: 'text_delta', delta: 'before ' } })
   proc.emit({ type: 'auto_retry_start', attempt: 1, maxAttempts: 2, delayMs: 2000 } as any)
   proc.emit({ type: 'message_update', assistantMessageEvent: { type: 'text_delta', delta: 'after' } })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.deepEqual(
     conn.updates.map(u => u.update),
@@ -482,14 +383,7 @@ test('PiAcpSession: emits streamed tool locations from pi path args', async () =
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'message_update',
@@ -503,7 +397,7 @@ test('PiAcpSession: emits streamed tool locations from pi path args', async () =
     }
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
@@ -519,14 +413,7 @@ test('PiAcpSession: emits edit tool line when oldText matches uniquely', async (
   mkdirSync(cwd, { recursive: true })
   writeFileSync(filePath, 'one\ntwo\nneedle\nthree\n', 'utf8')
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd,
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc, cwd)
 
   proc.emit({
     type: 'tool_execution_start',
@@ -535,7 +422,7 @@ test('PiAcpSession: emits edit tool line when oldText matches uniquely', async (
     args: { path: 'a.txt', oldText: 'needle' }
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
@@ -551,14 +438,7 @@ test('PiAcpSession: emits edit tool line from edits array when oldText matches u
   mkdirSync(cwd, { recursive: true })
   writeFileSync(filePath, 'one\ntwo\nneedle\nthree\n', 'utf8')
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd,
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc, cwd)
 
   proc.emit({
     type: 'tool_execution_start',
@@ -567,7 +447,7 @@ test('PiAcpSession: emits edit tool line from edits array when oldText matches u
     args: { path: 'a.txt', edits: [{ oldText: 'needle', newText: 'replacement' }] }
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
@@ -583,14 +463,7 @@ test('PiAcpSession: emits edit tool line from stringified edits array', async ()
   mkdirSync(cwd, { recursive: true })
   writeFileSync(filePath, 'one\ntwo\nneedle\nthree\n', 'utf8')
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd,
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc, cwd)
 
   proc.emit({
     type: 'tool_execution_start',
@@ -599,7 +472,7 @@ test('PiAcpSession: emits edit tool line from stringified edits array', async ()
     args: { path: 'a.txt', edits: JSON.stringify([{ oldText: 'needle', newText: 'replacement' }]) }
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
@@ -615,14 +488,7 @@ test('PiAcpSession: omits edit tool line when oldText matches multiple times', a
   mkdirSync(cwd, { recursive: true })
   writeFileSync(filePath, 'one\nneedle\ntwo\nneedle\n', 'utf8')
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd,
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc, cwd)
 
   proc.emit({
     type: 'tool_execution_start',
@@ -631,7 +497,7 @@ test('PiAcpSession: omits edit tool line when oldText matches multiple times', a
     args: { path: 'a.txt', oldText: 'needle' }
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
@@ -660,13 +526,13 @@ test('PiAcpSession: prompt stays open through retry runs until agent_settled', a
   proc.emit({ type: 'agent_start' })
   proc.emit({ type: 'auto_retry_start', attempt: 1, maxAttempts: 3, delayMs: 2000 })
   proc.emit({ type: 'agent_end', willRetry: true })
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
   assert.equal(resolved, false)
 
   proc.emit({ type: 'agent_start' })
   proc.emit({ type: 'turn_end' })
   proc.emit({ type: 'agent_end', willRetry: false })
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
   assert.equal(resolved, false)
 
   proc.emit({ type: 'agent_settled' })
@@ -691,10 +557,10 @@ test('PiAcpSession: does not re-emit startup info on first prompt after it was a
 
   session.setStartupInfo(notice)
   session.sendStartupInfoIfPending()
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   const p = session.prompt('hello')
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(proc.prompts.length, 1)
   assert.equal(proc.prompts[0]!.message, 'hello')
@@ -864,7 +730,7 @@ test('PiAcpSession: tags extension notify chunks with severity in _meta', async 
     notifyType: 'error'
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.deepEqual(conn.updates[0]!.update, {
@@ -895,7 +761,7 @@ test('PiAcpSession: defaults notify severity to info when notifyType is absent',
     message: 'heads up'
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.updates.length, 1)
   assert.deepEqual((conn.updates[0]!.update as any)._meta, {
@@ -924,7 +790,7 @@ test('PiAcpSession: handles extension input via ACP elicitation form (accept)', 
     placeholder: 'e.g. fix: ship it'
   })
 
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.elicitationRequests.length, 1)
   assert.deepEqual(conn.elicitationRequests[0], {
@@ -956,7 +822,7 @@ test('PiAcpSession: handles extension input declined or cancelled by the user', 
   })
 
   proc.emit({ type: 'extension_ui_request', id: 'ui-in-2', method: 'input', title: 'Pick a value' })
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.elicitationRequests.length, 1)
   assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-in-2', cancelled: true }])
@@ -977,7 +843,7 @@ test('PiAcpSession: falls back to a visible cancellation when the client lacks e
   })
 
   proc.emit({ type: 'extension_ui_request', id: 'ui-in-3', method: 'input', title: 'Input' })
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-in-3', cancelled: true }])
   assert.equal(conn.updates.length, 1)
@@ -999,7 +865,7 @@ test('PiAcpSession: keeps editor UI requests cancelled with a visible fallback',
   })
 
   proc.emit({ type: 'extension_ui_request', id: 'ui-ed-1', method: 'editor', title: 'Edit' })
-  await new Promise(r => setTimeout(r, 0))
+  await flush()
 
   assert.equal(conn.elicitationRequests.length, 0)
   assert.deepEqual(proc.extensionUiResponses, [{ id: 'ui-ed-1', cancelled: true }])
