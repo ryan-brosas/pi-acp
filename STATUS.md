@@ -68,6 +68,31 @@ Note: WebStorm's `run_inspection_kts` bridge cannot currently register
 `custom inspections degraded` diagnostic until the WebStorm KTS runtime
 supports it (expected to work under IntelliJ/Qodana per the README).
 
+## 2026-08-15 zero-finding sweep (Inspections panel)
+
+Goal: a clean Whole Project → Inspect Code run, not just zero errors.
+
+- WebStorm scope fixed (local, `.idea/`, gitignored): `pi-acp.iml` now
+  excludes `.git`, `.idea`, `.junie`, `.pi`, `.qodana-local`, `.veda`, `dist`,
+  `docs`, `inspection`, `inspections`, `node_modules`, `untitled`;
+  `.idea/dictionaries/pi_acp.xml` registers 42 legitimate project terms
+  (jsonrpc, xdebug, tsup, xhigh, …) so spell-checking stays on for real prose.
+- Generated export noise removed: all 17 stale `inspection/*.xml` +
+  `inspections/*.xml` deleted (untracked); `inspections/README.md` +
+  `no-any.inspection.kts` kept.
+- Prose/grammar/style fixes across README, 4 smoke scripts, 6 src files, and
+  5 component tests (Grazie suggestions, "canceled" spelling, sentence splits
+  in `mcp-sse.ts`/`mcp-bridge.ts`).
+- 30 structural/dynamic members marked `// noinspection JSUnusedGlobalSymbols`
+  (test doubles, `unstable_setSessionModel`, `closeAllExcept`).
+- Corrected the `agent.ts:1254` suppression ID to the true inspection class
+  `PointlessBooleanExpressionJS` — the old `IfStatementCanBeSimplifiedJS` ID
+  was why the 1255 finding persisted; bridge `lint_files` on `agent.ts` is
+  now `{"items":[]}`.
+- Verified: 299/299 tests, lint, typecheck, prettier, canonical check;
+  `lint_files` clean on all changed files (the two large files return partial
+  `problems:[]` with `timedOut:true` — tool deadline; all changes comment-only).
+
 ## Latest validation (2026-08-15)
 
 - Tests 293/293 (plus audit-regression additions), lint, typecheck, build, canonical check: PASS.

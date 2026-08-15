@@ -1584,8 +1584,8 @@ export class PiAcpAgent implements ACPAgent {
     return {}
   }
 
-      // noinspection JSUnusedGlobalSymbols
-      async unstable_setSessionModel(params: { sessionId: string; modelId: string }): Promise<void> {
+  // noinspection JSUnusedGlobalSymbols
+  async unstable_setSessionModel(params: { sessionId: string; modelId: string }): Promise<void> {
     const session = await this.restoreSession(params.sessionId)
     await setSessionModel(session.proc, params.modelId)
     await emitConfigOptionsUpdate(this.conn, session.sessionId, session.proc)
