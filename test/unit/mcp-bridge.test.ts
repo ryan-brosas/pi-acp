@@ -912,6 +912,7 @@ describe('McpIpcServer handshake', () => {
         await new Promise(resolve => setTimeout(resolve, 20))
       }
       assert.deepEqual(bridge.appliedMutationPaths, ['src/a.ts', 'src/b.ts'])
+      lines.close()
       sock.destroy()
     } finally {
       await bridge.dispose()
