@@ -160,7 +160,7 @@ describe('AcpMcpBridge', () => {
     assert.equal(bridge.tools.length, 1)
     assert.equal(bridge.tools[0].exposedName, 'ide_intellij_open_file_in_editor')
 
-    const { sock, lines, helloAck } = await connectIpc(settings)
+    const { sock, lines, nextMessage, helloAck } = await connectIpc(settings)
     assert.equal(helloAck.catalog.projectPath, process.cwd())
     const registration = {
       type: 'catalog_registered',
@@ -364,7 +364,7 @@ describe('AcpMcpBridge', () => {
   it('reports registration failures separately from discovered tools', async () => {
     const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'partial-registration')
     const settings = await bridge.start()
-    const { sock, lines, nextMessage, helloAck } = await connectIpc(settings)
+    const { sock, lines, helloAck } = await connectIpc(settings)
     const registrationPromise = bridge.waitForRegistration(1_000)
     sock.write(
       JSON.stringify({
