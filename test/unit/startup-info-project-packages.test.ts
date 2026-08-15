@@ -38,10 +38,10 @@ test('PiAcpAgent: startup info includes project-level packages from .pi/settings
   try {
     const conn = new FakeAgentSideConnection()
 
+    // noinspection JSUnusedGlobalSymbols
     const session = {
       sessionId: 's1',
       cwd: projectDir,
-      // noinspection JSUnusedGlobalSymbols
       proc: {
         async getAvailableModels() {
           return { models: [{ provider: 'test', id: 'model', name: 'model' }] }

@@ -30,3 +30,4 @@ inspection/
 inspections/*
 !inspections/README.md
 !inspections/*.inspection.kts
+inspirations/

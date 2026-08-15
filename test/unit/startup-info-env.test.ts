@@ -34,10 +34,10 @@ test('PiAcpAgent: quietStartup=true disables startup info generation/emission', 
     const conn = new FakeAgentSideConnection()
 
     let setStartupInfoCalled = false
+    // noinspection JSUnusedGlobalSymbols
     const session = {
       sessionId: 's1',
       cwd: process.cwd(),
-      // noinspection JSUnusedGlobalSymbols
       proc: {
         async getAvailableModels() {
           return { models: [{ provider: 'test', id: 'model', name: 'model' }] }

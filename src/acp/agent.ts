@@ -400,7 +400,7 @@ export class PiAcpAgent implements ACPAgent {
     const enableSkillCommands = getEnableSkillCommands(params.cwd)
 
     // MCP bridge: connect client-provided ACP or stdio MCP servers and
-    // prepare the Pi subprocess to expose their tools (best effort).
+    // prepare the Pi subprocess to expose their tools on a best-effort basis.
     // The IPC session id is a bridge-internal correlation value (pipe naming,
     // hello validation). The ACP session id only exists after pi spawns, so we
     // generate one here and keep it stable for the pi subprocess env.
@@ -869,7 +869,7 @@ export class PiAcpAgent implements ACPAgent {
 
       if (cmd === 'export') {
         // For now, we always export into the session cwd and do not accept a user-provided path.
-        // IMPORTANT: Pi's `export_html` reads the session JSONL file. If it doesn't exist yet
+        // IMPORTANT: Pi's `export_html` reads the session JSON Lines file. If it doesn't exist yet
         // (no messages) or is empty, pi throws and RPC mode emits an uncorrelated parse error
         // (no id), which would otherwise hang our request. So we guard here.
         const state = (await session.proc.getState()) as any

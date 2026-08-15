@@ -30,10 +30,10 @@ test('PiAcpAgent: newSession returns configOptions for model and thinking select
 
   try {
     const conn = new FakeAgentSideConnection()
+    // noinspection JSUnusedGlobalSymbols
     const session = {
       sessionId: 's1',
       cwd: process.cwd(),
-      // noinspection JSUnusedGlobalSymbols
       proc: {
         async getAvailableModels() {
           return {
@@ -156,10 +156,10 @@ test('PiAcpAgent: setSessionConfigOption maps thought level changes to pi and em
   }
   const thinkingLevels: string[] = []
 
+  // noinspection JSUnusedGlobalSymbols
   const session = {
     sessionId: 's1',
     cwd: process.cwd(),
-    // noinspection JSUnusedGlobalSymbols
     proc: {
       async getAvailableModels() {
         return {
