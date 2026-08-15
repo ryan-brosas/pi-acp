@@ -8,14 +8,19 @@ import { FakeAgentSideConnection, FakePiRpcProcess, asAgentConn } from '../helpe
 
 const flush = () => new Promise(resolve => setTimeout(resolve, 0))
 
-function makeSession(conn: FakeAgentSideConnection, proc: FakePiRpcProcess, cwd = process.cwd()) {
+function makeSession(
+  conn: FakeAgentSideConnection,
+  proc: FakePiRpcProcess,
+  cwd = process.cwd(),
+  fileCommands: Array<{ name: string; description: string; content: string; source: string }> = []
+) {
   return new PiAcpSession({
     sessionId: 's1',
     cwd,
     mcpServers: [],
     proc: proc as any,
     conn: asAgentConn(conn),
-    fileCommands: []
+    fileCommands
   })
 }
 
@@ -508,14 +513,7 @@ test('PiAcpSession: prompt stays open through retry runs until agent_settled', a
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  const session = new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  const session = makeSession(conn, proc)
 
   let resolved = false
   const p = session.prompt('hello').then(reason => {
@@ -544,14 +542,7 @@ test('PiAcpSession: does not re-emit startup info on first prompt after it was a
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  const session = new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  const session = makeSession(conn, proc)
 
   const notice = 'New version available: v0.74.0 (installed v0.73.1).'
 
@@ -585,14 +576,7 @@ test('PiAcpSession: cancel flips stopReason to cancelled', async () => {
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  const session = new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  const session = makeSession(conn, proc)
 
   const p = session.prompt('hello')
   await session.cancel()
@@ -610,14 +594,7 @@ test('PiAcpSession: queues concurrent prompt and starts it after agent_settled',
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  const session = new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  const session = makeSession(conn, proc)
 
   const first = session.prompt('one')
   const second = session.prompt('two')
@@ -649,14 +626,7 @@ test('PiAcpSession: cancel clears queued prompts', async () => {
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  const session = new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  const session = makeSession(conn, proc)
 
   const first = session.prompt('one')
   const second = session.prompt('two')
@@ -680,21 +650,9 @@ test('PiAcpSession: expands /command before sending to pi', async () => {
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  const session = new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: [
-      {
-        name: 'hello',
-        description: 'test',
-        content: 'Say hello to $1',
-        source: '(project)'
-      }
-    ]
-  })
+  const session = makeSession(conn, proc, process.cwd(), [
+    { name: 'hello', description: 'test', content: 'Say hello to $1', source: '(project)' }
+  ])
 
   const p = session.prompt('/hello world')
   assert.equal(proc.prompts.length, 1)
@@ -713,14 +671,7 @@ test('PiAcpSession: tags extension notify chunks with severity in _meta', async 
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'extension_ui_request',
@@ -745,14 +696,7 @@ test('PiAcpSession: defaults notify severity to info when notifyType is absent',
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'extension_ui_request',
@@ -773,14 +717,7 @@ test('PiAcpSession: handles extension input via ACP elicitation form (accept)', 
   conn.nextElicitationResponse = { action: 'accept', content: { value: 'hello from user' } }
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({
     type: 'extension_ui_request',
@@ -812,14 +749,7 @@ test('PiAcpSession: handles extension input declined or cancelled by the user', 
   conn.nextElicitationResponse = { action: 'decline' }
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'extension_ui_request', id: 'ui-in-2', method: 'input', title: 'Pick a value' })
   await flush()
@@ -833,14 +763,7 @@ test('PiAcpSession: falls back to a visible cancellation when the client lacks e
   conn.elicitationError = new Error('method not found')
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'extension_ui_request', id: 'ui-in-3', method: 'input', title: 'Input' })
   await flush()
@@ -855,14 +778,7 @@ test('PiAcpSession: keeps editor UI requests cancelled with a visible fallback',
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
 
-  new PiAcpSession({
-    sessionId: 's1',
-    cwd: process.cwd(),
-    mcpServers: [],
-    proc: proc as any,
-    conn: asAgentConn(conn),
-    fileCommands: []
-  })
+  makeSession(conn, proc)
 
   proc.emit({ type: 'extension_ui_request', id: 'ui-ed-1', method: 'editor', title: 'Edit' })
   await flush()
