@@ -27,7 +27,7 @@
   crashing: `setPolicyFiltering`/`activateIdeTools` retry until the runtime is ready, and the
   `hello_ack` branch probes readiness before registering tools. Covered by two unit tests
   (`defers policy filtering until the pi runtime is ready...`, `defers catalog registration
-  when hello_ack arrives during extension loading`).
+when hello_ack arrives during extension loading`).
 
 ## F-037: Qodana was analyzing the wrong language (fixed)
 
