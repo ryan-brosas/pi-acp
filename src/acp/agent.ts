@@ -59,7 +59,14 @@ import { loadSlashCommands, parseCommandArgs, toAvailableCommands } from './slas
 import { getAgentDir, getEnableSkillCommands, getQuietStartup } from './pi-settings.js'
 import { toAvailableCommandsFromPiGetCommands } from './pi-commands.js'
 import { maybeAuthRequiredError } from './auth-required.js'
-import { runEnforcedInspection, inspectionSummary, type IdeInspectionOutcome } from './ide-inspection.js'
+import {
+  collectChangedFiles,
+  computeMutationViolations,
+  inspectionSummary,
+  mergeInspectFiles,
+  runEnforcedInspection,
+  type IdeInspectionOutcome
+} from './ide-inspection.js'
 import { isAbsolute } from 'node:path'
 import { existsSync, readFileSync, realpathSync, readdirSync, statSync, unlinkSync } from 'node:fs'
 import type { AvailableCommand } from '@agentclientprotocol/sdk'
@@ -1009,6 +1016,7 @@ export class PiAcpAgent implements ACPAgent {
       }
     }
 
+    const ideMutationsBefore = new Set<string>(session.mcpBridge?.appliedMutationPaths ?? [])
     const result = await session.prompt(message, images)
 
     // UNSTABLE ACP PromptResponse.usage: report cumulative session tokens after the
@@ -1028,9 +1036,13 @@ export class PiAcpAgent implements ACPAgent {
 
     if (result === 'end_turn') {
       const inspection = await this.enforceIdeInspection(session)
+      const mutationViolations = await this.enforceIdeMutationProvenance(session, ideMutationsBefore)
       session.touchedFilePaths.clear()
-      if (inspection) {
-        return { stopReason: 'end_turn', usage, _meta: { piAcp: { inspection } } }
+      const piAcpMeta: Record<string, unknown> = {}
+      if (inspection) piAcpMeta.inspection = inspection
+      if (mutationViolations && mutationViolations.length > 0) piAcpMeta.mutationViolations = mutationViolations
+      if (Object.keys(piAcpMeta).length > 0) {
+        return { stopReason: 'end_turn', usage, _meta: { piAcp: piAcpMeta } }
       }
     }
 
@@ -1067,6 +1079,43 @@ export class PiAcpAgent implements ACPAgent {
     } catch (error) {
       process.stderr.write(
         `[pi-acp-jetbrain] IDE inspection failed: ${String((error as Error)?.message ?? error)}
+`
+      )
+      return null
+    }
+  }
+
+  /**
+   * Post-turn mutation provenance gate (IntelliJ-first enforcement): compares
+   * files changed during the turn (git status merged with turn-touched tool
+   * paths) against the paths the extension reported as applied by IDE mutation
+   * tools. Surfaced as agent_message_chunk + _meta.piAcp.mutationViolations;
+   * never throws. Opt out with PI_ACP_ENFORCE_IDE_MUTATIONS=0.
+   */
+  private async enforceIdeMutationProvenance(
+    session: PiAcpSession,
+    ideMutationsBefore: ReadonlySet<string>
+  ): Promise<string[] | null> {
+    if (process.env.PI_ACP_ENFORCE_IDE_MUTATIONS === '0') return null
+    const ideMode = process.env.PI_ACP_IDE_MODE
+    if (ideMode === undefined || ideMode === '' || ideMode === 'off') return null
+    if (!session.mcpBridge) return null
+    try {
+      const changed = mergeInspectFiles(session.cwd, collectChangedFiles(session.cwd), [...session.touchedFilePaths])
+      const applied = session.mcpBridge.appliedMutationPaths.filter(path => !ideMutationsBefore.has(path))
+      const violations = computeMutationViolations(changed, applied)
+      if (violations.length === 0) return null
+      const summary = `Mutation provenance: ${violations.length} file(s) changed outside IntelliJ (${violations.join(
+        ', '
+      )}). Re-apply them with ide_idea_apply_patch / ide_idea_create_new_file so the IDE owns mutations.`
+      await this.conn.sessionUpdate({
+        sessionId: session.sessionId,
+        update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: summary } }
+      })
+      return violations
+    } catch (error) {
+      process.stderr.write(
+        `[pi-acp-jetbrain] IDE mutation provenance failed: ${String((error as Error)?.message ?? error)}
 `
       )
       return null

@@ -934,7 +934,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     if (ideMode === 'off') return callRemoteTool(tool, prepared, toolCallId, signal)
     if (MUTATION_REMOTE_NAMES.has(tool.remoteName)) {
       return executeMutationComposite(tool, prepared, toolCallId, signal, applied => {
-        if (ideMode !== 'off') send({ type: 'mutations_applied', paths: applied })
+        send({ type: 'mutations_applied', paths: applied })
       })
     }
     return callRemoteTool(tool, confineToolArgs(tool, prepared), toolCallId, signal)

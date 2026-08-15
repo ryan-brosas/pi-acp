@@ -884,7 +884,7 @@ describe('McpIpcServer handshake', () => {
   })
 
   it('records IDE-applied mutation paths reported by the pi extension', async () => {
-    const bridge = new AcpMcpBridge(new FakeConn() as any, [], 'ledger-session')
+    const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'ledger-session')
     const settings = await bridge.start()
     try {
       assert.deepEqual(bridge.appliedMutationPaths, [])

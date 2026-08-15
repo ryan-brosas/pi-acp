@@ -164,6 +164,8 @@ export class AcpMcpBridge {
   readonly #sseClients = new Map<string, SseMcpClient>()
   readonly #tools = new Map<string, BridgeTool>()
   #ipc: McpIpcServer | undefined
+  /** Paths the pi extension reported as applied by IDE mutation tools (mutations_applied IPC). */
+  #appliedMutations = new Set<string>()
   #pending = new Map<
     string,
     { connectionId: string; remoteName: string; remoteRequestId?: JsonRpcId; cancelled: boolean }
@@ -733,6 +735,11 @@ export class AcpMcpBridge {
     return [...this.#diagnostics]
   }
 
+  /** Paths applied by IDE mutation tools this session, per the extension ledger. */
+  get appliedMutationPaths(): string[] {
+    return [...this.#appliedMutations]
+  }
+
   async #handleIpcMessage(msg: import('./mcp-types.js').BridgeIpcMessage): Promise<void> {
     if (msg.type === 'call') {
       await this.#callTool(msg.id, msg.tool, msg.args)
@@ -744,6 +751,11 @@ export class AcpMcpBridge {
     }
     if (msg.type === 'health' && msg.health.diagnostics?.length) {
       this.#diagnostics.push(...msg.health.diagnostics)
+    }
+    if (msg.type === 'mutations_applied') {
+      for (const path of msg.paths ?? []) {
+        if (typeof path === 'string' && path.length > 0) this.#appliedMutations.add(path)
+      }
     }
   }
 
