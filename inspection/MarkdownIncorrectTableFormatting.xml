@@ -1,0 +1,26 @@
+<problems>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-15-pi-acp-extension-dogfood-stability.md</file>
+  <line>13</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-15-pi-acp-extension-dogfood-stability.md" />
+  <problem_class id="MarkdownIncorrectTableFormatting" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Incorrect table formatting</problem_class>
+  <description>Table is not correctly formatted</description>
+  <highlighted_element>| Check | Result | Evidence | | --- | --- | --- | | `npm test` | PASS | 283/283 pass, 18 suites, 0 f...</highlighted_element>
+  <language>Markdown</language>
+  <offset>0</offset>
+  <length>295</length>
+</problem>
+<problem>
+  <file>file://$PROJECT_DIR$/docs/findings/2026-08-15-pi-acp-extension-dogfood-stability.md</file>
+  <line>24</line>
+  <module>pi-acp</module>
+  <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/docs/findings/2026-08-15-pi-acp-extension-dogfood-stability.md" />
+  <problem_class id="MarkdownIncorrectTableFormatting" severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Incorrect table formatting</problem_class>
+  <description>Table is not correctly formatted</description>
+  <highlighted_element>| Run | Result | Notes | | --- | --- | --- | | Run 1 (07:18 +08) | 14/15 OK | `smoke-cancel` FAIL: s...</highlighted_element>
+  <language>Markdown</language>
+  <offset>0</offset>
+  <length>302</length>
+</problem>
+</problems>
