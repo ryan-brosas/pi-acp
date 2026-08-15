@@ -24,6 +24,12 @@ function makeSession(
   })
 }
 
+function assertToolCall(conn: FakeAgentSideConnection, locations: Array<{ path: string; line?: number }>) {
+  assert.equal(conn.updates.length, 1)
+  assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
+  assert.deepEqual((conn.updates[0]!.update as any).locations, locations)
+}
+
 test('PiAcpSession: emits agent_message_chunk for text_delta', async () => {
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
@@ -429,9 +435,7 @@ test('PiAcpSession: emits edit tool line when oldText matches uniquely', async (
 
   await flush()
 
-  assert.equal(conn.updates.length, 1)
-  assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
-  assert.deepEqual((conn.updates[0]!.update as any).locations, [{ path: filePath, line: 3 }])
+  assertToolCall(conn, [{ path: filePath, line: 3 }])
 })
 
 test('PiAcpSession: emits edit tool line from edits array when oldText matches uniquely', async () => {
@@ -454,9 +458,7 @@ test('PiAcpSession: emits edit tool line from edits array when oldText matches u
 
   await flush()
 
-  assert.equal(conn.updates.length, 1)
-  assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
-  assert.deepEqual((conn.updates[0]!.update as any).locations, [{ path: filePath, line: 3 }])
+  assertToolCall(conn, [{ path: filePath, line: 3 }])
 })
 
 test('PiAcpSession: emits edit tool line from stringified edits array', async () => {
@@ -479,9 +481,7 @@ test('PiAcpSession: emits edit tool line from stringified edits array', async ()
 
   await flush()
 
-  assert.equal(conn.updates.length, 1)
-  assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
-  assert.deepEqual((conn.updates[0]!.update as any).locations, [{ path: filePath, line: 3 }])
+  assertToolCall(conn, [{ path: filePath, line: 3 }])
 })
 
 test('PiAcpSession: omits edit tool line when oldText matches multiple times', async () => {
@@ -504,9 +504,7 @@ test('PiAcpSession: omits edit tool line when oldText matches multiple times', a
 
   await flush()
 
-  assert.equal(conn.updates.length, 1)
-  assert.equal(conn.updates[0]!.update.sessionUpdate, 'tool_call')
-  assert.deepEqual((conn.updates[0]!.update as any).locations, [{ path: filePath }])
+  assertToolCall(conn, [{ path: filePath }])
 })
 
 test('PiAcpSession: prompt stays open through retry runs until agent_settled', async () => {
