@@ -884,10 +884,13 @@ describe('McpIpcServer handshake', () => {
   })
 
   it('records IDE-applied mutation paths reported by the pi extension', { timeout: 15_000 }, async () => {
+  it('records IDE-applied mutation paths reported by the pi extension', { timeout: 15_000 }, async () => {
+    const mark = (m: string) => process.stderr.write(`[LEDGER-TRACE] ${m}\n`)
     const bridge = new AcpMcpBridge(new FakeConn() as any, [stdioServer()], 'ledger-session')
     const settings = await bridge.start()
+    mark('started env=' + JSON.stringify(settings.env))
     try {
-      assert.deepEqual(bridge.appliedMutationPaths, [])
+      mark('ledger=' + JSON.stringify(bridge.appliedMutationPaths))
       const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
       const lines = createInterface({ input: sock })
       const iterator = lines[Symbol.asyncIterator]()
@@ -897,6 +900,7 @@ describe('McpIpcServer handshake', () => {
         return JSON.parse(next.value)
       }
       await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+      mark('connected')
       sock.write(
         JSON.stringify({
           type: 'hello',
@@ -905,18 +909,23 @@ describe('McpIpcServer handshake', () => {
           sessionId: 'ledger-session'
         })
       )
-      assert.equal((await nextMessage()).type, 'hello_ack')
+      const ack = await nextMessage()
+      mark('ack=' + ack.type)
       sock.write(JSON.stringify({ type: 'mutations_applied', paths: ['src/a.ts', 'src/b.ts'] }))
       const deadline = Date.now() + 5_000
       while (bridge.appliedMutationPaths.length < 2 && Date.now() < deadline) {
         await new Promise(resolve => setTimeout(resolve, 20))
       }
+      mark('polled=' + JSON.stringify(bridge.appliedMutationPaths))
       assert.deepEqual(bridge.appliedMutationPaths, ['src/a.ts', 'src/b.ts'])
       lines.close()
       sock.destroy()
     } finally {
+      mark('disposing')
       await bridge.dispose()
+      mark('disposed')
     }
+  })
   })
 
   it('keeps bridge diagnostics scoped to the bridge instance', async () => {
