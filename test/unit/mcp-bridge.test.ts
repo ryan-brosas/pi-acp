@@ -6,6 +6,7 @@ import { BRIDGE_IPC_VERSION } from '../../src/acp/mcp-types.js'
 import { createConnection, createServer } from 'node:net'
 import { createInterface } from 'node:readline'
 import { createFakeSseServer } from './helpers/fake-sse-server.js'
+import { buildInfo } from '../../src/build-info.js'
 
 /** Records extMethod traffic and answers with canned MCP responses. */
 class FakeConn {
@@ -330,6 +331,11 @@ describe('AcpMcpBridge', () => {
     const methods = conn.calls.map(c => c.method)
     assert.ok(methods.includes('mcp/connect'))
     assert.equal(conn.calls.find(c => c.method === 'mcp/message')?.params.method, 'initialize')
+    assert.equal(
+      conn.calls.find(c => c.method === 'mcp/message' && c.params?.method === 'initialize')?.params?.params?.clientInfo
+        ?.version,
+      buildInfo.packageVersion
+    )
     assert.ok(conn.calls.some(c => c.method === 'mcp/message' && c.params.method === 'tools/list'))
     assert.deepEqual(conn.notifications[0], {
       method: 'mcp/message',
