@@ -96,6 +96,7 @@ export type BridgeIpcMessage =
   | { type: 'health'; health: BridgeHealth }
   | { type: 'result'; id: string; result: unknown }
   | { type: 'error'; id: string; code: string; message: string; data?: unknown }
+  | { type: 'mutations_applied'; paths: string[] }
   | { type: 'shutdown'; reason?: string }
 
 /** Spawn settings produced by the bridge and consumed by PiRpcProcess. */

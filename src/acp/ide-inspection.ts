@@ -146,6 +146,16 @@ export function mergeInspectFiles(
   return files
 }
 
+/**
+ * Mutation provenance: changed repo-relative paths that were not applied by an
+ * IDE mutation tool during the turn (the extension reports applied paths over
+ * IPC as mutations_applied). Exact normalized matches are considered covered.
+ */
+export function computeMutationViolations(changed: string[], ideApplied: string[]): string[] {
+  const covered = new Set(ideApplied.filter(path => path.length > 0))
+  return [...new Set(changed.filter(path => path.length > 0 && !covered.has(path)))]
+}
+
 /** Compact diagnostic for an unexpected run_inspection_kts payload (bounded). */
 export function summarizeMalformedRaw(raw: unknown, maxChars = RAW_DIAGNOSTIC_MAX_CHARS): string {
   let text: string

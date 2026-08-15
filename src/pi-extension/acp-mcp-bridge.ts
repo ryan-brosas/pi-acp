@@ -845,7 +845,8 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     tool: BridgeTool,
     args: Record<string, unknown>,
     toolCallId: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    onApplied?: (paths: string[]) => void
   ): Promise<PiMcpToolResult> {
     if (projectRoot === undefined) {
       return Promise.reject(
@@ -879,6 +880,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         )
       }
       const result = await callRemoteTool(tool, plan.mutationArgs, `${toolCallId}:mutate`, signal)
+      if (onApplied) onApplied(dedupe([...plan.preOpen, ...plan.postOpen]))
       for (let i = 0; i < plan.postOpen.length; i++) {
         try {
           await callRemoteTool(
@@ -930,7 +932,11 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
     const args = (params ?? {}) as Record<string, unknown>
     const prepared = prepareToolArguments(tool, args, projectRoot)
     if (ideMode === 'off') return callRemoteTool(tool, prepared, toolCallId, signal)
-    if (MUTATION_REMOTE_NAMES.has(tool.remoteName)) return executeMutationComposite(tool, prepared, toolCallId, signal)
+    if (MUTATION_REMOTE_NAMES.has(tool.remoteName)) {
+      return executeMutationComposite(tool, prepared, toolCallId, signal, applied => {
+        if (ideMode !== 'off') send({ type: 'mutations_applied', paths: applied })
+      })
+    }
     return callRemoteTool(tool, confineToolArgs(tool, prepared), toolCallId, signal)
   }
 
