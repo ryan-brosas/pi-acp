@@ -8,6 +8,49 @@ import { createInterface } from 'node:readline'
 import { createFakeSseServer } from './helpers/fake-sse-server.js'
 import { buildInfo } from '../../src/build-info.js'
 
+async function connectIpc(
+  settings: { env: { PI_ACP_MCP_IPC_ENDPOINT: string; PI_ACP_MCP_IPC_TOKEN: string; PI_ACP_MCP_SESSION_ID: string } },
+  sessionIdOverride?: string
+) {
+  const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
+  const lines = createInterface({ input: sock })
+  const iterator = lines[Symbol.asyncIterator]()
+  const nextMessage = async (): Promise<any> => {
+    const next = await iterator.next()
+    if (next.done) throw new Error('IPC socket closed before the expected message')
+    return JSON.parse(next.value)
+  }
+  await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+  sock.write(
+    JSON.stringify({
+      type: 'hello',
+      version: BRIDGE_IPC_VERSION,
+      token: settings.env.PI_ACP_MCP_IPC_TOKEN,
+      sessionId: sessionIdOverride ?? settings.env.PI_ACP_MCP_SESSION_ID
+    }) + '\n'
+  )
+  const helloAck = await nextMessage()
+  assert.equal(helloAck.type, 'hello_ack')
+  return { sock, lines, nextMessage, helloAck }
+}
+
+async function connectRaw(ep: { endpoint: string }) {
+  const sock = createConnection(ep.endpoint)
+  const received: any[] = []
+  sock.setEncoding('utf8')
+  let buf = ''
+  sock.on('data', (d: Buffer) => {
+    buf += d.toString()
+    let i: number
+    while ((i = buf.indexOf('\n')) >= 0) {
+      received.push(JSON.parse(buf.slice(0, i)))
+      buf = buf.slice(i + 1)
+    }
+  })
+  await new Promise<void>(resolve => sock.on('connect', () => resolve()))
+  return { sock, received }
+}
+
 /** Records extMethod traffic and answers with canned MCP responses. */
 class FakeConn {
   calls: Array<{ method: string; params: any }> = []
