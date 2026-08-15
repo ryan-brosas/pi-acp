@@ -451,4 +451,3 @@ describe('computeMutationViolations', () => {
     assert.deepEqual(computeMutationViolations(['src/a.ts', 'src/a.ts'], ['other.ts']), ['src/a.ts'])
   })
 })
-

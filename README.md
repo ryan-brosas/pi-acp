@@ -185,6 +185,8 @@ Bash stays available in `prefer` for Git, tests, builds, and diagnostics. Unrest
 
 In `prefer` and `required` with an active catalog, direct Fabric/Schema file mutations (`schema.commit`, `pi.write`, `pi.edit` inside `fabric_exec`) are blocked before execution by a `tool_call` gate. Mutations must flow through the IDE tools (`ide_idea_apply_patch`, `ide_idea_create_new_file`, rename, reformat), which open affected files and confine patch/path arguments to the project root. Read-only Fabric code (`pi.read`, `pi.grep`, IDE tool calls) is unaffected. This closes the extension-tool bypass of the active-set filter; Bash remains an intentional, documented exception.
 
+A second layer runs after each turn: the extension reports paths applied by successful IDE mutation tools over the authenticated IPC (`mutations_applied`), and the adapter compares those against files changed during the turn (git status merged with turn-touched tool paths). Files that changed without an IDE mutation event are surfaced as `Mutation provenance` violations in the chat and recorded under `PromptResponse._meta.piAcp.mutationViolations`. Disable with `PI_ACP_ENFORCE_IDE_MUTATIONS=0`. Deleted files and files committed mid-turn by an external auto-commit watcher are not detected by this layer (same git-status semantics as the inspection gate).
+
 Set the variable for the adapter process, for example in `~/.jetbrains/acp.json`:
 
 ```json

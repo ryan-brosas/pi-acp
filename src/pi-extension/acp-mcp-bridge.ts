@@ -1437,6 +1437,7 @@ export function renderIdeCodingGuidance(
       parts.push(
         'Direct Fabric/Schema file mutations (schema.commit, pi.write, pi.edit) are blocked; route mutations through the IDE tools.'
       )
+      parts.push('Post-turn, files changed outside IntelliJ are reported as mutation-provenance violations.')
       const lines: string[] = []
       const read = name('read')
       const open = name('open')

@@ -59,7 +59,8 @@ interface IdeKtsRunOutcome {
 }
 
 export type IdeInspectionOutcome =
-  { status: 'inspected'; report: IdeInspectionReport; reportPath?: string } | { status: 'skipped'; reason: string }
+  | { status: 'inspected'; report: IdeInspectionReport; reportPath?: string }
+  | { status: 'skipped'; reason: string }
 
 /** Structural bridge surface the gate needs; AcpMcpBridge satisfies it. */
 export interface InspectionBridge {
