@@ -82,6 +82,7 @@ test('PiAcpSession: cancel cancels the bridge before awaiting the pi abort (P1-2
   const conn = new FakeAgentSideConnection()
   const proc = new FakePiRpcProcess()
   const order: string[] = []
+  // noinspection JSUnusedGlobalSymbols
   const bridge = { cancelAll: () => order.push('bridge') }
   ;(proc as any).abort = async () => {
     order.push('proc')

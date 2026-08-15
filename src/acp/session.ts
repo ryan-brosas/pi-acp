@@ -194,6 +194,7 @@ export class SessionManager {
   }
 
   /** Close all sessions except the one with `keepSessionId`. */
+  // noinspection JSUnusedGlobalSymbols
   closeAllExcept(keepSessionId: string): void {
     void this.closeAllExceptAsync(keepSessionId).catch(() => undefined)
   }

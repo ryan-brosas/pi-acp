@@ -3,6 +3,7 @@ import type { PiRpcEvent } from '../../src/pi-rpc/process.js'
 
 type SessionUpdateMsg = Parameters<AgentSideConnection['sessionUpdate']>[0]
 
+// noinspection JSUnusedGlobalSymbols
 export class FakeAgentSideConnection {
   readonly updates: SessionUpdateMsg[] = []
   readonly permissionRequests: unknown[] = []
@@ -32,6 +33,7 @@ export class FakeAgentSideConnection {
   }
 }
 
+// noinspection JSUnusedGlobalSymbols
 export class FakePiRpcProcess {
   private handlers: Array<(ev: PiRpcEvent) => void> = []
 

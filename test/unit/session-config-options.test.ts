@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { PiAcpAgent } from '../../src/acp/agent.js'
 import { FakeAgentSideConnection, asAgentConn } from '../helpers/fakes.js'
 
+// noinspection JSUnusedGlobalSymbols
 class FakeSessions {
   constructor(private readonly session: any) {}
 
@@ -32,6 +33,7 @@ test('PiAcpAgent: newSession returns configOptions for model and thinking select
     const session = {
       sessionId: 's1',
       cwd: process.cwd(),
+      // noinspection JSUnusedGlobalSymbols
       proc: {
         async getAvailableModels() {
           return {
@@ -157,6 +159,7 @@ test('PiAcpAgent: setSessionConfigOption maps thought level changes to pi and em
   const session = {
     sessionId: 's1',
     cwd: process.cwd(),
+    // noinspection JSUnusedGlobalSymbols
     proc: {
       async getAvailableModels() {
         return {

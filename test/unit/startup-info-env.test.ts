@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { PiAcpAgent } from '../../src/acp/agent.js'
 import { FakeAgentSideConnection, asAgentConn } from '../helpers/fakes.js'
 
+// noinspection JSUnusedGlobalSymbols
 class FakeSessions {
   constructor(private readonly session: any) {}
   async create(_params: any) {
@@ -36,6 +37,7 @@ test('PiAcpAgent: quietStartup=true disables startup info generation/emission', 
     const session = {
       sessionId: 's1',
       cwd: process.cwd(),
+      // noinspection JSUnusedGlobalSymbols
       proc: {
         async getAvailableModels() {
           return { models: [{ provider: 'test', id: 'model', name: 'model' }] }

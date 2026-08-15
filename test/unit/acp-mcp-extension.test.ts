@@ -108,6 +108,7 @@ describe('ACP MCP Pi extension conversion', () => {
 })
 
 it('dedupes factory activation and permits reactivation after session shutdown', () => {
+  // noinspection JSUnusedGlobalSymbols
   class FakeSocket extends EventEmitter {
     destroyed = false
     readonly writes: string[] = []
@@ -135,6 +136,7 @@ it('dedupes factory activation and permits reactivation after session shutdown',
   const shutdownHandlers: Array<() => void> = []
   const prevMode = process.env.PI_ACP_IDE_MODE
   delete process.env.PI_ACP_IDE_MODE
+  // noinspection JSUnusedGlobalSymbols
   const pi = {
     on(event: string, handler: () => void) {
       if (event === 'session_shutdown') shutdownHandlers.push(handler)
@@ -227,6 +229,7 @@ function makeFakeRuntime(
     if (runtimeReady) return
     throw new Error('Extension runtime not initialized. Action methods cannot be called during extension loading.')
   }
+  // noinspection JSUnusedGlobalSymbols
   const pi = {
     on(event: string, handler: (event: any, ctx: any) => unknown) {
       const list = handlers.get(event) ?? []

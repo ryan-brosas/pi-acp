@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { PiAcpAgent } from '../../src/acp/agent.js'
 import { FakeAgentSideConnection, FakePiRpcProcess, asAgentConn } from '../helpers/fakes.js'
 
+// noinspection JSUnusedGlobalSymbols
 class FakeSessions {
   constructor(private readonly session: Record<string, unknown>) {
     session.touchedFilePaths = new Set()

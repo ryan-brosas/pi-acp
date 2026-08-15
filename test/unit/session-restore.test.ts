@@ -7,6 +7,7 @@ import { PiAcpAgent } from '../../src/acp/agent.js'
 import { PiRpcProcess } from '../../src/pi-rpc/process.js'
 import { FakeAgentSideConnection, asAgentConn } from '../helpers/fakes.js'
 
+// noinspection JSUnusedGlobalSymbols
 class FakeSessions {
   restoredSession: Record<string, unknown> | null = null
 
