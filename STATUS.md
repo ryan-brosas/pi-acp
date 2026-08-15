@@ -2,7 +2,7 @@
 
 **Project:** pi-acp-jetbrain
 **Updated:** 2026-08-15
-**State:** `v0.0.38` published to npm with signed provenance; F-036 nested-pi IPC hardening and F-037 Qodana/JSON-RPC audit remediation are committed and verified. Fresh-host acceptance (F-033) and Windows CI coverage remain open.
+**State:** `v0.0.39` published to npm with signed provenance; zero-finding Inspect Code sweep, validator fail-closed fix, and second-export disposition are committed and verified (independent release review: no P0/P1/P2 findings; full smoke matrix 16/16). Fresh-host acceptance (F-033) and Windows CI coverage remain open.
 
 ## 2026-08-15 WebStorm inspection cleanup
 
@@ -176,6 +176,9 @@ when hello_ack arrives during extension loading`).
 
 ## Release status (2026-08-15)
 
+- `v0.0.39` **published**: `pi-acp-jetbrain@0.0.39` is npm `latest` (Publish Package
+  run `31882152305`, tag `v0.0.39` -> `ba43ecb`), signed provenance over GitHub OIDC; GitHub release
+  https://github.com/ryan-brosas/pi-acp-jetbrain/releases/tag/v0.0.39.
 - `v0.0.38` **published**: `pi-acp-jetbrain@0.0.38` is npm `latest` (run `31871255871`, tag
   `v0.0.38` -> `6bc5837`), signed provenance in sigstore log `2473524305`; GitHub release
   https://github.com/ryan-brosas/pi-acp-jetbrain/releases/tag/v0.0.38.
