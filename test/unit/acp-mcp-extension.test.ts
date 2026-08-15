@@ -1196,7 +1196,7 @@ describe('IntelliJ-first coding mode policy', () => {
     assert.deepEqual(rt.active, ['bash', 'my_ext_tool'])
   })
   it('defers catalog registration when hello_ack arrives during extension loading', async () => {
-    const { rt, socket, emitCatalog } = wireExtension('off', FULL_CATALOG, undefined, '/workspace/project', {
+    const { rt, emitCatalog } = wireExtension('off', FULL_CATALOG, undefined, '/workspace/project', {
       runtimeNotReady: true
     })
     assert.doesNotThrow(() => emitCatalog())

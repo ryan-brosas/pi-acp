@@ -20,14 +20,14 @@
 - Start a fresh IntelliJ chat after the next dist rebuild and complete the F-033 checklist (new PID, build revision match, cancel/restore/shutdown).
 - Add Windows CI coverage (check.yml currently runs Linux only; Windows paths and named-pipe logic stay untested).
 
-## Known issue (reviewer probe)
+## F-036: nested-pi IPC guard (fixed)
 
-- Spawning a nested `pi` that inherits a live adapter's `PI_ACP_MCP_IPC_*` env crashes during
-  extension loading: the single-client IPC server rejects the second connection, and the
-  extension's data handler calls `setPolicyFiltering` before the pi extension runtime is
-  initialized (`Extension runtime not initialized` from `getActiveTools`). Not reachable in
-  the adapter's own flow (the adapter's pi child is the sole IPC client); candidate fix: guard
-  the IPC data handler to defer processing until the extension runtime reports ready.
+- Fixed: IPC frames and socket close arriving while the pi extension runtime is still loading
+  (a nested `pi` inheriting a live adapter's `PI_ACP_MCP_IPC_*` env) now defer instead of
+  crashing: `setPolicyFiltering`/`activateIdeTools` retry until the runtime is ready, and the
+  `hello_ack` branch probes readiness before registering tools. Covered by two unit tests
+  (`defers policy filtering until the pi runtime is ready...`, `defers catalog registration
+  when hello_ack arrives during extension loading`).
 - In the fresh chat, dogfood the enforced IntelliJ-first path: edits must go through `ide_idea_apply_patch`/`ide_idea_create_new_file`; a direct `pi.write`/`schema.commit` inside `fabric_exec` must be blocked by the tool_call gate, and any file changed without an IDE mutation event must surface as a `Mutation provenance` violation.
 - Note: `docs/` is gitignored — findings docs are local-only evidence.
 

@@ -565,6 +565,15 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
 
   function handleMessage(msg: IpcMessage): void {
     if (msg.type === 'hello_ack' && !registered) {
+      if (typeof pi.getActiveTools === 'function') {
+        try {
+          pi.getActiveTools()
+        } catch (error) {
+          if (!isRuntimeNotReady(error)) throw error
+          schedulePolicyWhenReady(() => handleMessage(msg))
+          return
+        }
+      }
       registered = true
       projectRoot = msg.catalog.projectPath || undefined
       const registration = registerTools(msg.catalog.tools)
@@ -621,12 +630,7 @@ function activateAcpMcpBridgeExtension(pi: ExtensionAPI, runtime: AcpMcpBridgeRu
         } catch {
           continue
         }
-        try {
-          handleMessage(msg)
-        } catch (error) {
-          if (!isRuntimeNotReady(error)) throw error
-          schedulePolicyWhenReady(() => handleMessage(msg))
-        }
+        handleMessage(msg)
       }
     })
     sock.on('close', () => {
