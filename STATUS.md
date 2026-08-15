@@ -2,7 +2,7 @@
 
 **Project:** pi-acp-jetbrain
 **Updated:** 2026-08-15
-**State:** `v0.0.37` published to npm with signed provenance; audit remediation for the concurrent session map, MCP client version, boundary typing, and release docs is committed and verified. Fresh-host acceptance (F-033) and Windows CI coverage remain open.
+**State:** `v0.0.38` release candidate; F-036 nested-pi IPC hardening and F-037 Qodana/JSON-RPC audit remediation are committed and verified. Fresh-host acceptance (F-033) and Windows CI coverage remain open.
 
 ## Latest validation (2026-08-15)
 
