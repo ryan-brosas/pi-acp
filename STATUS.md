@@ -2,7 +2,7 @@
 
 **Project:** pi-acp-jetbrain
 **Updated:** 2026-08-15
-**State:** `v0.0.38` release candidate; F-036 nested-pi IPC hardening and F-037 Qodana/JSON-RPC audit remediation are committed and verified. Fresh-host acceptance (F-033) and Windows CI coverage remain open.
+**State:** `v0.0.38` published to npm with signed provenance; F-036 nested-pi IPC hardening and F-037 Qodana/JSON-RPC audit remediation are committed and verified. Fresh-host acceptance (F-033) and Windows CI coverage remain open.
 
 ## Latest validation (2026-08-15)
 
@@ -53,13 +53,13 @@ when hello_ack arrives during extension loading`).
 
 ## Release status (2026-08-15)
 
-- `v0.0.38` is prepared and pushed: version bump (`11b22bc`), STATUS formatting (`14e0c9f`),
-  tag `v0.0.38` (`c0d157eaa`), 20 commits pushed, working tree clean.
-- CI release battery passes on the tag (run `31870730409`: version-match, npm-ci, build,
-  tests 299/299). Publishing was blocked by an incorrect classic-token guard added after
-  v0.0.37; npm trusted publishing authorizes `npm-publish.yml` and `release.yml` over GitHub
-  OIDC, so CI requires no `NPM_TOKEN`. The guard and token override are being removed from
-  both workflows before re-triggering the `v0.0.38` tag path.
+- `v0.0.38` **published**: `pi-acp-jetbrain@0.0.38` is npm `latest` (run `31871255871`, tag
+  `v0.0.38` -> `6bc5837`), signed provenance in sigstore log `2473524305`; GitHub release
+  https://github.com/ryan-brosas/pi-acp-jetbrain/releases/tag/v0.0.38.
+- Publishing uses npm trusted publishing over GitHub OIDC; no `NPM_TOKEN` secret is needed.
+  The classic-token guard and `NODE_AUTH_TOKEN` override added in `d68f4e0`/`c593776` were
+  removed from both `npm-publish.yml` and `release.yml` (`6bc5837`) — they contradicted the
+  README OIDC path and failed once the secret was deleted.
 
 ## Gotchas
 
