@@ -6,6 +6,17 @@ import { join } from 'node:path'
 import { PiAcpAgent } from '../../src/acp/agent.js'
 import { FakeAgentSideConnection, asAgentConn } from '../helpers/fakes.js'
 
+async function withPiAgentDir(root: string, fn: () => Promise<void>): Promise<void> {
+  const oldEnv = process.env.PI_CODING_AGENT_DIR
+  process.env.PI_CODING_AGENT_DIR = root
+  try {
+    await fn()
+  } finally {
+    if (oldEnv === undefined) delete process.env.PI_CODING_AGENT_DIR
+    else process.env.PI_CODING_AGENT_DIR = oldEnv
+  }
+}
+
 test('PiAcpAgent: deleteSession removes stored session and session file', async () => {
   const root = mkdtempSync(join(tmpdir(), 'pi-acp-delete-test-'))
   const sessionsDir = join(root, 'sessions', '--tmp--delete-project--')
@@ -17,36 +28,30 @@ test('PiAcpAgent: deleteSession removes stored session and session file', async 
     'utf-8'
   )
 
-  const oldEnv = process.env.PI_CODING_AGENT_DIR
-  process.env.PI_CODING_AGENT_DIR = root
+  await withPiAgentDir(root, async () => {
+    const conn = new FakeAgentSideConnection()
+    const agent = new PiAcpAgent(asAgentConn(conn))
 
-  const conn = new FakeAgentSideConnection()
-  const agent = new PiAcpAgent(asAgentConn(conn))
+    const storedSessionId = 'stored-session'
+    const storeDeletes: string[] = []
 
-  const storedSessionId = 'stored-session'
-  const storeDeletes: string[] = []
+    // Inject a SessionStore that tracks calls.
+    ;(agent as any).store = {
+      get(sessionId: string) {
+        if (sessionId !== storedSessionId) return null
+        return { sessionId, cwd: '/tmp/delete-project', sessionFile, updatedAt: new Date().toISOString() }
+      },
+      delete(sessionId: string) {
+        storeDeletes.push(sessionId)
+      },
+      upsert() {}
+    }
 
-  // Inject a SessionStore that tracks calls.
-  ;(agent as any).store = {
-    get(sessionId: string) {
-      if (sessionId !== storedSessionId) return null
-      return { sessionId, cwd: '/tmp/delete-project', sessionFile, updatedAt: new Date().toISOString() }
-    },
-    delete(sessionId: string) {
-      storeDeletes.push(sessionId)
-    },
-    upsert() {}
-  }
-
-  try {
     const response = await agent.deleteSession({ sessionId: storedSessionId } as any)
     assert.deepEqual(response, {})
     assert.deepEqual(storeDeletes, [storedSessionId])
     assert.equal(existsSync(sessionFile), false)
-  } finally {
-    if (oldEnv === undefined) delete process.env.PI_CODING_AGENT_DIR
-    else process.env.PI_CODING_AGENT_DIR = oldEnv
-  }
+  })
 })
 
 test('PiAcpAgent: deleteSession finds session via pi discovery when SessionStore misses', async () => {
@@ -66,33 +71,27 @@ test('PiAcpAgent: deleteSession finds session via pi discovery when SessionStore
     'utf-8'
   )
 
-  const oldEnv = process.env.PI_CODING_AGENT_DIR
-  process.env.PI_CODING_AGENT_DIR = root
+  await withPiAgentDir(root, async () => {
+    const conn = new FakeAgentSideConnection()
+    const agent = new PiAcpAgent(asAgentConn(conn))
 
-  const conn = new FakeAgentSideConnection()
-  const agent = new PiAcpAgent(asAgentConn(conn))
+    const storeDeletes: string[] = []
 
-  const storeDeletes: string[] = []
+    ;(agent as any).store = {
+      get() {
+        return null
+      },
+      delete(sessionId: string) {
+        storeDeletes.push(sessionId)
+      },
+      upsert() {}
+    }
 
-  ;(agent as any).store = {
-    get() {
-      return null
-    },
-    delete(sessionId: string) {
-      storeDeletes.push(sessionId)
-    },
-    upsert() {}
-  }
-
-  try {
     const response = await agent.deleteSession({ sessionId: 'pi-discovered-session' } as any)
     assert.deepEqual(response, {})
     assert.deepEqual(storeDeletes, ['pi-discovered-session'])
     assert.equal(existsSync(sessionFile), false)
-  } finally {
-    if (oldEnv === undefined) delete process.env.PI_CODING_AGENT_DIR
-    else process.env.PI_CODING_AGENT_DIR = oldEnv
-  }
+  })
 })
 
 test('PiAcpAgent: deleteSession succeeds idempotently for unknown sessionId', async () => {
@@ -100,33 +99,27 @@ test('PiAcpAgent: deleteSession succeeds idempotently for unknown sessionId', as
   const sessionsDir = join(root, 'sessions', '--tmp--delete-unknown--')
   mkdirSync(sessionsDir, { recursive: true })
 
-  const oldEnv = process.env.PI_CODING_AGENT_DIR
-  process.env.PI_CODING_AGENT_DIR = root
+  await withPiAgentDir(root, async () => {
+    const conn = new FakeAgentSideConnection()
+    const agent = new PiAcpAgent(asAgentConn(conn))
 
-  const conn = new FakeAgentSideConnection()
-  const agent = new PiAcpAgent(asAgentConn(conn))
+    // Per ACP session/delete semantics, deleting a non-existent session
+    // should succeed idempotently (return {} without error).
+    const storeDeletes: string[] = []
+    ;(agent as any).store = {
+      get() {
+        return null
+      },
+      delete(sessionId: string) {
+        storeDeletes.push(sessionId)
+      },
+      upsert() {}
+    }
 
-  // Per ACP session/delete semantics, deleting a non-existent session
-  // should succeed idempotently (return {} without error).
-  const storeDeletes: string[] = []
-  ;(agent as any).store = {
-    get() {
-      return null
-    },
-    delete(sessionId: string) {
-      storeDeletes.push(sessionId)
-    },
-    upsert() {}
-  }
-
-  try {
     const response = await agent.deleteSession({ sessionId: 'non-existent-session' } as any)
     assert.deepEqual(response, {})
     assert.deepEqual(storeDeletes, [])
-  } finally {
-    if (oldEnv === undefined) delete process.env.PI_CODING_AGENT_DIR
-    else process.env.PI_CODING_AGENT_DIR = oldEnv
-  }
+  })
 })
 
 test('PiAcpAgent: deleteSession survives missing session file', async () => {
@@ -135,36 +128,30 @@ test('PiAcpAgent: deleteSession survives missing session file', async () => {
   mkdirSync(sessionsDir, { recursive: true })
   const nonExistentFile = join(sessionsDir, '0000_non_existent.jsonl')
 
-  const oldEnv = process.env.PI_CODING_AGENT_DIR
-  process.env.PI_CODING_AGENT_DIR = root
+  await withPiAgentDir(root, async () => {
+    const conn = new FakeAgentSideConnection()
+    const agent = new PiAcpAgent(asAgentConn(conn))
 
-  const conn = new FakeAgentSideConnection()
-  const agent = new PiAcpAgent(asAgentConn(conn))
+    const storeDeletes: string[] = []
 
-  const storeDeletes: string[] = []
+    ;(agent as any).store = {
+      get(sessionId: string) {
+        if (sessionId !== 'missing-file-session') return null
+        return {
+          sessionId,
+          cwd: '/tmp/delete-missingfile',
+          sessionFile: nonExistentFile,
+          updatedAt: new Date().toISOString()
+        }
+      },
+      delete(sessionId: string) {
+        storeDeletes.push(sessionId)
+      },
+      upsert() {}
+    }
 
-  ;(agent as any).store = {
-    get(sessionId: string) {
-      if (sessionId !== 'missing-file-session') return null
-      return {
-        sessionId,
-        cwd: '/tmp/delete-missingfile',
-        sessionFile: nonExistentFile,
-        updatedAt: new Date().toISOString()
-      }
-    },
-    delete(sessionId: string) {
-      storeDeletes.push(sessionId)
-    },
-    upsert() {}
-  }
-
-  try {
     const response = await agent.deleteSession({ sessionId: 'missing-file-session' } as any)
     assert.deepEqual(response, {})
     assert.deepEqual(storeDeletes, ['missing-file-session'])
-  } finally {
-    if (oldEnv === undefined) delete process.env.PI_CODING_AGENT_DIR
-    else process.env.PI_CODING_AGENT_DIR = oldEnv
-  }
+  })
 })
