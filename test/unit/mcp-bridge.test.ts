@@ -9,7 +9,7 @@ import { createFakeSseServer } from './helpers/fake-sse-server.js'
 import { buildInfo } from '../../src/build-info.js'
 
 async function connectIpc(
-  settings: { env: { PI_ACP_MCP_IPC_ENDPOINT: string; PI_ACP_MCP_IPC_TOKEN: string; PI_ACP_MCP_SESSION_ID: string } },
+  settings: { env: Record<string, string> },
   sessionIdOverride?: string
 ) {
   const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
@@ -160,7 +160,7 @@ describe('AcpMcpBridge', () => {
     assert.equal(bridge.tools.length, 1)
     assert.equal(bridge.tools[0].exposedName, 'ide_intellij_open_file_in_editor')
 
-    const { sock, lines, nextMessage, helloAck } = await connectIpc(settings)
+    const { sock, lines, helloAck } = await connectIpc(settings)
     assert.equal(helloAck.catalog.projectPath, process.cwd())
     const registration = {
       type: 'catalog_registered',
@@ -677,7 +677,7 @@ describe('McpIpcServer handshake', () => {
         )
       )
 
-      const { sock, lines, nextMessage } = await connectIpc(settings)
+      const { sock, lines, nextMessage, helloAck: ack } = await connectIpc(settings)
 
       const registrationPromise = bridge.waitForRegistration(1_000)
       sock.write(
@@ -794,7 +794,7 @@ describe('McpIpcServer handshake', () => {
     const settings = await bridge.start()
     try {
       assert.deepEqual(bridge.appliedMutationPaths, [])
-      const { sock, lines, nextMessage } = await connectIpc(settings, 'ledger-session')
+      const { sock, lines } = await connectIpc(settings, 'ledger-session')
       sock.write(JSON.stringify({ type: 'mutations_applied', paths: ['src/a.ts', 'src/b.ts'] }) + '\n')
       const deadline = Date.now() + 5_000
       while (bridge.appliedMutationPaths.length < 2 && Date.now() < deadline) {
