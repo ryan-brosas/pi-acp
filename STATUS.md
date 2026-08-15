@@ -31,11 +31,16 @@ when hello_ack arrives during extension loading`).
 
 ## F-037: Qodana was analyzing the wrong language (fixed)
 
-- `qodana.yaml` pinned `qodana-jvm-community` (the free JVM linter), so CI pulled the JVM image
-  and reported "0 problem detected" against this TypeScript repo (run `31858985179`). No JS/TS
-  community linter exists (docs list only jvm/python community images); switched to the WebStorm-
-  based `qodana-js`, which requires `QODANA_TOKEN` (already wired in the workflow). Next Qodana
-  run will analyze TypeScript for real.
+- `qodana.yaml` originally pinned `qodana-jvm-community`, so CI reported "0 problem detected"
+  against this TypeScript repo (run `31858985179`). Switching to the WebStorm-based `qodana-js`
+  then failed on the license: "Your Qodana Cloud organization has Community license that doesn't
+  support 'Qodana for JS' linter" (runs `31870730024`, `31870874507`, `31871194563`,
+  `31871338288`). JetBrains' license matrix marks JavaScript and TypeScript as Ultimate/Ultimate
+  Plus only; Community covers JVM, Android, Python, .NET, C/C++. `qodana.yaml` stays on
+  `qodana-jvm-community` (gate green, but not a TS scan); the real TypeScript baseline is the
+  per-turn IntelliJ inspection (`ide_idea_lint_files`), which found the 8 real findings fixed
+  below. Enabling `qodana-js` requires a Qodana Ultimate/Ultimate Plus license on the `pi-acp`
+  Cloud org.
 - Local proxy for the same engine: `ide_idea_lint_files` across `src/` (28 files) found 8 real
   findings; fixed the duplicated JSON-RPC settlement block shared by `mcp-sse.ts`/`mcp-stdio.ts`
   via a new `src/acp/mcp-json-rpc.ts` helper (`settlePendingJsonRpcResponse`, 3 unit tests) and

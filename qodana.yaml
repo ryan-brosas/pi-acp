@@ -47,4 +47,11 @@ profile:
 #    failOnUnknown: false
 
 #Specify Qodana linter for analysis (Applied in CI/CD pipeline)
-linter: qodana-js
+# The pi-acp Qodana Cloud org is on the Community license. The JetBrains linter/license
+# matrix (pricing.html#pricing-linters-licenses) marks JavaScript and TypeScript as
+# Ultimate/Ultimate Plus only; Community covers JVM, Android, Python, .NET, and C/C++.
+# qodana-js therefore cannot run here (it fails with "Community license that doesn't support
+# Qodana for JS"). Keep a Community linter so the gate stays green; it is NOT a TS scan.
+# The real TypeScript baseline is the per-turn IntelliJ inspection (ide_idea_lint_files)
+# plus local lint/typecheck in check.yml. Enabling qodana-js needs a Qodana Ultimate license.
+linter: qodana-jvm-community
