@@ -9,7 +9,7 @@ An Agent Client Protocol (ACP) adapter for the pi coding agent. JetBrains Intell
 
 The adapter runs as an ACP server over stdio. Each ACP session starts one `pi --mode rpc` subprocess. The adapter translates messages between the client and pi.
 
-npm package: `pi-acp-jetbrain` at 0.0.36. GitHub Actions publishes each release with signed provenance.
+npm package: `pi-acp-jetbrain` (see the version badge for the current release). GitHub Actions publishes each release with signed provenance over npm OIDC; no npm token is needed on CI.
 
 ## In action
 
@@ -83,12 +83,14 @@ Register the adapter in `~/.jetbrains/acp.json`:
 
 npx works too. Pin the version so a later start cannot fetch a different release:
 
+Replace `<version>` with the current release (see the badge):
+
 ```json
 {
   "agent_servers": {
     "pi-acp-jetbrain": {
       "command": "npx",
-      "args": ["-y", "pi-acp-jetbrain@0.0.36"],
+      "args": ["-y", "pi-acp-jetbrain@<version>"],
       "env": {}
     }
   }
@@ -239,7 +241,7 @@ Each release publishes to npm from GitHub Actions with signed provenance. No int
 Start a release with:
 
 ```bash
-gh workflow run Release -f version=0.0.36
+gh workflow run Release -f version=<next-version>
 ```
 
 Workflow `Release` (file `release.yml`) validates the version, bumps the package files, runs the gates, commits, tags, pushes, publishes, and creates a GitHub release.
@@ -249,6 +251,18 @@ Workflow `Publish Package` (file `npm-publish.yml`) runs on a `v*` tag push. It 
 One-time setup for the package owner: on npmjs.com open the package Settings and the GitHub Cloud CI/CD form. Authorize `ryan-brosas/pi-acp-jetbrain`, branch `main`, with workflow filenames `npm-publish.yml` and `release.yml`.
 
 ## Limitations
+
+### Trust boundary
+
+The adapter trusts its ACP host. The host supplies the session working directory and
+client-provided MCP descriptors; stdio MCP servers named in a descriptor are spawned with
+the adapter's process environment in that working directory. Run the adapter only with
+hosts and MCP configurations you control. Do not expose it as a service to untrusted clients
+or place unnecessary secrets in the adapter environment.
+
+`PI_ACP_IDE_MODE=prefer|required` is policy enforcement for normal coding tools, not a
+filesystem sandbox: unrestricted Bash stays available, and the post-turn gates report
+violations without rolling back changes.
 
 The adapter does not expose ACP filesystem or terminal delegation. Pi reads files and runs commands locally.
 

@@ -2,11 +2,13 @@
 
 **Project:** pi-acp-jetbrain
 **Updated:** 2026-08-15
-**State:** Dogfood stability validation complete at `e590678`. Verdict: stable for continued dogfooding; D-1 cancel diagnostics implemented; fresh-host acceptance (F-033) is the only open item.
+**State:** `v0.0.37` published to npm with signed provenance; audit remediation for the concurrent session map, MCP client version, boundary typing, and release docs is committed and verified. Fresh-host acceptance (F-033) and Windows CI coverage remain open.
 
 ## Latest validation (2026-08-15)
 
-- Tests 283/283, lint, typecheck, build, canonical check: PASS.
+- Tests 293/293 (plus audit-regression additions), lint, typecheck, build, canonical check: PASS.
+- `v0.0.37` published via GitHub Actions (`Publish Package` on the `v0.0.37` tag, run `31858905710`), signed provenance in sigstore log `2471995135`; GitHub release created.
+- Audit remediation: session-map writes are serialized across adapter processes (dependency-free sibling lock with stale recovery); the MCP `clientInfo` version now mirrors the package version; protocol-boundary `any` declarations narrowed to typed access; README/STATUS refreshed.
 - `dogfood:report` 15/15 probes OK (run 1 had an intermittent `smoke-cancel` 60 s prompt timeout; instrumented in D-1).
 - `dogfood:ide` preflight: config wired to this checkout; 6 stale adapter PIDs predate the dist rebuild.
 - Live bridge (`ide_idea_*`) read/search/discovery/lint all work; 0 IDE problems on changed files.
@@ -16,6 +18,7 @@
 ## Next steps
 
 - Start a fresh IntelliJ chat after the next dist rebuild and complete the F-033 checklist (new PID, build revision match, cancel/restore/shutdown).
+- Add Windows CI coverage (check.yml currently runs Linux only; Windows paths and named-pipe logic stay untested).
 - In the fresh chat, dogfood the enforced IntelliJ-first path: edits must go through `ide_idea_apply_patch`/`ide_idea_create_new_file`; a direct `pi.write`/`schema.commit` inside `fabric_exec` must be blocked by the tool_call gate, and any file changed without an IDE mutation event must surface as a `Mutation provenance` violation.
 - Note: `docs/` is gitignored — findings docs are local-only evidence.
 

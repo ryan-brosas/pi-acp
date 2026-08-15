@@ -218,15 +218,15 @@ export class PiRpcProcess {
       if (code === 'ENOENT') {
         throw new PiRpcSpawnError(
           `Could not start pi: executable not found (command: ${cmd}). Pi needs to be installed before it can run in ACP clients. Install it via \`npm install -g @earendil-works/pi-coding-agent\` or ensure \`pi\` is on your PATH. Then try again.`,
-          { code, cause: e }
+          { code, cause: error }
         )
       }
 
       if (code === 'EACCES') {
-        throw new PiRpcSpawnError(`Could not start pi: permission denied (command: ${cmd}).`, { code, cause: e })
+        throw new PiRpcSpawnError(`Could not start pi: permission denied (command: ${cmd}).`, { code, cause: error })
       }
 
-      throw new PiRpcSpawnError(`Could not start pi (command: ${cmd}).`, { code, cause: e })
+      throw new PiRpcSpawnError(`Could not start pi (command: ${cmd}).`, { code, cause: error })
     }
 
     const proc = new PiRpcProcess(child, params.requestTimeoutMs ?? 30_000)
