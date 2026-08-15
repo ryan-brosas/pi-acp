@@ -4,6 +4,22 @@
 **Updated:** 2026-08-15
 **State:** `v0.0.38` published to npm with signed provenance; F-036 nested-pi IPC hardening and F-037 Qodana/JSON-RPC audit remediation are committed and verified. Fresh-host acceptance (F-033) and Windows CI coverage remain open.
 
+## 2026-08-15 WebStorm inspection cleanup
+
+- Ran the full WebStorm inspection sweep (41 findings across 15 files, warnings
+  and weak warnings) and addressed every actionable finding: fixed real
+  type/control-flow/regex findings in `src/acp/{agent,mcp-sse}.ts` and the dev
+  scripts, removed accidental `untitled/src/Main.java` and `src/Main.kt` starter
+  templates, and deduplicated shared scaffolding (`scripts/lib/validate-common.mjs`,
+  `scripts/fixtures/fake-mcp-stdio.mjs`, and the `connectIpc`/`connectRaw`,
+  `makeSession`/`flush`/`assertToolCall` test helpers).
+- One finding remains and is a verified WebStorm dataflow false positive: the
+  `if (sessionId)` cleanup branch in the `agent.ts` fork path (WebStorm concludes
+  the try cannot throw once `sessionId` is assigned, but the post-registration
+  awaits — bridge readiness, session release, config — can throw). Documented
+  in-code; the IDE `lint_files` tool ignores `// noinspection` comments.
+- Verified: 299/299 tests, ESLint, typecheck, build, canonical check, prettier.
+
 ## Latest validation (2026-08-15)
 
 - Tests 293/293 (plus audit-regression additions), lint, typecheck, build, canonical check: PASS.

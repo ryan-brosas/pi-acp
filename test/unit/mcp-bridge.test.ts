@@ -8,10 +8,7 @@ import { createInterface } from 'node:readline'
 import { createFakeSseServer } from './helpers/fake-sse-server.js'
 import { buildInfo } from '../../src/build-info.js'
 
-async function connectIpc(
-  settings: { env: Record<string, string> },
-  sessionIdOverride?: string
-) {
+async function connectIpc(settings: { env: Record<string, string> }, sessionIdOverride?: string) {
   const sock = createConnection(settings.env.PI_ACP_MCP_IPC_ENDPOINT)
   const lines = createInterface({ input: sock })
   const iterator = lines[Symbol.asyncIterator]()

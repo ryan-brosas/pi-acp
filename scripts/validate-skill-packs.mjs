@@ -44,7 +44,6 @@ const listedNames = text => {
   return names
 }
 
-
 function parse(file) {
   const text = readFileSync(file, 'utf8')
   const m = text.match(/^---\n([\s\S]*?)\n---/)
