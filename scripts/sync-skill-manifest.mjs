@@ -3,9 +3,10 @@
 // discovered SKILL.md tree. Entries are deterministic and sorted by name; the
 // generated date is informational. The removed ledger is preserved verbatim.
 // With --check, exits 1 on semantic drift without writing.
-import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { join, dirname, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { findSkillFiles } from './lib/validate-common.mjs'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const skillsRoot = join(root, '.pi', 'skills')
@@ -19,15 +20,6 @@ if (!existsSync(skillsRoot)) {
 
 const check = process.argv.includes('--check')
 
-function walk(dir) {
-  const found = []
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const full = join(dir, entry.name)
-    if (entry.isDirectory()) found.push(...walk(full))
-    else if (entry.isFile() && entry.name === 'SKILL.md') found.push(full)
-  }
-  return found
-}
 function parse(file) {
   const text = readFileSync(file, 'utf8')
   const m = text.match(/^---\n([\s\S]*?)\n---/)
@@ -45,7 +37,7 @@ try {
 const core = new Set(catalog.visibleCore || [])
 const packOf = new Map()
 for (const pack of catalog.packs || []) for (const m of pack.members || []) packOf.set(m, pack.id)
-const discovered = walk(skillsRoot).map(parse)
+const discovered = findSkillFiles(skillsRoot).map(parse)
 const isRouter = s => dirname(dirname(s.file)) === skillsRoot && basename(dirname(s.file)).startsWith('pack-')
 
 const retained = discovered

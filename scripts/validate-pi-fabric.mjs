@@ -4,14 +4,10 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createReporter } from './lib/validate-common.mjs'
 
 const root = process.argv[2] ? resolve(process.argv[2]) : fileURLToPath(new URL('..', import.meta.url))
-let failures = 0
-const ok = m => console.log('[ok] ' + m)
-const fail = m => {
-  failures++
-  console.log('[fail] ' + m)
-}
+const { ok, fail, failCount } = createReporter()
 
 // 1. Runtime configuration (.pi/fabric.json)
 const fabricPath = join(root, '.pi', 'fabric.json')
@@ -19,6 +15,7 @@ if (!existsSync(fabricPath)) {
   console.log('[skip] .pi/fabric.json is not in this checkout; fabric contract checks run in the development tree')
   process.exit(0)
 } else {
+  /** @type {Record<string, any> | null} */
   let cfg
   try {
     cfg = JSON.parse(readFileSync(fabricPath, 'utf8'))
@@ -152,5 +149,5 @@ const ignorePath = join(root, '.gitignore')
 if (existsSync(ignorePath) && readFileSync(ignorePath, 'utf8').includes('.veda/')) ok('.veda/ is ignored')
 else fail('.gitignore must ignore local Veda sessions with .veda/')
 
-console.log(failures ? 'pi-fabric contract: FAIL' : 'pi-fabric contract: ok')
-process.exit(failures ? 1 : 0)
+console.log(failCount ? 'pi-fabric contract: FAIL' : 'pi-fabric contract: ok')
+process.exit(failCount ? 1 : 0)
