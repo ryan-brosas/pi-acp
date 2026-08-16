@@ -52,9 +52,15 @@ const cases = [
   { task: 'REST API design task', expect: ['api-implementation'], keywords: ['http'], max: 1 },
   { task: 'queue worker task', expect: ['background-jobs'], keywords: ['background'], max: 1 },
   {
-    task: 'compare inspiration repository opencode-template for session summaries via CGC',
-    expect: ['cgc-inspiration-workflow'],
+    task: 'compare an indexed inspiration repository through Codebase Memory',
+    expect: ['codebase-memory'],
     keywords: ['inspiration'],
+    max: 1
+  },
+  {
+    task: 'use JetBrains IDE search, refactoring, diagnostics, build, and run tools',
+    expect: ['jetbrains-ide-workflow'],
+    keywords: ['jetbrains'],
     max: 1
   },
   {

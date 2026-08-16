@@ -35,7 +35,7 @@ The model selector works through a mapping from pi models to ACP provider info. 
 
 Slash commands load file-based prompts from pi and a set of built-ins: `/compact`, `/export`, `/session`, `/name`, `/queue`, `/changelog`, `/steering`, `/follow-up`. Skills appear as `/skill:<name>` when enabled in pi settings.
 
-The local tree carries pi developer tooling: 9 prompt commands, 100 skill files (90 leaves in 10 packs), and 12 format templates under `.pi/`. These checks run in the development tree and skip on clean CI checkouts.
+The local tree carries pi developer tooling: 9 prompt commands, 101 skill files (91 leaves in 10 packs), and 12 format templates under `.pi/`. These checks run in the development tree and skip on clean CI checkouts.
 
 ## JetBrains IDE bridge
 
