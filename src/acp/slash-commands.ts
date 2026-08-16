@@ -11,6 +11,7 @@ export type FileSlashCommand = {
   description: string
   content: string
   source: string // e.g. "(user)", "(project)", "(project:frontend)"
+  argumentHint?: string
 }
 
 function parseFrontmatter(content: string): {
@@ -28,8 +29,14 @@ function parseFrontmatter(content: string): {
   const remaining = content.slice(endIndex + 4).trim()
 
   for (const line of frontmatterBlock.split('\n')) {
-    const match = line.match(/^(\w+):\s*(.*)$/)
-    if (match) frontmatter[match[1]] = match[2].trim()
+    const match = line.match(/^([\w-]+):\s*(.*)$/)
+    if (match) {
+      const value = match[2].trim()
+      const quoted =
+        value.length >= 2 &&
+        ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))
+      frontmatter[match[1]] = quoted ? value.slice(1, -1) : value
+    }
   }
 
   return { frontmatter, content: remaining }
@@ -77,7 +84,8 @@ function loadCommandsFromDir(dir: string, source: 'user' | 'project', subdir = '
           name,
           description,
           content,
-          source: sourceStr
+          source: sourceStr,
+          ...(frontmatter['argument-hint'] && { argumentHint: frontmatter['argument-hint'] })
         })
       } catch {
         // Silently skip unreadable files.
@@ -122,12 +130,28 @@ export function toAvailableCommands(fileCommands: FileSlashCommand[]): Available
 
     out.push({
       name: c.name,
-      description: c.description
-      // input: omitted for now (pi commands don't specify this)
+      description: c.description,
+      ...(c.argumentHint && { input: { hint: c.argumentHint } })
     })
   }
 
   return out
+}
+
+/** Add local prompt input hints to Pi RPC command metadata without changing command precedence. */
+export function withFileCommandInputs(
+  commands: AvailableCommand[],
+  fileCommands: FileSlashCommand[]
+): AvailableCommand[] {
+  const hints = new Map<string, string>()
+  for (const command of fileCommands) {
+    if (command.argumentHint && !hints.has(command.name)) hints.set(command.name, command.argumentHint)
+  }
+
+  return commands.map(command => {
+    const hint = hints.get(command.name)
+    return hint && !command.input ? { ...command, input: { hint } } : command
+  })
 }
 
 /**
@@ -149,7 +173,7 @@ export function parseCommandArgs(argsString: string): string[] {
 
     if (ch === '"' || ch === "'") {
       inQuote = ch
-    } else if (ch === ' ' || ch === '\t') {
+    } else if (/\s/.test(ch)) {
       if (current) {
         args.push(current)
         current = ''
@@ -163,19 +187,38 @@ export function parseCommandArgs(argsString: string): string[] {
   return args
 }
 
-/**
- * Substitute $1, $2, ... and $@.
- */
+/** Substitute Pi prompt-template argument forms in one pass so inserted values are not expanded again. */
 export function substituteArgs(content: string, args: string[]): string {
-  let result = content
-
-  result = result.replace(/\$@/g, args.join(' '))
-  result = result.replace(/\$(\d+)/g, (_m, num) => {
-    const idx = Number.parseInt(String(num), 10) - 1
-    return args[idx] ?? ''
-  })
-
-  return result
+  const allArgs = args.join(' ')
+  return content.replace(
+    /\$\{(\d+|ARGUMENTS|@):-([^}]*)\}|\$\{@:(\d+)(?::(\d+))?\}|\$(ARGUMENTS|@|\d+)/g,
+    (
+      _match,
+      defaultTarget: string | undefined,
+      defaultValue: string | undefined,
+      sliceStart: string | undefined,
+      sliceLength: string | undefined,
+      simple: string | undefined
+    ) => {
+      if (defaultTarget) {
+        const value =
+          defaultTarget === '@' || defaultTarget === 'ARGUMENTS'
+            ? allArgs
+            : args[Number.parseInt(defaultTarget, 10) - 1]
+        return value || defaultValue || ''
+      }
+      if (sliceStart) {
+        const start = Math.max(0, Number.parseInt(sliceStart, 10) - 1)
+        if (sliceLength) {
+          const length = Number.parseInt(sliceLength, 10)
+          return args.slice(start, start + length).join(' ')
+        }
+        return args.slice(start).join(' ')
+      }
+      if (simple === 'ARGUMENTS' || simple === '@') return allArgs
+      return args[Number.parseInt(simple || '', 10) - 1] ?? ''
+    }
+  )
 }
 
 /**
@@ -184,14 +227,11 @@ export function substituteArgs(content: string, args: string[]): string {
  */
 export function expandSlashCommand(text: string, fileCommands: FileSlashCommand[]): string {
   if (!text.startsWith('/')) return text
+  const match = text.match(/^\/([^\s]+)(?:\s+([\s\S]*))?$/)
+  if (!match) return text
 
-  const spaceIndex = text.indexOf(' ')
-  const commandName = spaceIndex === -1 ? text.slice(1) : text.slice(1, spaceIndex)
-  const argsString = spaceIndex === -1 ? '' : text.slice(spaceIndex + 1)
-
-  const cmd = fileCommands.find(c => c.name === commandName)
+  const cmd = fileCommands.find(c => c.name === match[1])
   if (!cmd) return text
 
-  const args = parseCommandArgs(argsString)
-  return substituteArgs(cmd.content, args)
+  return substituteArgs(cmd.content, parseCommandArgs(match[2] ?? ''))
 }

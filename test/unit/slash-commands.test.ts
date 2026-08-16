@@ -5,8 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import * as slashCommands from '../../src/acp/slash-commands.js'
 
-const { expandSlashCommand, loadSlashCommands, parseCommandArgs, substituteArgs, toAvailableCommands } =
-  slashCommands
+const { expandSlashCommand, loadSlashCommands, parseCommandArgs, substituteArgs, toAvailableCommands } = slashCommands
 
 test('parseCommandArgs: handles quotes and multiline whitespace', () => {
   assert.deepEqual(parseCommandArgs('a b'), ['a', 'b'])
@@ -23,10 +22,7 @@ test('substituteArgs: matches Pi prompt-template argument syntax', () => {
     substituteArgs(template, ['one', 'two']),
     'pos=one missing= all=one two alias=one two default=fallback allDefault=one two slice=two range=one'
   )
-  assert.equal(
-    substituteArgs('${1:-7}|${@:-all-default}|${ARGUMENTS:-args-default}', []),
-    '7|all-default|args-default'
-  )
+  assert.equal(substituteArgs('${1:-7}|${@:-all-default}|${ARGUMENTS:-args-default}', []), '7|all-default|args-default')
 })
 
 test('substituteArgs: does not recursively expand argument values', () => {
@@ -58,12 +54,14 @@ test('loadSlashCommands: carries argument-hint into ACP command input', t => {
 })
 
 test('withFileCommandInputs: enriches Pi prompt commands without changing order or descriptions', () => {
-  const enrich = (slashCommands as typeof slashCommands & {
-    withFileCommandInputs: (
-      commands: Array<{ name: string; description: string }>,
-      fileCommands: Array<Record<string, unknown>>
-    ) => unknown
-  }).withFileCommandInputs
+  const enrich = (
+    slashCommands as typeof slashCommands & {
+      withFileCommandInputs: (
+        commands: Array<{ name: string; description: string }>,
+        fileCommands: Array<Record<string, unknown>>
+      ) => unknown
+    }
+  ).withFileCommandInputs
   const commands = [
     { name: 'hint-test', description: 'From Pi RPC' },
     { name: 'skill:other', description: 'Other' }

@@ -55,7 +55,7 @@ import {
   isBashTool
 } from './translate/bash.js'
 import { promptToPiMessage } from './translate/prompt.js'
-import { loadSlashCommands, parseCommandArgs, toAvailableCommands } from './slash-commands.js'
+import { loadSlashCommands, parseCommandArgs, toAvailableCommands, withFileCommandInputs } from './slash-commands.js'
 import { getAgentDir, getEnableSkillCommands, getQuietStartup } from './pi-settings.js'
 import { toAvailableCommandsFromPiGetCommands } from './pi-commands.js'
 import { maybeAuthRequiredError } from './auth-required.js'
@@ -538,7 +538,10 @@ export class PiAcpAgent implements ACPAgent {
             sessionId: session.sessionId,
             update: {
               sessionUpdate: 'available_commands_update',
-              availableCommands: mergeCommands(commands, builtinAvailableCommands())
+              availableCommands: mergeCommands(
+                withFileCommandInputs(commands, fileCommands),
+                builtinAvailableCommands()
+              )
             }
           })
           return
@@ -1528,7 +1531,10 @@ export class PiAcpAgent implements ACPAgent {
             sessionId: session.sessionId,
             update: {
               sessionUpdate: 'available_commands_update',
-              availableCommands: mergeCommands(commands, builtinAvailableCommands())
+              availableCommands: mergeCommands(
+                withFileCommandInputs(commands, fileCommands),
+                builtinAvailableCommands()
+              )
             }
           })
           return
